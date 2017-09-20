@@ -39,6 +39,12 @@ const (
     BCE_PREFIX = "x-bce-"
     BCE_ACL = "x-bce-acl"
     BCE_CONTENT_SHA256 = "x-bce-content-sha256"
+    BCE_REQUEST_ID = "x-bce-request-id"
+    BCE_USER_METADATA_PREFIX = "x-bce-meta-"
+    BCE_SECURITY_TOKEN = "x-bce-security-token"
+    BCE_DATE = "x-bce-date"
+
+    // BOS HTTP Headers
     BCE_COPY_METADATA_DIRECTIVE = "x-bce-metadata-directive"
     BCE_COPY_SOURCE = "x-bce-copy-source"
     BCE_COPY_SOURCE_IF_MATCH = "x-bce-copy-source-if-match"
@@ -46,12 +52,6 @@ const (
     BCE_COPY_SOURCE_IF_NONE_MATCH = "x-bce-copy-source-if-none-match"
     BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE = "x-bce-copy-source-if-unmodified-since"
     BCE_COPY_SOURCE_RANGE = "x-bce-copy-source-range"
-    BCE_DATE = "x-bce-date"
-    BCE_REQUEST_ID = "x-bce-request-id"
-    BCE_USER_METADATA_PREFIX = "x-bce-meta-"
-    BCE_SECURITY_TOKEN = "x-bce-security-token"
-
-    // BOS HTTP Headers
     BCE_DEBUG_ID = "x-bce-debug-id"
     BCE_OBJECT_TYPE = "x-bce-object-type"
     BCE_STORAGE_CLASS = "x-bce-storage-class"
