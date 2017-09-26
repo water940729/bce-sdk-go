@@ -1,22 +1,25 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Response of GetSessionToken for STS service
+// get_session_token.go - define the response of GetSessionToken for STS service
+
 package model
 
 import (
+    "glog"
+
     "baidubce/model"
-    "baidubce/util"
 )
 
 type GetSessionTokenJsonSchema struct {
@@ -52,7 +55,7 @@ func (resp *GetSessionTokenResponse) ParseResponse() {
 
     jsonBody := &GetSessionTokenJsonSchema{}
     if err := resp.BceResponse.ParseJsonBody(jsonBody); err != nil {
-        util.LOGGER.Error().Printf("parse GetSessionToken json response failed: %v\n", err)
+        glog.Error("parse GetSessionToken json response failed: %v\n", err)
         return
     }
     resp.accessKeyId     = jsonBody.AccessKeyId

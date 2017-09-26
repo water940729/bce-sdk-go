@@ -1,17 +1,22 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Define client for STS service
+// client.go - define the client for STS service which is derived from BceClient
+
+// Package sts defines the STS service of BCE.
+// It contains the model sub package to implement the concrete request and response of the
+// GetSessionToken API.
 package sts
 
 import (
@@ -21,9 +26,9 @@ import (
     "baidubce/util"
 )
 
+// Client of STS service is a kind of BceClient, so it derived from the BceClient and it only
+// supports the GetSessionToken API. There is no other fields needed.
 type Client struct {
-    // Client of STS service is a kind of BceClient, so derived from
-    // the BceClient and no other fields needed.
     *bce.BceClient
 }
 
@@ -32,10 +37,10 @@ func (cli *Client) GetSessionToken(req *model.GetSessionTokenRequest,
     return cli.SendRequest(req, resp)
 }
 
-// Make the STS service client with default configuration
-// Use `cli.Config.xxx` to access the config or change it to non-default value
+// NewClient make the STS service client with default configuration.
+// Use `cli.Config.xxx` to access the config or change it to non-default value.
 func NewClient(ak, sk, endpoint string) (*Client, error) {
-    credentials, err := auth.NewBceDefaultCredentials(ak, sk)
+    credentials, err := auth.NewBceCredentials(ak, sk)
     if err != nil {
         return nil, err
     }
@@ -44,14 +49,13 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
         util.NowUTCSeconds(),
         auth.DEFAULT_EXPIRE_SECONDS}
     defaultConf := &bce.BceClientConfiguration{
-        bce.DEFAULT_PROTOCOL,
-        endpoint,
-        bce.DEFAULT_REGION,
-        credentials,
-        defaultSignOptions,
-        bce.DEFAULT_RETRY_POLICY,
-        bce.DEFAULT_USER_AGENT,
-        bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
+        Endpoint: endpoint,
+        Region: bce.DEFAULT_REGION,
+        UserAgent: bce.DEFAULT_USER_AGENT,
+        Credentials: credentials,
+        SignOption: defaultSignOptions,
+        Retry: bce.DEFAULT_RETRY_POLICY,
+        ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
     v1Signer := &auth.BceV1Signer{}
 
     client := &Client{bce.NewBceClient(defaultConf, v1Signer)}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +11,14 @@
  * specific language governing permissions and limitations under the License.
  */
 
-// Initiate multipart upload request definition
+// initiate_multipart_upload_request.go - Initiate multipart upload request definition
+
 package model
 
 import (
+    "glog"
+
     "baidubce/http"
-    "baidubce/util"
 )
 
 type InitiateMultipartUploadRequest struct {
@@ -34,7 +36,7 @@ type InitiateMultipartUploadRequest struct {
 func (req *InitiateMultipartUploadRequest) SetStorageClass(val string) {
     if val != STORAGE_CLASS_STANDARD && val != STORAGE_CLASS_STANDARD_IA &&
             val != STORAGE_CLASS_COLD {
-        util.LOGGER.Info().Printf(
+        glog.Info(
             "invalid storage class value: %s, use default: %s\n", val, STORAGE_CLASS_STANDARD)
         val = STORAGE_CLASS_STANDARD
     }

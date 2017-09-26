@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,14 +11,15 @@
  * specific language governing permissions and limitations under the License.
  */
 
-// Get object response definition
+// get_object_response.go - the get object response definition
+
 package model
 
 import (
     "strconv"
 
-    "baidubce/model"
     "baidubce/http"
+    "baidubce/model"
 )
 
 type GetObjectResponse struct {

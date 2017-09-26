@@ -1,23 +1,27 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Implement the Signer of BCE V1 protocol
+// signer.go - implement the specific sign algorithm of BCE V1 protocol
+
 package auth
 
 import (
     "fmt"
     "strings"
     "sort"
+
+    "glog"
 
     "baidubce/http"
     "baidubce/util"
@@ -39,12 +43,13 @@ func init() {
     DEFAULT_HEADERS_TO_SIGN[3] = strings.ToLower(http.CONTENT_MD5)
 }
 
+// Signer abstracts the entity that implements the `Sign` method
 type Signer interface {
     // Sign the given Request with the Credentials and SignOptions
-    Sign(*http.Request, BceCredentials, *SignOptions)
+    Sign(*http.Request, *BceCredentials, *SignOptions)
 }
 
-// Sign optinos data structure used for `Signer` implementation
+// SignOptions defines the data structure used by Signer
 type SignOptions struct {
     HeadersToSign []string
     Timestamp     int64
@@ -59,25 +64,33 @@ func (opt* SignOptions) String() string {
     ]`, opt.HeadersToSign, opt.Timestamp, opt.ExpireSeconds)
 }
 
-// BCE version 1 signer which implements Signer interface
+// BceV1Signer implements the v1 sign algorithm
 type BceV1Signer struct {}
 
-func (bvs *BceV1Signer) Sign(req *http.Request, cred BceCredentials, opt *SignOptions) {
+/*
+ * Sign - generate the authorization string from the BceCredentials and SignOptions
+ *
+ * PARAMS:
+ *     - req: *http.Request for this sign
+ *     - cred: *BceCredentials to access the serice
+ *     - opt: *SignOptions for this sign algorithm
+ */
+func (bvs *BceV1Signer) Sign(req *http.Request, cred *BceCredentials, opt *SignOptions) {
     if req == nil {
-        util.LOGGER.Panic().Println("request should not be null")
+        glog.Fatal("request should not be null for sign")
     }
     if cred == nil {
         return
     }
 
     // Prepare parameters
-    accessKeyId     := cred.GetAccessKeyId()
-    secretAccessKey := cred.GetSecretAccessKey()
+    accessKeyId     := cred.AccessKeyId
+    secretAccessKey := cred.SecretAccessKey
     signDate        := util.FormatISO8601Date(opt.Timestamp)
 
     // Set security token if using session credentials
-    if v, ok := cred.(*BceSessionCredentials); ok {
-        req.AddHeader(http.BCE_SECURITY_TOKEN, v.GetSessionToken())
+    if len(cred.SessionToken) != 0 {
+        req.AddHeader(http.BCE_SECURITY_TOKEN, cred.SessionToken)
     }
 
     // Prepare the canonical request components
@@ -101,12 +114,12 @@ func (bvs *BceV1Signer) Sign(req *http.Request, cred BceCredentials, opt *SignOp
     // Generate signature
     canonicalParts := []string{req.Method(), canonicalUri, canonicalQueryString, canonicalHeaders}
     canonicalReq := strings.Join(canonicalParts, SIGN_JOINER)
-    util.LOGGER.Debug().Println("CanonicalRequest data:\n" + canonicalReq)
+    glog.Debug("CanonicalRequest data:\n" + canonicalReq)
     signature := util.HmacSha256Hex(signKey, canonicalReq)
 
     // Generate auth string and add to the reqeust header
     authStr := signKeyInfo + "/" + signedHeaders + "/" + signature
-    util.LOGGER.Debug().Println("Authorization=" + authStr)
+    glog.Debug("Authorization=" + authStr)
 
     req.AddHeader(http.AUTHORIZATION, authStr)
 }
@@ -156,19 +169,19 @@ func getCanonicalHeaders(headers map[string]string, headersToSign []string) (str
         }
         return -1
     }
-    for k, _ := range headers {
-        if strings.ToLower(k) == strings.ToLower(http.AUTHORIZATION) {
+    for k, v := range headers {
+        headKey := strings.ToLower(k)
+        if headKey == strings.ToLower(http.AUTHORIZATION) {
             continue
         }
-        lowerHead := strings.ToLower(k)
-        if (finder(headersToSign, lowerHead) != -1) ||
-           (strings.HasPrefix(lowerHead, http.BCE_PREFIX) &&
-           (lowerHead != http.BCE_REQUEST_ID)) {
+        if (finder(headersToSign, headKey) != -1) ||
+           (strings.HasPrefix(headKey, http.BCE_PREFIX) &&
+           (headKey != http.BCE_REQUEST_ID)) {
 
-            headVal := strings.TrimSpace(headers[k])
-            item := util.UriEncode(lowerHead, true) + ":" + util.UriEncode(headVal, true)
-            canonicalHeaders = append(canonicalHeaders, item)
-            signHeaders = append(signHeaders, lowerHead)
+            headVal := strings.TrimSpace(v)
+            encoded := util.UriEncode(headKey, true) + ":" + util.UriEncode(headVal, true)
+            canonicalHeaders = append(canonicalHeaders, encoded)
+            signHeaders = append(signHeaders, headKey)
         }
     }
     sort.Strings(canonicalHeaders)

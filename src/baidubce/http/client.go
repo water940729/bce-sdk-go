@@ -1,17 +1,22 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Definine HTTP client facilities for BCE
+// client.go - define the execute function to send http request and get response
+
+// Package http defines the structure of request and response which used to access the BCE services
+// as well as the http constant headers and and methods. And finally implement the `Execute` funct-
+// ion to do the work.
 package http
 
 import (
@@ -20,9 +25,16 @@ import (
     "net/url"
 )
 
+// The httpClient and httpRequest are the global variable to send the request and get response
+// for reuse.
+var (
+    httpClient = &http.Client{}
+    httpRequest = &http.Request{}
+)
+
 func Execute(request *Request) (*Response, error) {
-    // Prepare the internal data structure for sending the http request
-    internalClient := &http.Client{ Timeout: time.Duration(request.Timeout()) * time.Second }
+    // Set the connection timeout for current request
+    httpClient.Timeout = time.Duration(request.Timeout()) * time.Second
 
     internalUrl := &url.URL{
         Scheme: request.Protocol(),
@@ -52,9 +64,19 @@ func Execute(request *Request) (*Response, error) {
         internalReq.ContentLength = body.Len()
     }
 
+    // Setup the proxy setting if needed
+    defaultTr := http.DefaultTransport
+    tr, _ := defaultTr.(*http.Transport)
+    if len(request.ProxyUrl()) != 0 {
+        tr.Proxy = func(_ *http.Request) (*url.URL, error) {
+            return url.Parse(request.ProxyUrl())
+        }
+    }
+    httpClient.Transport = tr
+
     // Perform the http request and get response
     start := time.Now()
-    internalResp, err := internalClient.Do(internalReq)
+    internalResp, err := httpClient.Do(internalReq)
     end := time.Now()
     if err != nil {
         return nil, err

@@ -1,17 +1,21 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Define client for BOS service
+// client.go - define the client for BOS service
+
+// Package bos defines the BOS services of BCE. The supported APIs are all defined in sub-package
+// model with three types: 16 bucket APIs, 9 object APIs and 7 multipart APIs.
 package bos
 
 import (
@@ -20,7 +24,6 @@ import (
 
     "baidubce/auth"
     "baidubce/bce"
-    "baidubce/common"
     "baidubce/http"
     "baidubce/util"
     . "baidubce/services/bos/model"
@@ -37,19 +40,19 @@ const (
     MAX_SINGLE_OBJECT_SIZE = 5 * (1 << 40) // 5TB
 )
 
+// Client of BOS service is a kind of BceClient, so derived from BceClient
 type Client struct {
-    // Client of BOS service is a kind of BceClient, so derived from BceClient
     *bce.BceClient
 
     // Fileds that used in parallel operation for BOS service
-    MaxParallel   int
-    MultipartSize int
+    MaxParallel   int64
+    MultipartSize int64
 }
 
-// Make the BOS service client with default configuration
-// Use `cli.Config.xxx` to access the config or change it to non-default value
+// NewClient make the BOS service client with default configuration.
+// Use `cli.Config.xxx` to access the config or change it to non-default value.
 func NewClient(ak, sk string) (*Client, error) {
-    credentials, err := auth.NewBceDefaultCredentials(ak, sk)
+    credentials, err := auth.NewBceCredentials(ak, sk)
     if err != nil {
         return nil, err
     }
@@ -58,14 +61,13 @@ func NewClient(ak, sk string) (*Client, error) {
         util.NowUTCSeconds(),
         auth.DEFAULT_EXPIRE_SECONDS}
     defaultConf := &bce.BceClientConfiguration{
-        bce.DEFAULT_PROTOCOL,
-        fmt.Sprintf("%s.%s", bce.DEFAULT_REGION, common.DEFAULT_SERVICE_DOMAIN),
-        bce.DEFAULT_REGION,
-        credentials,
-        defaultSignOptions,
-        bce.DEFAULT_RETRY_POLICY,
-        bce.DEFAULT_USER_AGENT,
-        bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
+        Endpoint: fmt.Sprintf("%s.%s", bce.DEFAULT_REGION, bce.DEFAULT_SERVICE_DOMAIN),
+        Region: bce.DEFAULT_REGION,
+        UserAgent: bce.DEFAULT_USER_AGENT,
+        Credentials: credentials,
+        SignOption: defaultSignOptions,
+        Retry: bce.DEFAULT_RETRY_POLICY,
+        ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
     v1Signer := &auth.BceV1Signer{}
 
     client := &Client{bce.NewBceClient(defaultConf, v1Signer),

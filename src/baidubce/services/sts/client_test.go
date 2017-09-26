@@ -2,9 +2,7 @@ package sts
 
 import (
     "testing"
-    "os"
 
-    "baidubce/util"
     "baidubce/services/sts/model"
 )
 
@@ -17,10 +15,6 @@ var (
 
 func init() {
     CLIENT, _ = NewClient(AK, SK, ENDPOINT)
-
-    // Clear the debug info
-    null, _ := os.Open("/dev/null")
-    util.LOGGER = util.GetLogger(null, util.DEFAULT_LOGGER_PREFIX)
 }
 
 func TestGetSessionToken(t *testing.T) {
@@ -39,11 +33,11 @@ func TestGetSessionToken(t *testing.T) {
     for k, v := range response.GetHeaders() {
         t.Logf("%s: %s", k, v)
     }
-    t.Logf("%v", response.AccessKeyId())
-    t.Logf("%v", response.SecretAccessKey())
-    t.Logf("%v", response.SessionToken())
-    t.Logf("%v", response.CreateTime())
-    t.Logf("%v", response.Expiration())
-    t.Logf("%v", response.UserId())
+    t.Logf("ak: %v", response.AccessKeyId())
+    t.Logf("sk: %v", response.SecretAccessKey())
+    t.Logf("sessionToken: %v", response.SessionToken())
+    t.Logf("createTime: %v", response.CreateTime())
+    t.Logf("expiration: %v", response.Expiration())
+    t.Logf("userId: %v", response.UserId())
 }
 

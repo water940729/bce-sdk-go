@@ -1,36 +1,39 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Definine common HTTP request for BCE
+// request.go - the custom HTTP request for BCE
+
 package http
 
 import (
+    "bufio"
+    "bytes"
     "fmt"
+    "io"
+    "os"
     "strings"
     "strconv"
-    "bytes"
-    "os"
-    "io"
-    "bufio"
 
     "baidubce/util"
 )
 
-// The internal request body stream implements the io.ReadCloser interface
-// for adapting the `Body` field in the net/http Client.
+// BodyStream is used for internal request body stream implements the io.ReadCloser interface
+// for adapting the `Body` field in the net/http.Request, as well as the `Len` method to set
+// the content-length.
 type BodyStream struct {
-    Entity io.ReadCloser  // abstract entity that can `Read` and `Close`
-    Size   int64
+    Entity io.ReadCloser // abstract entity that can `Read` and `Close`
+    Size   int64         // the body size that returned by `Len`
 }
 
 func (body *BodyStream) Read(p []byte) (int, error) { return body.Entity.Read(p) }
@@ -39,7 +42,7 @@ func (body *BodyStream) Close() error { return body.Entity.Close() }
 
 func (body *BodyStream) Len() int64 { return body.Size }
 
-// Adapter of buffered file stream to `BodyStream`
+// BufferedFileStream is an adapter of buffered file stream to `BodyStream`.
 type bufferedFileStream struct {
     buffer *bufio.Reader
     closer io.Closer
@@ -62,7 +65,7 @@ func NewBodyStreamFromFile(fname string) (*BodyStream, error) {
     return &BodyStream{adapter, fileInfo.Size()}, nil
 }
 
-// Adapter of common strings to `BodyStream`
+// StringStream is an adapter of common strings to `BodyStream`.
 type stringStream struct { buffer *bytes.Buffer }
 
 func (str *stringStream) Read(p []byte) (int, error) { return str.buffer.Read(p) }
@@ -81,13 +84,14 @@ func NewBodyStreamFromString(stream string) *BodyStream {
     return &BodyStream{adapter, int64(buf.Len())}
 }
 
-// General http request structure
+// Reauest stands for the general http request structure to make request to the BCE services.
 type Request struct {
     protocol    string
     host        string
     port        int
     method      string
     uri         string
+    proxyUrl    string
     timeout     int
     headers     map[string]string
     params      map[string]string
@@ -203,6 +207,14 @@ func (req *Request) Uri() string {
 
 func (req *Request) SetUri(uri string) {
     req.uri = uri
+}
+
+func (req *Request) ProxyUrl() string {
+    return req.proxyUrl
+}
+
+func (req *Request) SetProxyUrl(url string) {
+    req.proxyUrl = url
 }
 
 func (req *Request) Timeout() int {

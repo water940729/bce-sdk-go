@@ -1,23 +1,23 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Define json schema used by the json request and response for BOS service
-//
-// If the struct is used in request, its name suffix is "Input", and if it is
-// used in response its name suffix is "Output". For example "BucketAclInput" is
-// used in the PutBucketAcl request, and "BucketAclOutput" is used in the GetBu-
-// cketAcl response. If the request and response shares the same json structure,
-// the suffix will be "InOut" such as "BucketLifecycleInOut".
+// json_schema.go - Define json schema used by the json request and response for BOS service
+// If the struct is used in request, its name suffix is "Input", and if it is used in response its 
+// name suffix is "Output". For example "BucketAclInput" is used in the PutBucketAcl request, and
+// "BucketAclOutput" is used in the GetBucketAcl response. If the request and response shares the
+// same json structure, the suffix will be "InOut" such as "BucketLifecycleInOut".
+
 package model
 
 // Acl schema

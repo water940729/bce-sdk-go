@@ -1,17 +1,19 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Define the common BCE response
+// bce_response.go - defines the common BCE services response
+
 package model
 
 import (
@@ -19,33 +21,19 @@ import (
     "time"
     "encoding/json"
 
-    "baidubce/common"
+    "baidubce/bce"
     "baidubce/http"
 )
 
-type BceResponser interface {
-    IsFail() bool
-    StatusCode() int
-    StatusText() string
-    RequestId() string
-    DebugId() string
-    GetHeader(key string) string
-    GetHeaders() map[string]string
-    Body() io.ReadCloser
-    SetHttpResponse(*http.Response)
-    ElapsedTime() time.Duration
-    ParseResponse()
-    ServiceError() *common.BceServiceError
-}
-
-// The common BceResponse structure
+// BceResponse defines the concrete response structure for receiving BCE services response. It imp-
+// lements the BceResponser interface defined in the bce package.
 type BceResponse struct {
     statusCode   int
     statusText   string
     requestId    string
     debugId      string
     response     *http.Response
-    serviceError *common.BceServiceError
+    serviceError *bce.BceServiceError
 }
 
 func (resp *BceResponse) IsFail() bool {
@@ -100,7 +88,7 @@ func (resp *BceResponse) ElapsedTime() time.Duration {
     return resp.response.ElapsedTime()
 }
 
-func (resp *BceResponse) ServiceError() *common.BceServiceError {
+func (resp *BceResponse) ServiceError() *bce.BceServiceError {
     return resp.serviceError
 }
 
@@ -110,11 +98,11 @@ func (resp *BceResponse) ParseResponse() {
     resp.requestId = resp.response.GetHeader(http.BCE_REQUEST_ID)
     resp.debugId = resp.response.GetHeader(http.BCE_DEBUG_ID)
     if resp.IsFail() {
-        resp.serviceError = &common.BceServiceError{}
+        resp.serviceError = &bce.BceServiceError{}
         err := resp.ParseJsonBody(resp.serviceError)
         if err != nil {
-            resp.serviceError = common.NewBceServiceError(
-                common.EMALFORMED_JSON,
+            resp.serviceError = bce.NewBceServiceError(
+                bce.EMALFORMED_JSON,
                 "Service json error message decode failed",
                 resp.requestId,
                 resp.statusCode)
@@ -124,10 +112,7 @@ func (resp *BceResponse) ParseResponse() {
 }
 
 func (resp *BceResponse) ParseJsonBody(result interface{}) error {
-    defer func(){
-        resp.Body().Close()
-    }()
-
+    defer resp.Body().Close()
     jsonDecoder := json.NewDecoder(resp.Body())
     return jsonDecoder.Decode(result)
 }

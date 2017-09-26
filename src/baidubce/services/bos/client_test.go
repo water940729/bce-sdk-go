@@ -2,9 +2,7 @@ package bos
 
 import (
     "testing"
-    "os"
 
-    "baidubce/util"
     "baidubce/http"
     . "baidubce/services/bos/model"
 )
@@ -20,10 +18,6 @@ var (
 
 func init() {
     BOS_CLIENT, _ = NewClient(AK, SK)
-
-    // Clear the debug info
-    null, _ := os.Open("/dev/null")
-    util.LOGGER = util.GetLogger(null, util.DEFAULT_LOGGER_PREFIX)
 }
 
 func TestHeadBucket(t *testing.T) {

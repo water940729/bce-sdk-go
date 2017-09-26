@@ -1,24 +1,26 @@
 /*
- * Copyright 2014 Baidu, Inc.
+ * Copyright 2017 Baidu, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
  */
 
-// Complete multipart upload request definition
+// complete_multipart_upload_request.go - the complete multipart upload request definition
+
 package model
 
 import (
     "encoding/json"
 
+    "baidubce/bce"
     "baidubce/http"
-    "baidubce/common"
 )
 
 type CompleteMultipartUploadRequest struct {
@@ -57,12 +59,12 @@ func (req *CompleteMultipartUploadRequest) BuildHttpRequest() *http.Request {
     case *CompleteMultipartUploadInput:
         jsonBytes, err := json.Marshal(val)
         if err != nil {
-            req.SetClientError(common.NewBceClientError("upload part json encode fail: " + err.Error()))
+            req.SetClientError(bce.NewBceClientError("upload part json encode fail: " + err.Error()))
             return nil
         }
         httpReq.SetBody(http.NewBodyStreamFromBytes(jsonBytes))
     default:
-        req.SetClientError(common.NewBceClientError("invalid complete multiupload parameter type"))
+        req.SetClientError(bce.NewBceClientError("invalid complete multiupload parameter type"))
         return nil
     }
 
