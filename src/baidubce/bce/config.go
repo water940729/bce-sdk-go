@@ -26,13 +26,11 @@ import (
 
 // Constants for BceClientConfiguration
 var (
+    DEFAULT_PROTOCOL      = "http"
     DEFAULT_REGION        = "bj"
     DEFAULT_USER_AGENT    string
     DEFAULT_RETRY_POLICY  = NewBackOffRetryPolicy(3, 20000, 300)
     DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 50 * 1000
-    PROTOCOL_HTTP         = "http"
-    PROTOCOL_HTTPS        = "https"
-    PROTOCOL_DEFAULT_PORT = map[string]int{PROTOCOL_HTTP: 80, PROTOCOL_HTTPS: 443}
 )
 
 func init() {

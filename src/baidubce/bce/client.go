@@ -14,25 +14,33 @@
 
 // client.go - definiton the BceClientConfiguration and BceClient structure
 
-// Package bce implements the BCE client to access BCE services.
-// This package defines the general client of BCE - BceClient - to access all services.
-// The BceClient makes http request to access the services based on the given client configuration,
-// which contains endpoint, region, credentials, retry policy, sign options and so on.
-// The interface of BCE Request and response are defined for the concrete implementation.
-// This package also defines the error types when making request or receiving response. The error
-// for BCE contains two types: the BceClientError when making request to BCE services and the Bce-
-// ServiceError when recieving response from them.
+// Package bce implements the infrastructure to access BCE services.
+// - BceClient:
+//     It is the general client of BCE to access all services. It builds http request to access the
+//     services based on the given client configuration.
+// - BceClientConfiguration:
+//     The client configuration data structure which contains endpoint, region, credentials, retry
+//     policy, sign options and so on. It supports most of the default value and user can also
+//     access or change the default with its public fields' name.
+// - Error types:
+//     The error types when making request or receiving response to the BCE services contains two
+//     types: the BceClientError when making request to BCE services and the BceServiceError when
+//     recieving response from them.
+// - BceRequest:
+//     The request instance stands for an request to access the BCE services.
+// - BceResponse:
+//     The response instance stands for an response from the BCE services.
+// - Log facility functions:
+//     Define some global functions to set the log handler, log level and log directory.
 package bce
 
 import (
     "fmt"
-    "io"
     "time"
-
-    "glog"
 
     "baidubce/auth"
     "baidubce/http"
+    "baidubce/thirdlib/glog"
     "baidubce/util"
 )
 
@@ -48,100 +56,97 @@ const (
     LOG_FATAL
 )
 
-// BceRequester is an interface for setting up a contract to make request.
-type BceRequester interface {
-    GetUri() string
-    SetHeader(key, val string)
-    SetBody(*http.BodyStream)
-    BuildHttpRequest() *http.Request  // May be override by specific request
-    ClientError() *BceClientError
+// Client is the general interface which can perform sending request. Different service
+// will define its own client in case of specific extension.
+type Client interface {
+    SendRequest(*BceRequest, *BceResponse) error
 }
 
-// BceResponser is an interface for setting up a contract to reveive response.
-type BceResponser interface {
-    IsFail() bool
-    StatusCode() int
-    StatusText() string
-    RequestId() string
-    DebugId() string
-    GetHeader(key string) string
-    GetHeaders() map[string]string
-    Body() io.ReadCloser
-    SetHttpResponse(*http.Response)
-    ElapsedTime() time.Duration
-    ParseResponse()
-    ServiceError() *BceServiceError
-}
-
-// BceClient defines a client to access the BCE services.
+// BceClient defines the general client to access the BCE services.
 type BceClient struct {
     Config    *BceClientConfiguration
     Signer    auth.Signer // the sign algorithm
 }
 
-func (cli *BceClient) BuildHttpRequest(request BceRequester) *http.Request {
-    // Construct the http request instance
-    httpReq := request.BuildHttpRequest()
-    if httpReq == nil {
-        return nil
-    }
+/*
+ * BuildHttpRequest - the helper method for the client to build http request
+ *
+ * PARAMS:
+ *     - request: the input request object to be built
+ */
+func (cli *BceClient) buildHttpRequest(request *BceRequest) {
+    // Construct the http request instance for the special fields
+    request.BuildHttpRequest()
 
-    // Set configuration
-    httpReq.SetEndpoint(cli.Config.Endpoint)
-    if httpReq.Protocol() == "" {
-        httpReq.SetProtocol(PROTOCOL_HTTP)
-    }
-    if httpReq.Port() == 0 {
-        port, err := PROTOCOL_DEFAULT_PORT[httpReq.Protocol()]
-        if !err {
-            return nil
-        }
-        httpReq.SetPort(port)
+    // Set the client specific configurations
+    request.SetEndpoint(cli.Config.Endpoint)
+    if request.Protocol() == "" {
+        request.SetProtocol(DEFAULT_PROTOCOL)
     }
     if len(cli.Config.ProxyUrl) != 0 {
-        httpReq.SetProxyUrl(cli.Config.ProxyUrl)
+        request.SetProxyUrl(cli.Config.ProxyUrl)
     }
-    httpReq.SetTimeout(cli.Config.ConnectionTimeoutInMillis / 1000)
+    request.SetTimeout(cli.Config.ConnectionTimeoutInMillis / 1000)
 
-    // Add common headers headers
-    httpReq.AddHeader(http.HOST, httpReq.Host())
-    httpReq.AddHeader(http.USER_AGENT, cli.Config.UserAgent)
-    httpReq.AddHeader(http.BCE_DATE, util.FormatISO8601Date(cli.Config.SignOption.Timestamp))
-    if httpReq.Body() != nil {
-        httpReq.AddHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", httpReq.Body().Len()))
+    // Set the BCE request headers
+    request.SetHeader(http.HOST, request.Host())
+    request.SetHeader(http.USER_AGENT, cli.Config.UserAgent)
+    request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(cli.Config.SignOption.Timestamp))
+    if request.Body() != nil {
+        request.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", request.Body().Len()))
     }
 
     // Generate the auth string
-    cli.Signer.Sign(httpReq, cli.Config.Credentials, cli.Config.SignOption)
-
-    return httpReq
+    cli.Signer.Sign(&request.Request, cli.Config.Credentials, cli.Config.SignOption)
 }
 
-func (cli *BceClient) SendRequest(req BceRequester, resp BceResponser) error {
-    httpReq := cli.BuildHttpRequest(req)
-    if httpReq == nil {
+/*
+ * SendRequest - the client performs sending the http request with retry policy and receive the
+ *               response from the BCE services.
+ * PARAMS:
+ *     - req: the request object to be sent to the BCE service
+ *     - resp: the response object to receive the content from BCE service
+ * RETURNS:
+ *     - error: nil if ok otherwise the specific error
+ */
+func (cli *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
+    // Return client error if it is not nil
+    if req.ClientError() != nil {
         return req.ClientError()
     }
-    glog.Info("Send http request: %v\n", httpReq)
 
+    // Build the http request and prepare to send
+    cli.buildHttpRequest(req)
+    glog.Infof("send http request: %v", req)
+
+    // Send request with the given retry policy
     retries := 0
     for {
-        httpResp, err := http.Execute(httpReq)
+        httpResp, err := http.Execute(&req.Request)
         if err != nil {
             if cli.Config.Retry.ShouldRetry(err, retries) {
                 delay_in_mills := cli.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
                 time.Sleep(delay_in_mills)
             } else {
                 return &BceClientError{
-                        fmt.Sprintf("Execute http request failed! Retried %d times, error: %v",
+                        fmt.Sprintf("execute http request failed! Retried %d times, error: %v",
                                     retries, err)}
             }
             retries++
+            glog.Warningf("send request failed, retry for %d time(s)", retries)
             continue
         }
-
         resp.SetHttpResponse(httpResp)
         resp.ParseResponse()
+
+        glog.Infof("receive http response: status: %s, debugId: %s, requestId: %s, elapsed: %v",
+            resp.StatusText(), resp.DebugId(), resp.RequestId(), resp.ElapsedTime())
+        if resp.IsFail() {
+            return resp.ServiceError()
+        }
+        for k, v := range resp.Headers() {
+            glog.Debugf("%s=%s", k, v)
+        }
         return nil
     }
 }

@@ -1,1 +1,1 @@
-BUILD_SUBMITTER -x -m baidu/bos/gosdk -c "cd baidu/bos/gosdk && mkdir output &&cp BCLOUD ./output/" -u ./
+BUILD_SUBMITTER -x -m baidu/bos/gosdk -c "cd baidu/bos/gosdk &&sh build.sh " -u ./

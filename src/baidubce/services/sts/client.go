@@ -22,7 +22,7 @@ package sts
 import (
     "baidubce/auth"
     "baidubce/bce"
-    "baidubce/services/sts/model"
+    "baidubce/services/sts/api"
     "baidubce/util"
 )
 
@@ -32,9 +32,8 @@ type Client struct {
     *bce.BceClient
 }
 
-func (cli *Client) GetSessionToken(req *model.GetSessionTokenRequest,
-        resp *model.GetSessionTokenResponse) error {
-    return cli.SendRequest(req, resp)
+func (cli *Client) GetSessionToken(duration int, acl string) (*api.GetSessionTokenResult, error) {
+    return api.GetSessionToken(cli, duration, acl)
 }
 
 // NewClient make the STS service client with default configuration.

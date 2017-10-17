@@ -21,9 +21,8 @@ import (
     "strings"
     "sort"
 
-    "glog"
-
     "baidubce/http"
+    "baidubce/thirdlib/glog"
     "baidubce/util"
 )
 
@@ -90,7 +89,7 @@ func (bvs *BceV1Signer) Sign(req *http.Request, cred *BceCredentials, opt *SignO
 
     // Set security token if using session credentials
     if len(cred.SessionToken) != 0 {
-        req.AddHeader(http.BCE_SECURITY_TOKEN, cred.SessionToken)
+        req.SetHeader(http.BCE_SECURITY_TOKEN, cred.SessionToken)
     }
 
     // Prepare the canonical request components
@@ -121,7 +120,7 @@ func (bvs *BceV1Signer) Sign(req *http.Request, cred *BceCredentials, opt *SignO
     authStr := signKeyInfo + "/" + signedHeaders + "/" + signature
     glog.Debug("Authorization=" + authStr)
 
-    req.AddHeader(http.AUTHORIZATION, authStr)
+    req.SetHeader(http.AUTHORIZATION, authStr)
 }
 
 func getCanonicalURIPath(path string) string {

@@ -21,7 +21,7 @@ import (
     "net"
     "net/http"
 
-    "glog"
+    "baidubce/thirdlib/glog"
 )
 
 // RetryPolicy defines the two methods to retry for sending request.

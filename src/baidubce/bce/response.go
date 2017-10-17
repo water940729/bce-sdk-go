@@ -12,28 +12,26 @@
  * and limitations under the License.
  */
 
-// bce_response.go - defines the common BCE services response
+// response.go - defines the common BCE services response
 
-package model
+package bce
 
 import (
     "io"
     "time"
     "encoding/json"
 
-    "baidubce/bce"
     "baidubce/http"
 )
 
-// BceResponse defines the concrete response structure for receiving BCE services response. It imp-
-// lements the BceResponser interface defined in the bce package.
+// BceResponse defines the response structure for receiving BCE services response.
 type BceResponse struct {
     statusCode   int
     statusText   string
     requestId    string
     debugId      string
     response     *http.Response
-    serviceError *bce.BceServiceError
+    serviceError *BceServiceError
 }
 
 func (resp *BceResponse) IsFail() bool {
@@ -68,11 +66,11 @@ func (resp *BceResponse) DebugId() string {
     return resp.debugId
 }
 
-func (resp *BceResponse) GetHeader(key string) string {
+func (resp *BceResponse) Header(key string) string {
     return resp.response.GetHeader(key)
 }
 
-func (resp *BceResponse) GetHeaders() map[string]string {
+func (resp *BceResponse) Headers() map[string]string {
     return resp.response.GetHeaders()
 }
 
@@ -88,7 +86,7 @@ func (resp *BceResponse) ElapsedTime() time.Duration {
     return resp.response.ElapsedTime()
 }
 
-func (resp *BceResponse) ServiceError() *bce.BceServiceError {
+func (resp *BceResponse) ServiceError() *BceServiceError {
     return resp.serviceError
 }
 
@@ -98,11 +96,11 @@ func (resp *BceResponse) ParseResponse() {
     resp.requestId = resp.response.GetHeader(http.BCE_REQUEST_ID)
     resp.debugId = resp.response.GetHeader(http.BCE_DEBUG_ID)
     if resp.IsFail() {
-        resp.serviceError = &bce.BceServiceError{}
+        resp.serviceError = &BceServiceError{}
         err := resp.ParseJsonBody(resp.serviceError)
         if err != nil {
-            resp.serviceError = bce.NewBceServiceError(
-                bce.EMALFORMED_JSON,
+            resp.serviceError = NewBceServiceError(
+                EMALFORMED_JSON,
                 "Service json error message decode failed",
                 resp.requestId,
                 resp.statusCode)

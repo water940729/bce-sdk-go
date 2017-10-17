@@ -120,16 +120,7 @@ func (req *Request) SetEndpoint(endpoint string) {
         req.protocol = "http"
     }
 
-    pos = strings.Index(rest, ":")
-    if pos != -1 {
-        req.host = rest[0:pos]
-        p, e := strconv.Atoi(rest[pos + 1:])
-        if e == nil {
-            req.port = p
-        }
-    } else {
-        req.host = rest
-    }
+    req.SetHost(rest)
 }
 
 func (req *Request) Host() string {
@@ -138,6 +129,21 @@ func (req *Request) Host() string {
 
 func (req *Request) SetHost(host string) {
     req.host = host
+    pos := strings.Index(host, ":")
+    if pos != -1 {
+        p, e := strconv.Atoi(host[pos + 1:])
+        if e == nil {
+            req.port = p
+        }
+    }
+
+    if req.port == 0 {
+        if req.protocol == "http" {
+            req.port = 80
+        } else if req.protocol == "https" {
+            req.port = 443
+        }
+    }
 }
 
 func (req *Request) Port() int {
@@ -145,6 +151,7 @@ func (req *Request) Port() int {
 }
 
 func (req *Request) SetPort(port int) {
+    // Port can be set by the endpoint or host, this method is rarely used.
     req.port = port
 }
 
@@ -156,18 +163,18 @@ func (req *Request) SetHeaders(headers map[string]string) {
     req.headers = headers
 }
 
-func (req *Request) AddHeader(key, value string) {
-    if req.headers == nil {
-        req.headers = make(map[string]string)
-    }
-    req.headers[key] = value
-}
-
-func (req *Request) GetHeader(key string) string {
+func (req *Request) Header(key string) string {
     if v, ok := req.headers[key]; ok {
         return v
     }
     return ""
+}
+
+func (req *Request) SetHeader(key, value string) {
+    if req.headers == nil {
+        req.headers = make(map[string]string)
+    }
+    req.headers[key] = value
 }
 
 func (req *Request) Params() map[string]string {
@@ -178,7 +185,14 @@ func (req *Request) SetParams(params map[string]string) {
     req.params = params
 }
 
-func (req *Request) AddParam(key, value string) {
+func (req *Request) Param(key string) string {
+    if v, ok := req.params[key]; ok {
+        return v
+    }
+    return ""
+}
+
+func (req *Request) SetParam(key, value string) {
     if req.params == nil {
         req.params = make(map[string]string)
     }
@@ -245,9 +259,9 @@ func (req *Request) GenerateUrl(addPort bool) string {
 func (req *Request) String() string {
     header := make([]string, 0, len(req.headers))
     for k, v := range req.headers {
-        header = append(header, k + "=" + v)
+        header = append(header, "\t" + k + "=" + v)
     }
-    return fmt.Sprintf("%s %s\n%v",
+    return fmt.Sprintf("\t%s %s\n%v",
                        req.method, req.GenerateUrl(false), strings.Join(header, "\n"))
 }
 

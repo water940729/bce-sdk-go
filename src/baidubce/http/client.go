@@ -25,46 +25,58 @@ import (
     "net/url"
 )
 
-// The httpClient and httpRequest are the global variable to send the request and get response
-// for reuse.
-var (
-    httpClient = &http.Client{}
-    httpRequest = &http.Request{}
-)
+// The httpClient is the global variable to send the request and get response
+// for reuse and the Client provided by the Go standard library is thread safe.
+var httpClient = &http.Client{}
 
+/*
+ * Execute - do the http requset and get the response
+ *
+ * PARAMS:
+ *     - request: the http request instance to be sent
+ * RETURNS:
+ *     - response: the http response returned from the server
+ *     - error: nil if ok otherwise the specific error
+ */
 func Execute(request *Request) (*Response, error) {
+    // Build the request object for the current requesting
+    httpRequest := &http.Request{}
+
     // Set the connection timeout for current request
     httpClient.Timeout = time.Duration(request.Timeout()) * time.Second
 
+    // Set the request method
+    httpRequest.Method = request.Method()
+
+    // Set the request url
     internalUrl := &url.URL{
         Scheme: request.Protocol(),
         Host: request.Host(),
         Path: request.Uri(),
         RawQuery: request.QueryString()}
+    httpRequest.URL = internalUrl
 
+    // Set the request headers
     internalHeader := make(http.Header)
     for k, v := range request.Headers() {
         val := make([]string, 0, 1)
         val = append(val, v)
         internalHeader[k] = val
     }
+    httpRequest.Header = internalHeader
 
-    body := request.Body()
-    internalReq := &http.Request{
-        Method: request.Method(),
-        URL: internalUrl,
-        Header: internalHeader,
-        Body: body}
+    // Set the reqeust body and content length if needed
     // Variable body's type is `*BodyStream`. If its value is nil, the `Body` field must be
     // explicitly assigned `nil` value, otherwise nil pointer dereference will arise.
+    body := request.Body()
     if body == nil {
-        internalReq.Body = nil
-        internalReq.ContentLength = 0
+        httpRequest.Body = nil
     } else {
-        internalReq.ContentLength = body.Len()
+        httpRequest.Body = body
+        httpRequest.ContentLength = body.Len()
     }
 
-    // Setup the proxy setting if needed
+    // Set the proxy setting if needed
     defaultTr := http.DefaultTransport
     tr, _ := defaultTr.(*http.Transport)
     if len(request.ProxyUrl()) != 0 {
@@ -76,12 +88,12 @@ func Execute(request *Request) (*Response, error) {
 
     // Perform the http request and get response
     start := time.Now()
-    internalResp, err := httpClient.Do(internalReq)
+    httpResponse, err := httpClient.Do(httpRequest)
     end := time.Now()
     if err != nil {
         return nil, err
     }
-    response := &Response{internalResp, end.Sub(start)}
+    response := &Response{httpResponse, end.Sub(start)}
     return response, nil
 }
 

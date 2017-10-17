@@ -22,6 +22,7 @@ const (
     CACHE_CONTROL = "Cache-Control"
     CONTENT_DISPOSITION = "Content-Disposition"
     CONTENT_ENCODING = "Content-Encoding"
+    CONTENT_LANGUAGE = "Content-Language"
     CONTENT_LENGTH = "Content-Length"
     CONTENT_MD5 = "Content-MD5"
     CONTENT_RANGE = "Content-Range"
