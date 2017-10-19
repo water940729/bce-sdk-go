@@ -28,29 +28,29 @@ type BceRequest struct {
     clientError *BceClientError
 }
 
-func (bceReq *BceRequest) RequestId() string { return bceReq.requestId }
+func (b *BceRequest) RequestId() string { return b.requestId }
 
-func (bceReq *BceRequest) SetRequestId(val string) { bceReq.requestId = val }
+func (b *BceRequest) SetRequestId(val string) { b.requestId = val }
 
-func (bceReq *BceRequest) ClientError() *BceClientError { return bceReq.clientError }
+func (b *BceRequest) ClientError() *BceClientError { return b.clientError }
 
-func (bceReq *BceRequest) SetClientError(err *BceClientError) { bceReq.clientError = err }
+func (b *BceRequest) SetClientError(err *BceClientError) { b.clientError = err }
 
-func (bceReq *BceRequest) BuildHttpRequest() {
+func (b *BceRequest) BuildHttpRequest() {
     // Only need to build the specific `requestId` field for BCE, other fields are same as the
     // `http.Request` as well as its methods.
-    if len(bceReq.requestId) == 0 {
+    if len(b.requestId) == 0 {
         // Construct the request ID with UUID V1
-        bceReq.requestId = uuid.NewV1().String()
+        b.requestId = uuid.NewV1().String()
     }
-    bceReq.SetHeader(http.BCE_REQUEST_ID, bceReq.requestId)
+    b.SetHeader(http.BCE_REQUEST_ID, b.requestId)
 }
 
-func (bceReq *BceRequest) String() string {
-    requestIdStr := "requestId=" + bceReq.requestId
-    if bceReq.clientError != nil {
-        return requestIdStr + ", client error: "+ bceReq.ClientError().Error()
+func (b *BceRequest) String() string {
+    requestIdStr := "requestId=" + b.requestId
+    if b.clientError != nil {
+        return requestIdStr + ", client error: "+ b.ClientError().Error()
     }
-    return requestIdStr + "\n" + bceReq.Request.String()
+    return requestIdStr + "\n" + b.Request.String()
 }
 

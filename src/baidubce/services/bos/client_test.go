@@ -1,11 +1,11 @@
 package bos
 
 import (
-//    "os"
+    "os"
     "testing"
 
     "baidubce/bce"
-//    "baidubce/http"
+    "baidubce/http"
     "baidubce/services/bos/api"
 )
 
@@ -23,7 +23,7 @@ func init() {
     bce.SetLogHandler(false, false) // close the internal logger
     //bce.SetLogHandler(true, false) // set log to stderr and not to file
 }
-/*
+
 func TestListBuckets(t *testing.T) {
     res, err := BOS_CLIENT.ListBuckets()
     if err != nil {
@@ -485,7 +485,7 @@ func TestDeleteMultipleObjectsFromStruct(t *testing.T) {
     }
     t.Logf("%+v", res)
 }
-*/
+
 func TestInitiateMultipartUpload(t *testing.T) {
     args := &api.InitiateMultipartUploadArgs{Expires: "aaaaaaa"}
     res, err := BOS_CLIENT.InitiateMultipartUpload(EXISTS_BUCKET, "test-multipart-upload", "", args)

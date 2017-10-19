@@ -36,11 +36,11 @@ type BodyStream struct {
     Size   int64         // the body size that returned by `Len`
 }
 
-func (body *BodyStream) Read(p []byte) (int, error) { return body.Entity.Read(p) }
+func (b *BodyStream) Read(p []byte) (int, error) { return b.Entity.Read(p) }
 
-func (body *BodyStream) Close() error { return body.Entity.Close() }
+func (b *BodyStream) Close() error { return b.Entity.Close() }
 
-func (body *BodyStream) Len() int64 { return body.Size }
+func (b *BodyStream) Len() int64 { return b.Size }
 
 // BufferedFileStream is an adapter of buffered file stream to `BodyStream`.
 type bufferedFileStream struct {
@@ -48,9 +48,9 @@ type bufferedFileStream struct {
     closer io.Closer
 }
 
-func (buf *bufferedFileStream) Read(p []byte) (int, error) { return buf.buffer.Read(p) }
+func (b *bufferedFileStream) Read(p []byte) (int, error) { return b.buffer.Read(p) }
 
-func (buf *bufferedFileStream) Close() error { return buf.closer.Close() }
+func (b *bufferedFileStream) Close() error { return b.closer.Close() }
 
 func NewBodyStreamFromFile(fname string) (*BodyStream, error) {
     file, err := os.Open(fname)
@@ -68,9 +68,9 @@ func NewBodyStreamFromFile(fname string) (*BodyStream, error) {
 // StringStream is an adapter of common strings to `BodyStream`.
 type stringStream struct { buffer *bytes.Buffer }
 
-func (str *stringStream) Read(p []byte) (int, error) { return str.buffer.Read(p) }
+func (s *stringStream) Read(p []byte) (int, error) { return s.buffer.Read(p) }
 
-func (str *stringStream) Close() error { return nil }
+func (s *stringStream) Close() error { return nil }
 
 func NewBodyStreamFromBytes(stream []byte) *BodyStream {
     buf := bytes.NewBuffer(stream)
@@ -98,170 +98,170 @@ type Request struct {
     body        *BodyStream // Optional stream from which to read the payload
 }
 
-func (req *Request) Protocol() string {
-    return req.protocol
+func (r *Request) Protocol() string {
+    return r.protocol
 }
 
-func (req *Request) SetProtocol(protocol string) {
-    req.protocol = protocol
+func (r *Request) SetProtocol(protocol string) {
+    r.protocol = protocol
 }
 
-func (req *Request) Endpoint() string {
-    return req.protocol + "://" + req.host
+func (r *Request) Endpoint() string {
+    return r.protocol + "://" + r.host
 }
 
-func (req *Request) SetEndpoint(endpoint string) {
+func (r *Request) SetEndpoint(endpoint string) {
     pos := strings.Index(endpoint, "://")
     rest := endpoint
     if pos != -1 {
-        req.protocol = endpoint[0:pos]
+        r.protocol = endpoint[0:pos]
         rest = endpoint[pos + 3:]
     } else {
-        req.protocol = "http"
+        r.protocol = "http"
     }
 
-    req.SetHost(rest)
+    r.SetHost(rest)
 }
 
-func (req *Request) Host() string {
-    return req.host
+func (r *Request) Host() string {
+    return r.host
 }
 
-func (req *Request) SetHost(host string) {
-    req.host = host
+func (r *Request) SetHost(host string) {
+    r.host = host
     pos := strings.Index(host, ":")
     if pos != -1 {
         p, e := strconv.Atoi(host[pos + 1:])
         if e == nil {
-            req.port = p
+            r.port = p
         }
     }
 
-    if req.port == 0 {
-        if req.protocol == "http" {
-            req.port = 80
-        } else if req.protocol == "https" {
-            req.port = 443
+    if r.port == 0 {
+        if r.protocol == "http" {
+            r.port = 80
+        } else if r.protocol == "https" {
+            r.port = 443
         }
     }
 }
 
-func (req *Request) Port() int {
-    return req.port
+func (r *Request) Port() int {
+    return r.port
 }
 
-func (req *Request) SetPort(port int) {
+func (r *Request) SetPort(port int) {
     // Port can be set by the endpoint or host, this method is rarely used.
-    req.port = port
+    r.port = port
 }
 
-func (req *Request) Headers() map[string]string {
-    return req.headers
+func (r *Request) Headers() map[string]string {
+    return r.headers
 }
 
-func (req *Request) SetHeaders(headers map[string]string) {
-    req.headers = headers
+func (r *Request) SetHeaders(headers map[string]string) {
+    r.headers = headers
 }
 
-func (req *Request) Header(key string) string {
-    if v, ok := req.headers[key]; ok {
+func (r *Request) Header(key string) string {
+    if v, ok := r.headers[key]; ok {
         return v
     }
     return ""
 }
 
-func (req *Request) SetHeader(key, value string) {
-    if req.headers == nil {
-        req.headers = make(map[string]string)
+func (r *Request) SetHeader(key, value string) {
+    if r.headers == nil {
+        r.headers = make(map[string]string)
     }
-    req.headers[key] = value
+    r.headers[key] = value
 }
 
-func (req *Request) Params() map[string]string {
-    return req.params
+func (r *Request) Params() map[string]string {
+    return r.params
 }
 
-func (req *Request) SetParams(params map[string]string) {
-    req.params = params
+func (r *Request) SetParams(params map[string]string) {
+    r.params = params
 }
 
-func (req *Request) Param(key string) string {
-    if v, ok := req.params[key]; ok {
+func (r *Request) Param(key string) string {
+    if v, ok := r.params[key]; ok {
         return v
     }
     return ""
 }
 
-func (req *Request) SetParam(key, value string) {
-    if req.params == nil {
-        req.params = make(map[string]string)
+func (r *Request) SetParam(key, value string) {
+    if r.params == nil {
+        r.params = make(map[string]string)
     }
-    req.params[key] = value
+    r.params[key] = value
 }
 
-func (req *Request) QueryString() string {
-    buf := make([]string, 0, len(req.params))
-    for k, v := range req.params {
+func (r *Request) QueryString() string {
+    buf := make([]string, 0, len(r.params))
+    for k, v := range r.params {
         buf = append(buf, util.UriEncode(k, true) + "=" + util.UriEncode(v, true))
     }
     return strings.Join(buf, "&")
 }
 
-func (req *Request) Method() string {
-    return req.method
+func (r *Request) Method() string {
+    return r.method
 }
 
-func (req *Request) SetMethod(method string) {
-    req.method = method
+func (r *Request) SetMethod(method string) {
+    r.method = method
 }
 
-func (req *Request) Uri() string {
-    return req.uri
+func (r *Request) Uri() string {
+    return r.uri
 }
 
-func (req *Request) SetUri(uri string) {
-    req.uri = uri
+func (r *Request) SetUri(uri string) {
+    r.uri = uri
 }
 
-func (req *Request) ProxyUrl() string {
-    return req.proxyUrl
+func (r *Request) ProxyUrl() string {
+    return r.proxyUrl
 }
 
-func (req *Request) SetProxyUrl(url string) {
-    req.proxyUrl = url
+func (r *Request) SetProxyUrl(url string) {
+    r.proxyUrl = url
 }
 
-func (req *Request) Timeout() int {
-    return req.timeout
+func (r *Request) Timeout() int {
+    return r.timeout
 }
 
-func (req *Request) SetTimeout(timeout int) {
-    req.timeout = timeout
+func (r *Request) SetTimeout(timeout int) {
+    r.timeout = timeout
 }
 
-func (req *Request) Body() *BodyStream {
-    return req.body
+func (r *Request) Body() *BodyStream {
+    return r.body
 }
 
-func (req *Request) SetBody(stream *BodyStream) {
-    req.body = stream
+func (r *Request) SetBody(stream *BodyStream) {
+    r.body = stream
 }
 
-func (req *Request) GenerateUrl(addPort bool) string {
+func (r *Request) GenerateUrl(addPort bool) string {
     if addPort {
         return fmt.Sprintf("%s://%s:%d%s?%s",
-                           req.protocol, req.host, req.port, req.uri, req.QueryString())
+                           r.protocol, r.host, r.port, r.uri, r.QueryString())
     } else {
-        return fmt.Sprintf("%s://%s%s?%s", req.protocol, req.host, req.uri, req.QueryString())
+        return fmt.Sprintf("%s://%s%s?%s", r.protocol, r.host, r.uri, r.QueryString())
     }
 }
 
-func (req *Request) String() string {
-    header := make([]string, 0, len(req.headers))
-    for k, v := range req.headers {
+func (r *Request) String() string {
+    header := make([]string, 0, len(r.headers))
+    for k, v := range r.headers {
         header = append(header, "\t" + k + "=" + v)
     }
     return fmt.Sprintf("\t%s %s\n%v",
-                       req.method, req.GenerateUrl(false), strings.Join(header, "\n"))
+                       r.method, r.GenerateUrl(false), strings.Join(header, "\n"))
 }
 

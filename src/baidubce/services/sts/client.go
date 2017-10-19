@@ -32,8 +32,8 @@ type Client struct {
     *bce.BceClient
 }
 
-func (cli *Client) GetSessionToken(duration int, acl string) (*api.GetSessionTokenResult, error) {
-    return api.GetSessionToken(cli, duration, acl)
+func (c *Client) GetSessionToken(duration int, acl string) (*api.GetSessionTokenResult, error) {
+    return api.GetSessionToken(c, duration, acl)
 }
 
 // NewClient make the STS service client with default configuration.

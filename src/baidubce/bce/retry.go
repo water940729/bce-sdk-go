@@ -33,11 +33,11 @@ type RetryPolicy interface {
 // NoRetryPolicy just does not retry.
 type NoRetryPolicy struct {}
 
-func (rp *NoRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
+func (_ *NoRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
     return false
 }
 
-func (rp *NoRetryPolicy) GetDelayBeforeNextRetryInMillis(
+func (_ *NoRetryPolicy) GetDelayBeforeNextRetryInMillis(
         err BceError, attempts int) time.Duration {
     return 0 * time.Millisecond
 }
@@ -58,9 +58,9 @@ type BackOffRetryPolicy struct {
     baseIntervalInMillis int64
 }
 
-func (rp *BackOffRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
+func (b *BackOffRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
     // Do not retry any more when retry the max times
-    if attempts >= rp.maxErrorRetry {
+    if attempts >= b.maxErrorRetry {
         return false
     }
 
@@ -92,14 +92,14 @@ func (rp *BackOffRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
     return false
 }
 
-func (rp *BackOffRetryPolicy) GetDelayBeforeNextRetryInMillis(
+func (b *BackOffRetryPolicy) GetDelayBeforeNextRetryInMillis(
     err BceError, attempts int) time.Duration {
     if attempts < 0 {
         return 0 * time.Millisecond
     }
-    delayInMillis := (1 << uint64(attempts)) * rp.baseIntervalInMillis
-    if delayInMillis > rp.maxDelayInMillis {
-        return time.Duration(rp.maxDelayInMillis) * time.Millisecond
+    delayInMillis := (1 << uint64(attempts)) * b.baseIntervalInMillis
+    if delayInMillis > b.maxDelayInMillis {
+        return time.Duration(b.maxDelayInMillis) * time.Millisecond
     }
     return time.Duration(delayInMillis) * time.Millisecond
 }

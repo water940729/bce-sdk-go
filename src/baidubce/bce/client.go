@@ -74,30 +74,30 @@ type BceClient struct {
  * PARAMS:
  *     - request: the input request object to be built
  */
-func (cli *BceClient) buildHttpRequest(request *BceRequest) {
+func (c *BceClient) buildHttpRequest(request *BceRequest) {
     // Construct the http request instance for the special fields
     request.BuildHttpRequest()
 
     // Set the client specific configurations
-    request.SetEndpoint(cli.Config.Endpoint)
+    request.SetEndpoint(c.Config.Endpoint)
     if request.Protocol() == "" {
         request.SetProtocol(DEFAULT_PROTOCOL)
     }
-    if len(cli.Config.ProxyUrl) != 0 {
-        request.SetProxyUrl(cli.Config.ProxyUrl)
+    if len(c.Config.ProxyUrl) != 0 {
+        request.SetProxyUrl(c.Config.ProxyUrl)
     }
-    request.SetTimeout(cli.Config.ConnectionTimeoutInMillis / 1000)
+    request.SetTimeout(c.Config.ConnectionTimeoutInMillis / 1000)
 
     // Set the BCE request headers
     request.SetHeader(http.HOST, request.Host())
-    request.SetHeader(http.USER_AGENT, cli.Config.UserAgent)
-    request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(cli.Config.SignOption.Timestamp))
+    request.SetHeader(http.USER_AGENT, c.Config.UserAgent)
+    request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(c.Config.SignOption.Timestamp))
     if request.Body() != nil {
         request.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", request.Body().Len()))
     }
 
     // Generate the auth string
-    cli.Signer.Sign(&request.Request, cli.Config.Credentials, cli.Config.SignOption)
+    c.Signer.Sign(&request.Request, c.Config.Credentials, c.Config.SignOption)
 }
 
 /*
@@ -109,14 +109,14 @@ func (cli *BceClient) buildHttpRequest(request *BceRequest) {
  * RETURNS:
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
+func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
     // Return client error if it is not nil
     if req.ClientError() != nil {
         return req.ClientError()
     }
 
     // Build the http request and prepare to send
-    cli.buildHttpRequest(req)
+    c.buildHttpRequest(req)
     glog.Infof("send http request: %v", req)
 
     // Send request with the given retry policy
@@ -124,8 +124,8 @@ func (cli *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
     for {
         httpResp, err := http.Execute(&req.Request)
         if err != nil {
-            if cli.Config.Retry.ShouldRetry(err, retries) {
-                delay_in_mills := cli.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
+            if c.Config.Retry.ShouldRetry(err, retries) {
+                delay_in_mills := c.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
                 time.Sleep(delay_in_mills)
             } else {
                 return &BceClientError{

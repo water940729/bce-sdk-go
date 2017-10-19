@@ -38,7 +38,7 @@ type BceError interface { error }
 // BceClientError defines the error struct for the client when making request
 type BceClientError struct { Message string }
 
-func (bcr *BceClientError) Error() string { return bcr.Message }
+func (b *BceClientError) Error() string { return b.Message }
 
 func NewBceClientError(msg string) *BceClientError { return &BceClientError{msg} }
 
@@ -50,10 +50,10 @@ type BceServiceError struct {
     StatusCode int
 }
 
-func (bsr *BceServiceError) Error() string {
-    ret := "[Code: " + bsr.Code
-    ret += "; Message: " + bsr.Message
-    ret += "; RequestId: " + bsr.RequestId + "]"
+func (b *BceServiceError) Error() string {
+    ret := "[Code: " + b.Code
+    ret += "; Message: " + b.Message
+    ret += "; RequestId: " + b.RequestId + "]"
     return ret
 }
 

@@ -74,7 +74,7 @@ type BceV1Signer struct {}
  *     - cred: *BceCredentials to access the serice
  *     - opt: *SignOptions for this sign algorithm
  */
-func (bvs *BceV1Signer) Sign(req *http.Request, cred *BceCredentials, opt *SignOptions) {
+func (b *BceV1Signer) Sign(req *http.Request, cred *BceCredentials, opt *SignOptions) {
     if req == nil {
         glog.Fatal("request should not be null for sign")
     }

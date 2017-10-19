@@ -84,8 +84,8 @@ func NewClient(ak, sk string) (*Client, error) {
  *     - *api.ListBucketsResult: the all buckets
  *     - error: the uploaded error if any occurs
  */
-func (cli *Client) ListBuckets() (*api.ListBucketsResult, error) {
-    return api.ListBuckets(cli)
+func (c *Client) ListBuckets() (*api.ListBucketsResult, error) {
+    return api.ListBuckets(c)
 }
 
 /*
@@ -98,9 +98,9 @@ func (cli *Client) ListBuckets() (*api.ListBucketsResult, error) {
  *     - *api.ListObjectsResult: the all objects of the bucket
  *     - error: the uploaded error if any occurs
  */
-func (cli *Client) ListObjects(bucket string,
+func (c *Client) ListObjects(bucket string,
         args *api.ListObjectsArgs) (*api.ListObjectsResult, error) {
-    return api.ListObjects(cli, bucket, args)
+    return api.ListObjects(c, bucket, args)
 }
 
 /*
@@ -111,8 +111,8 @@ func (cli *Client) ListObjects(bucket string,
  * RETURNS:
  *     - error: nil if exists and have authority otherwise the specific error
  */
-func (cli *Client) HeadBucket(bucket string) error {
-    return api.HeadBucket(cli, bucket)
+func (c *Client) HeadBucket(bucket string) error {
+    return api.HeadBucket(c, bucket)
 }
 
 /*
@@ -124,8 +124,8 @@ func (cli *Client) HeadBucket(bucket string) error {
  *     - string: the location of the new bucket if create success
  *     - error: nil if create success otherwise the specific error
  */
-func (cli *Client) PutBucket(bucket string) (string, error) {
-    return api.PutBucket(cli, bucket)
+func (c *Client) PutBucket(bucket string) (string, error) {
+    return api.PutBucket(c, bucket)
 }
 
 /*
@@ -136,8 +136,8 @@ func (cli *Client) PutBucket(bucket string) (string, error) {
  * RETURNS:
  *     - error: nil if delete success otherwise the specific error
  */
-func (cli *Client) DeleteBucket(bucket string) error {
-    return api.DeleteBucket(cli, bucket)
+func (c *Client) DeleteBucket(bucket string) error {
+    return api.DeleteBucket(c, bucket)
 }
 
 /*
@@ -149,8 +149,8 @@ func (cli *Client) DeleteBucket(bucket string) error {
  *     - string: the location of the bucket
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) GetBucketLocation(bucket string) (string, error) {
-    return api.GetBucketLocation(cli, bucket)
+func (c *Client) GetBucketLocation(bucket string) (string, error) {
+    return api.GetBucketLocation(c, bucket)
 }
 
 /*
@@ -162,8 +162,8 @@ func (cli *Client) GetBucketLocation(bucket string) (string, error) {
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketAcl(bucket string, aclStream *http.BodyStream) error {
-    return api.PutBucketAcl(cli, bucket, "", aclStream)
+func (c *Client) PutBucketAcl(bucket string, aclStream *http.BodyStream) error {
+    return api.PutBucketAcl(c, bucket, "", aclStream)
 }
 
 /*
@@ -175,8 +175,8 @@ func (cli *Client) PutBucketAcl(bucket string, aclStream *http.BodyStream) error
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketAclFromCanned(bucket, cannedAcl string) error {
-    return api.PutBucketAcl(cli, bucket, cannedAcl, nil)
+func (c *Client) PutBucketAclFromCanned(bucket, cannedAcl string) error {
+    return api.PutBucketAcl(c, bucket, cannedAcl, nil)
 }
 
 /*
@@ -188,12 +188,12 @@ func (cli *Client) PutBucketAclFromCanned(bucket, cannedAcl string) error {
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketAclFromFile(bucket, aclFile string) error {
+func (c *Client) PutBucketAclFromFile(bucket, aclFile string) error {
     stream, err := http.NewBodyStreamFromFile(aclFile)
     if err != nil {
         return err
     }
-    return api.PutBucketAcl(cli, bucket, "", stream)
+    return api.PutBucketAcl(c, bucket, "", stream)
 }
 
 /*
@@ -205,13 +205,13 @@ func (cli *Client) PutBucketAclFromFile(bucket, aclFile string) error {
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketAclFromStruct(bucket string, aclObj *api.PutBucketAclArgs) error {
+func (c *Client) PutBucketAclFromStruct(bucket string, aclObj *api.PutBucketAclArgs) error {
     jsonBytes, jsonErr := json.Marshal(aclObj)
     if jsonErr != nil {
         return jsonErr
     }
     stream := http.NewBodyStreamFromBytes(jsonBytes)
-    return api.PutBucketAcl(cli, bucket, "", stream)
+    return api.PutBucketAcl(c, bucket, "", stream)
 }
 
 /*
@@ -223,8 +223,8 @@ func (cli *Client) PutBucketAclFromStruct(bucket string, aclObj *api.PutBucketAc
  *     - *api.GetBucketAclResult: the result of the bucket acl
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) GetBucketAcl(bucket string) (*api.GetBucketAclResult, error) {
-    return api.GetBucketAcl(cli, bucket)
+func (c *Client) GetBucketAcl(bucket string) (*api.GetBucketAclResult, error) {
+    return api.GetBucketAcl(c, bucket)
 }
 
 /*
@@ -236,8 +236,8 @@ func (cli *Client) GetBucketAcl(bucket string) (*api.GetBucketAclResult, error) 
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketLogging(bucket string, stream *http.BodyStream) error {
-    return api.PutBucketLogging(cli, bucket, stream)
+func (c *Client) PutBucketLogging(bucket string, stream *http.BodyStream) error {
+    return api.PutBucketLogging(c, bucket, stream)
 }
 
 /*
@@ -249,9 +249,9 @@ func (cli *Client) PutBucketLogging(bucket string, stream *http.BodyStream) erro
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketLoggingFromString(bucket, logging string) error {
+func (c *Client) PutBucketLoggingFromString(bucket, logging string) error {
     stream := http.NewBodyStreamFromString(logging)
-    return api.PutBucketLogging(cli, bucket, stream)
+    return api.PutBucketLogging(c, bucket, stream)
 }
 
 /*
@@ -263,13 +263,13 @@ func (cli *Client) PutBucketLoggingFromString(bucket, logging string) error {
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketLoggingFromStruct(bucket string, obj *api.PutBucketLoggingArgs) error {
+func (c *Client) PutBucketLoggingFromStruct(bucket string, obj *api.PutBucketLoggingArgs) error {
     jsonBytes, jsonErr := json.Marshal(obj)
     if jsonErr != nil {
         return jsonErr
     }
     stream := http.NewBodyStreamFromBytes(jsonBytes)
-    return api.PutBucketLogging(cli, bucket, stream)
+    return api.PutBucketLogging(c, bucket, stream)
 }
 
 /*
@@ -281,8 +281,8 @@ func (cli *Client) PutBucketLoggingFromStruct(bucket string, obj *api.PutBucketL
  *     - *api.GetBucketLoggingResult: the logging setting of the bucket
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) GetBucketLogging(bucket string) (*api.GetBucketLoggingResult, error) {
-    return api.GetBucketLogging(cli, bucket)
+func (c *Client) GetBucketLogging(bucket string) (*api.GetBucketLoggingResult, error) {
+    return api.GetBucketLogging(c, bucket)
 }
 
 /*
@@ -293,8 +293,8 @@ func (cli *Client) GetBucketLogging(bucket string) (*api.GetBucketLoggingResult,
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) DeleteBucketLogging(bucket string) error {
-    return api.DeleteBucketLogging(cli, bucket)
+func (c *Client) DeleteBucketLogging(bucket string) error {
+    return api.DeleteBucketLogging(c, bucket)
 }
 
 /*
@@ -306,8 +306,8 @@ func (cli *Client) DeleteBucketLogging(bucket string) error {
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketLifecycle(bucket string, lifecycle *http.BodyStream) error {
-    return api.PutBucketLifecycle(cli, bucket, lifecycle)
+func (c *Client) PutBucketLifecycle(bucket string, lifecycle *http.BodyStream) error {
+    return api.PutBucketLifecycle(c, bucket, lifecycle)
 }
 
 /*
@@ -319,9 +319,9 @@ func (cli *Client) PutBucketLifecycle(bucket string, lifecycle *http.BodyStream)
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketLifecycleFromString(bucket, lifecycle string) error {
+func (c *Client) PutBucketLifecycleFromString(bucket, lifecycle string) error {
     stream := http.NewBodyStreamFromString(lifecycle)
-    return api.PutBucketLifecycle(cli, bucket, stream)
+    return api.PutBucketLifecycle(c, bucket, stream)
 }
 
 /*
@@ -333,8 +333,8 @@ func (cli *Client) PutBucketLifecycleFromString(bucket, lifecycle string) error 
  *     - *api.GetBucketLifecycleResult: the lifecycle rule of the bucket
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) GetBucketLifecycle(bucket string) (*api.GetBucketLifecycleResult, error) {
-    return api.GetBucketLifecycle(cli, bucket)
+func (c *Client) GetBucketLifecycle(bucket string) (*api.GetBucketLifecycleResult, error) {
+    return api.GetBucketLifecycle(c, bucket)
 }
 
 /*
@@ -345,8 +345,8 @@ func (cli *Client) GetBucketLifecycle(bucket string) (*api.GetBucketLifecycleRes
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) DeleteBucketLifecycle(bucket string) error {
-    return api.DeleteBucketLifecycle(cli, bucket)
+func (c *Client) DeleteBucketLifecycle(bucket string) error {
+    return api.DeleteBucketLifecycle(c, bucket)
 }
 
 /*
@@ -358,8 +358,8 @@ func (cli *Client) DeleteBucketLifecycle(bucket string) error {
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) PutBucketStorageclass(bucket, storageClass string) error {
-    return api.PutBucketStorageclass(cli, bucket, storageClass)
+func (c *Client) PutBucketStorageclass(bucket, storageClass string) error {
+    return api.PutBucketStorageclass(c, bucket, storageClass)
 }
 
 /*
@@ -371,8 +371,8 @@ func (cli *Client) PutBucketStorageclass(bucket, storageClass string) error {
  *     - string: the storage class string value
  *     - error: nil if success otherwise the specific error
  */
-func (cli *Client) GetBucketStorageclass(bucket string) (string, error) {
-    return api.GetBucketStorageclass(cli, bucket)
+func (c *Client) GetBucketStorageclass(bucket string) (string, error) {
+    return api.GetBucketStorageclass(c, bucket)
 }
 
 /*
@@ -386,8 +386,8 @@ func (cli *Client) GetBucketStorageclass(bucket string) (string, error) {
  *     - string: etag of the uploaded object
  *     - error: the uploaded error if any occurs
  */
-func (cli *Client) PutObject(bucket, object string, stream *http.BodyStream) (string, error) {
-    return api.PutObject(cli, bucket, object, stream)
+func (c *Client) PutObject(bucket, object string, stream *http.BodyStream) (string, error) {
+    return api.PutObject(c, bucket, object, stream)
 }
 
 /*
@@ -401,9 +401,9 @@ func (cli *Client) PutObject(bucket, object string, stream *http.BodyStream) (st
  *     - string: etag of the uploaded object
  *     - error: the uploaded error if any occurs
  */
-func (cli *Client) PutObjectFromString(bucket, object, content string) (string, error) {
+func (c *Client) PutObjectFromString(bucket, object, content string) (string, error) {
     body := http.NewBodyStreamFromString(content)
-    return api.PutObject(cli, bucket, object, body)
+    return api.PutObject(c, bucket, object, body)
 }
 
 /*
@@ -417,12 +417,12 @@ func (cli *Client) PutObjectFromString(bucket, object, content string) (string, 
  *     - string: etag of the uploaded object
  *     - error: the uploaded error if any occurs
  */
-func (cli *Client) PutObjectFromFile(bucket, object, fileName string) (string, error) {
+func (c *Client) PutObjectFromFile(bucket, object, fileName string) (string, error) {
     body, err := http.NewBodyStreamFromFile(fileName)
     if err != nil {
         return "", err
     }
-    return api.PutObject(cli, bucket, object, body)
+    return api.PutObject(c, bucket, object, body)
 }
 
 /*
@@ -440,10 +440,10 @@ func (cli *Client) PutObjectFromFile(bucket, object, fileName string) (string, e
  *     - *api.CopyObjectResult: result struct which contains "ETag" and "LastModified" fields
  *     - error: any error if it occurs
  */
-func (cli *Client) CopyObject(bucket, object, srcBucket, srcObject string,
+func (c *Client) CopyObject(bucket, object, srcBucket, srcObject string,
         args *api.CopyObjectArgs) (*api.CopyObjectResult, error) {
     source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.CopyObject(cli, bucket, object, source, args)
+    return api.CopyObject(c, bucket, object, source, args)
 }
 
 /*
@@ -458,10 +458,10 @@ func (cli *Client) CopyObject(bucket, object, srcBucket, srcObject string,
  *     - *api.CopyObjectResult: result struct which contains "ETag" and "LastModified" fields
  *     - error: any error if it occurs
  */
-func (cli *Client) BasicCopyObject(bucket, object, srcBucket,
+func (c *Client) BasicCopyObject(bucket, object, srcBucket,
         srcObject string) (*api.CopyObjectResult, error) {
     source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.CopyObject(cli, bucket, object, source, nil)
+    return api.CopyObject(c, bucket, object, source, nil)
 }
 
 /*
@@ -476,9 +476,9 @@ func (cli *Client) BasicCopyObject(bucket, object, srcBucket,
  *       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
  *     - error: any error if it occurs
  */
-func (cli *Client) GetObject(bucket, object string,
+func (c *Client) GetObject(bucket, object string,
         args *api.GetObjectArgs) (*api.GetObjectResult, error) {
-    return api.GetObject(cli, bucket, object, args)
+    return api.GetObject(c, bucket, object, args)
 }
 
 /*
@@ -492,8 +492,8 @@ func (cli *Client) GetObject(bucket, object string,
  *       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
  *     - error: any error if it occurs
  */
-func (cli *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, error) {
-    return api.GetObject(cli, bucket, object, nil)
+func (c *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, error) {
+    return api.GetObject(c, bucket, object, nil)
 }
 
 /*
@@ -511,13 +511,13 @@ func (cli *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, 
  *       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
  *     - error: any error if it occurs
  */
-func (cli *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd int64,
+func (c *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd int64,
         responseHeaders map[string]string) (*api.GetObjectResult, error) {
     args := &api.GetObjectArgs{
         rangeStart,
         rangeEnd,
         responseHeaders}
-    return api.GetObject(cli, bucket, object, args)
+    return api.GetObject(c, bucket, object, args)
 }
 
 /*
@@ -530,8 +530,8 @@ func (cli *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd i
  * RETURNS:
  *     - error: any error if it occurs
  */
-func (cli *Client) GetObjectToFile(bucket, object, filePath string) error {
-    res, err := api.GetObject(cli, bucket, object, nil)
+func (c *Client) GetObjectToFile(bucket, object, filePath string) error {
+    res, err := api.GetObject(c, bucket, object, nil)
     if err != nil {
         return err
     }
@@ -564,8 +564,8 @@ func (cli *Client) GetObjectToFile(bucket, object, filePath string) error {
  *       https://cloud.baidu.com/doc/BOS/API.html#GetObjectMeta.E6.8E.A5.E5.8F.A3
  *     - error: any error if it occurs
  */
-func (cli *Client) GetObjectMeta(bucket, object string) (*api.GetObjectMetaResult, error) {
-    return api.GetObjectMeta(cli, bucket, object)
+func (c *Client) GetObjectMeta(bucket, object string) (*api.GetObjectMetaResult, error) {
+    return api.GetObjectMeta(c, bucket, object)
 }
 
 /*
@@ -580,9 +580,9 @@ func (cli *Client) GetObjectMeta(bucket, object string) (*api.GetObjectMetaResul
  *     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
  *     - error: any error if it occurs
  */
-func (cli *Client) FetchObject(bucket, object, source string,
+func (c *Client) FetchObject(bucket, object, source string,
         args *api.FetchObjectArgs) (*api.FetchObjectResult, error) {
-    return api.FetchObject(cli, bucket, object, source, args)
+    return api.FetchObject(c, bucket, object, source, args)
 }
 
 /*
@@ -596,8 +596,8 @@ func (cli *Client) FetchObject(bucket, object, source string,
  *     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
  *     - error: any error if it occurs
  */
-func (cli *Client) BasicFetchObject(bucket, object, source string) (*api.FetchObjectResult, error) {
-    return api.FetchObject(cli, bucket, object, source, nil)
+func (c *Client) BasicFetchObject(bucket, object, source string) (*api.FetchObjectResult, error) {
+    return api.FetchObject(c, bucket, object, source, nil)
 }
 
 /*
@@ -612,9 +612,9 @@ func (cli *Client) BasicFetchObject(bucket, object, source string) (*api.FetchOb
  *     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
  *     - error: any error if it occurs
  */
-func (cli *Client) AppendObject(bucket, object string, content *http.BodyStream,
+func (c *Client) AppendObject(bucket, object string, content *http.BodyStream,
         args *api.AppendObjectArgs) (*api.AppendObjectResult, error) {
-    return api.AppendObject(cli, bucket, object, content, args)
+    return api.AppendObject(c, bucket, object, content, args)
 }
 
 /*
@@ -628,9 +628,9 @@ func (cli *Client) AppendObject(bucket, object string, content *http.BodyStream,
  *     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
  *     - error: any error if it occurs
  */
-func (cli *Client) BasicAppendObject(bucket, object string,
+func (c *Client) BasicAppendObject(bucket, object string,
         content *http.BodyStream) (*api.AppendObjectResult, error) {
-    return api.AppendObject(cli, bucket, object, content, nil)
+    return api.AppendObject(c, bucket, object, content, nil)
 }
 
 /*
@@ -644,10 +644,10 @@ func (cli *Client) BasicAppendObject(bucket, object string,
  *     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
  *     - error: any error if it occurs
  */
-func (cli *Client) BasicAppendObjectFromString(bucket, object,
+func (c *Client) BasicAppendObjectFromString(bucket, object,
         content string) (*api.AppendObjectResult, error) {
     stream := http.NewBodyStreamFromString(content)
-    return api.AppendObject(cli, bucket, object, stream, nil)
+    return api.AppendObject(c, bucket, object, stream, nil)
 }
 
 /*
@@ -661,13 +661,13 @@ func (cli *Client) BasicAppendObjectFromString(bucket, object,
  *     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
  *     - error: any error if it occurs
  */
-func (cli *Client) BasicAppendObjectFromFile(bucket, object,
+func (c *Client) BasicAppendObjectFromFile(bucket, object,
         filePath string) (*api.AppendObjectResult, error) {
     stream, err := http.NewBodyStreamFromFile(filePath)
     if err != nil {
         return nil, err
     }
-    return api.AppendObject(cli, bucket, object, stream, nil)
+    return api.AppendObject(c, bucket, object, stream, nil)
 }
 
 /*
@@ -679,8 +679,8 @@ func (cli *Client) BasicAppendObjectFromFile(bucket, object,
  * RETURNS:
  *     - error: any error if it occurs
  */
-func (cli *Client) DeleteObject(bucket, object string) error {
-    return api.DeleteObject(cli, bucket, object)
+func (c *Client) DeleteObject(bucket, object string) error {
+    return api.DeleteObject(c, bucket, object)
 }
 
 /*
@@ -693,9 +693,9 @@ func (cli *Client) DeleteObject(bucket, object string) error {
  *     - *api.DeleteMultipleObjectsResult: the delete information
  *     - error: any error if it occurs
  */
-func (cli *Client) DeleteMultipleObjects(bucket string,
+func (c *Client) DeleteMultipleObjects(bucket string,
         objectListStream *http.BodyStream) (*api.DeleteMultipleObjectsResult, error) {
-    return api.DeleteMultipleObjects(cli, bucket, objectListStream)
+    return api.DeleteMultipleObjects(c, bucket, objectListStream)
 }
 
 /*
@@ -707,10 +707,10 @@ func (cli *Client) DeleteMultipleObjects(bucket string,
  * RETURNS:
  *     - error: any error if it occurs
  */
-func (cli *Client) DeleteMultipleObjectsFromString(bucket,
+func (c *Client) DeleteMultipleObjectsFromString(bucket,
         objectListString string) (*api.DeleteMultipleObjectsResult, error) {
     stream := http.NewBodyStreamFromString(objectListString)
-    return api.DeleteMultipleObjects(cli, bucket, stream)
+    return api.DeleteMultipleObjects(c, bucket, stream)
 }
 
 /*
@@ -722,14 +722,14 @@ func (cli *Client) DeleteMultipleObjectsFromString(bucket,
  * RETURNS:
  *     - error: any error if it occurs
  */
-func (cli *Client) DeleteMultipleObjectsFromStruct(bucket string,
+func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
         objectListStruct *api.DeleteMultipleObjectsArgs) (*api.DeleteMultipleObjectsResult, error) {
     jsonBytes, jsonErr := json.Marshal(objectListStruct)
     if jsonErr != nil {
         return nil, jsonErr
     }
     stream := http.NewBodyStreamFromBytes(jsonBytes)
-    return api.DeleteMultipleObjects(cli, bucket, stream)
+    return api.DeleteMultipleObjects(c, bucket, stream)
 }
 
 /*
@@ -745,9 +745,9 @@ func (cli *Client) DeleteMultipleObjectsFromStruct(bucket string,
  *     - *InitiateMultipartUploadResult: the result data structure
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) InitiateMultipartUpload(bucket, object, contentType string,
+func (c *Client) InitiateMultipartUpload(bucket, object, contentType string,
         args *api.InitiateMultipartUploadArgs) (*api.InitiateMultipartUploadResult, error) {
-    return api.InitiateMultipartUpload(cli, bucket, object, contentType, args)
+    return api.InitiateMultipartUpload(c, bucket, object, contentType, args)
 }
 
 /*
@@ -760,9 +760,9 @@ func (cli *Client) InitiateMultipartUpload(bucket, object, contentType string,
  *     - *InitiateMultipartUploadResult: the result data structure
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) BasicInitiateMultipartUpload(bucket,
+func (c *Client) BasicInitiateMultipartUpload(bucket,
         object string) (*api.InitiateMultipartUploadResult, error) {
-    return api.InitiateMultipartUpload(cli, bucket, object, "", nil)
+    return api.InitiateMultipartUpload(c, bucket, object, "", nil)
 }
 
 /*
@@ -779,9 +779,9 @@ func (cli *Client) BasicInitiateMultipartUpload(bucket,
  *     - string: the etag of the uploaded part
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) UploadPart(bucket, object, uploadId string, partNumber int,
+func (c *Client) UploadPart(bucket, object, uploadId string, partNumber int,
         content *http.BodyStream, args *api.UploadPartArgs) (string, error) {
-    return api.UploadPart(cli, bucket, object, uploadId, partNumber, content, args)
+    return api.UploadPart(c, bucket, object, uploadId, partNumber, content, args)
 }
 
 /*
@@ -797,9 +797,9 @@ func (cli *Client) UploadPart(bucket, object, uploadId string, partNumber int,
  *     - string: the etag of the uploaded part
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) BasicUploadPart(bucket, object, uploadId string, partNumber int,
+func (c *Client) BasicUploadPart(bucket, object, uploadId string, partNumber int,
         content *http.BodyStream) (string, error) {
-    return api.UploadPart(cli, bucket, object, uploadId, partNumber, content, nil)
+    return api.UploadPart(c, bucket, object, uploadId, partNumber, content, nil)
 }
 
 /*
@@ -817,10 +817,10 @@ func (cli *Client) BasicUploadPart(bucket, object, uploadId string, partNumber i
  *     - *CopyObjectResult: the lastModified and eTag of the part
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) UploadPartCopy(bucket, object, srcBucket, srcObject, uploadId string,
+func (c *Client) UploadPartCopy(bucket, object, srcBucket, srcObject, uploadId string,
         partNumber int, args *api.UploadPartCopyArgs) (*api.CopyObjectResult, error) {
     source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.UploadPartCopy(cli, bucket, object, source, uploadId, partNumber, args)
+    return api.UploadPartCopy(c, bucket, object, source, uploadId, partNumber, args)
 }
 
 /*
@@ -837,10 +837,10 @@ func (cli *Client) UploadPartCopy(bucket, object, srcBucket, srcObject, uploadId
  *     - *CopyObjectResult: the lastModified and eTag of the part
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) BasicUploadPartCopy(bucket, object, srcBucket, srcObject, uploadId string,
+func (c *Client) BasicUploadPartCopy(bucket, object, srcBucket, srcObject, uploadId string,
         partNumber int) (*api.CopyObjectResult, error) {
     source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.UploadPartCopy(cli, bucket, object, source, uploadId, partNumber, nil)
+    return api.UploadPartCopy(c, bucket, object, source, uploadId, partNumber, nil)
 }
 
 /*
@@ -856,10 +856,10 @@ func (cli *Client) BasicUploadPartCopy(bucket, object, srcBucket, srcObject, upl
  *     - *CompleteMultipartUploadResult: the result data
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) CompleteMultipartUpload(bucket, object, uploadId string,
+func (c *Client) CompleteMultipartUpload(bucket, object, uploadId string,
         parts *http.BodyStream,
         meta map[string]string) (*api.CompleteMultipartUploadResult, error) {
-    return api.CompleteMultipartUpload(cli, bucket, object, uploadId, parts, meta)
+    return api.CompleteMultipartUpload(c, bucket, object, uploadId, parts, meta)
 }
 
 /*
@@ -875,7 +875,7 @@ func (cli *Client) CompleteMultipartUpload(bucket, object, uploadId string,
  *     - *CompleteMultipartUploadResult: the result data
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId string,
+func (c *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId string,
         parts *api.CompleteMultipartUploadArgs,
         meta map[string]string) (*api.CompleteMultipartUploadResult, error) {
     jsonBytes, jsonErr := json.Marshal(parts)
@@ -883,7 +883,7 @@ func (cli *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId st
         return nil, jsonErr
     }
     stream := http.NewBodyStreamFromBytes(jsonBytes)
-    return api.CompleteMultipartUpload(cli, bucket, object, uploadId, stream, meta)
+    return api.CompleteMultipartUpload(c, bucket, object, uploadId, stream, meta)
 }
 
 /*
@@ -896,8 +896,8 @@ func (cli *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId st
  * RETURNS:
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) AbortMultipartUpload(bucket, object, uploadId string) error {
-    return api.AbortMultipartUpload(cli, bucket, object, uploadId)
+func (c *Client) AbortMultipartUpload(bucket, object, uploadId string) error {
+    return api.AbortMultipartUpload(c, bucket, object, uploadId)
 }
 
 /*
@@ -912,9 +912,9 @@ func (cli *Client) AbortMultipartUpload(bucket, object, uploadId string) error {
  *     - *ListPartsResult: the uploaded parts info result
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) ListParts(bucket, object, uploadId string,
+func (c *Client) ListParts(bucket, object, uploadId string,
         args *api.ListPartsArgs) (*api.ListPartsResult, error) {
-    return api.ListParts(cli, bucket, object, uploadId, args)
+    return api.ListParts(c, bucket, object, uploadId, args)
 }
 
 /*
@@ -928,8 +928,8 @@ func (cli *Client) ListParts(bucket, object, uploadId string,
  *     - *ListPartsResult: the uploaded parts info result
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) BasicListParts(bucket, object, uploadId string) (*api.ListPartsResult, error) {
-    return api.ListParts(cli, bucket, object, uploadId, nil)
+func (c *Client) BasicListParts(bucket, object, uploadId string) (*api.ListPartsResult, error) {
+    return api.ListParts(c, bucket, object, uploadId, nil)
 }
 
 /*
@@ -942,9 +942,9 @@ func (cli *Client) BasicListParts(bucket, object, uploadId string) (*api.ListPar
  *     - *ListMultipartUploadsResult: the unfinished uploaded parts info result
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) ListMultipartUploads(bucket string,
+func (c *Client) ListMultipartUploads(bucket string,
         args *api.ListMultipartUploadsArgs) (*api.ListMultipartUploadsResult, error) {
-    return api.ListMultipartUploads(cli, bucket, args)
+    return api.ListMultipartUploads(c, bucket, args)
 }
 
 /*
@@ -956,8 +956,8 @@ func (cli *Client) ListMultipartUploads(bucket string,
  *     - *ListMultipartUploadsResult: the unfinished uploaded parts info result
  *     - error: nil if ok otherwise the specific error
  */
-func (cli *Client) BasicListMultipartUploads(bucket string) (
+func (c *Client) BasicListMultipartUploads(bucket string) (
         *api.ListMultipartUploadsResult, error) {
-    return api.ListMultipartUploads(cli, bucket, nil)
+    return api.ListMultipartUploads(c, bucket, nil)
 }
 

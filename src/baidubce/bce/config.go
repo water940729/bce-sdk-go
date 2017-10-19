@@ -53,7 +53,7 @@ type BceClientConfiguration struct {
     ConnectionTimeoutInMillis int
 }
 
-func (conf *BceClientConfiguration) String() string {
+func (c *BceClientConfiguration) String() string {
     return fmt.Sprintf(`BceClientConfiguration [
         Endpoint=%s;
         ProxyUrl=%s;
@@ -63,7 +63,7 @@ func (conf *BceClientConfiguration) String() string {
         SignOption=%v;
         RetryPolicy=%v;
         ConnectionTimeoutInMillis=%v
-    ]`, conf.Endpoint, conf.ProxyUrl, conf.Region, conf.UserAgent, conf.Credentials,
-    conf.SignOption, reflect.TypeOf(conf.Retry).Name(), conf.ConnectionTimeoutInMillis)
+    ]`, c.Endpoint, c.ProxyUrl, c.Region, c.UserAgent, c.Credentials,
+    c.SignOption, reflect.TypeOf(c.Retry).Name(), c.ConnectionTimeoutInMillis)
 }
 

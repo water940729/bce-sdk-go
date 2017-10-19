@@ -34,84 +34,84 @@ type BceResponse struct {
     serviceError *BceServiceError
 }
 
-func (resp *BceResponse) IsFail() bool {
-    return resp.response.StatusCode() >= 400
+func (r *BceResponse) IsFail() bool {
+    return r.response.StatusCode() >= 400
 }
 
-func (resp *BceResponse) StatusCode() int {
-    if resp.statusCode == 0 {
-        resp.ParseResponse()
+func (r *BceResponse) StatusCode() int {
+    if r.statusCode == 0 {
+        r.ParseResponse()
     }
-    return resp.statusCode
+    return r.statusCode
 }
 
-func (resp *BceResponse) StatusText() string {
-    if resp.statusText == "" {
-        resp.ParseResponse()
+func (r *BceResponse) StatusText() string {
+    if r.statusText == "" {
+        r.ParseResponse()
     }
-    return resp.statusText
+    return r.statusText
 }
 
-func (resp *BceResponse) RequestId() string {
-    if resp.requestId == "" {
-        resp.ParseResponse()
+func (r *BceResponse) RequestId() string {
+    if r.requestId == "" {
+        r.ParseResponse()
     }
-    return resp.requestId
+    return r.requestId
 }
 
-func (resp *BceResponse) DebugId() string {
-    if resp.debugId == "" {
-        resp.ParseResponse()
+func (r *BceResponse) DebugId() string {
+    if r.debugId == "" {
+        r.ParseResponse()
     }
-    return resp.debugId
+    return r.debugId
 }
 
-func (resp *BceResponse) Header(key string) string {
-    return resp.response.GetHeader(key)
+func (r *BceResponse) Header(key string) string {
+    return r.response.GetHeader(key)
 }
 
-func (resp *BceResponse) Headers() map[string]string {
-    return resp.response.GetHeaders()
+func (r *BceResponse) Headers() map[string]string {
+    return r.response.GetHeaders()
 }
 
-func (resp *BceResponse) Body() io.ReadCloser {
-    return resp.response.Body()
+func (r *BceResponse) Body() io.ReadCloser {
+    return r.response.Body()
 }
 
-func (resp *BceResponse) SetHttpResponse(response *http.Response) {
-    resp.response = response
+func (r *BceResponse) SetHttpResponse(response *http.Response) {
+    r.response = response
 }
 
-func (resp *BceResponse) ElapsedTime() time.Duration {
-    return resp.response.ElapsedTime()
+func (r *BceResponse) ElapsedTime() time.Duration {
+    return r.response.ElapsedTime()
 }
 
-func (resp *BceResponse) ServiceError() *BceServiceError {
-    return resp.serviceError
+func (r *BceResponse) ServiceError() *BceServiceError {
+    return r.serviceError
 }
 
-func (resp *BceResponse) ParseResponse() {
-    resp.statusCode = resp.response.StatusCode()
-    resp.statusText = resp.response.StatusText()
-    resp.requestId = resp.response.GetHeader(http.BCE_REQUEST_ID)
-    resp.debugId = resp.response.GetHeader(http.BCE_DEBUG_ID)
-    if resp.IsFail() {
-        resp.serviceError = &BceServiceError{}
-        err := resp.ParseJsonBody(resp.serviceError)
+func (r *BceResponse) ParseResponse() {
+    r.statusCode = r.response.StatusCode()
+    r.statusText = r.response.StatusText()
+    r.requestId = r.response.GetHeader(http.BCE_REQUEST_ID)
+    r.debugId = r.response.GetHeader(http.BCE_DEBUG_ID)
+    if r.IsFail() {
+        r.serviceError = &BceServiceError{}
+        err := r.ParseJsonBody(r.serviceError)
         if err != nil {
-            resp.serviceError = NewBceServiceError(
+            r.serviceError = NewBceServiceError(
                 EMALFORMED_JSON,
                 "Service json error message decode failed",
-                resp.requestId,
-                resp.statusCode)
+                r.requestId,
+                r.statusCode)
         }
-        resp.serviceError.StatusCode = resp.statusCode
+        r.serviceError.StatusCode = r.statusCode
     }
 }
 
-func (resp *BceResponse) ParseJsonBody(result interface{}) error {
-    defer resp.Body().Close()
-    jsonDecoder := json.NewDecoder(resp.Body())
+func (r *BceResponse) ParseJsonBody(result interface{}) error {
+    defer r.Body().Close()
+    jsonDecoder := json.NewDecoder(r.Body())
     return jsonDecoder.Decode(result)
 }
 
