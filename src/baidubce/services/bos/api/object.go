@@ -32,12 +32,12 @@ import (
  *     - cli: the client agent which can perform sending request
  *     - bucket: the bucket name of the object
  *     - object: the name of the object
- *     - body: the input content stream of the object
+ *     - body: the input content of the object
  * RETURNS:
  *     - string: the etag of the object
  *     - error: nil if ok otherwise the specific error
  */
-func PutObject(cli bce.Client, bucket, object string, body *http.BodyStream) (string, error) {
+func PutObject(cli bce.Client, bucket, object string, body *bce.Body) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
     req.SetMethod(http.PUT)
@@ -79,18 +79,13 @@ func CopyObject(cli bce.Client, bucket, object, source string,
 
     // Optional arguments settings
     if args != nil {
-        if len(args.IfMatch) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_MATCH, args.IfMatch)
-        }
-        if len(args.IfNoneMatch) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_NONE_MATCH, args.IfNoneMatch)
-        }
-        if len(args.IfModifiedSince) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE, args.IfModifiedSince)
-        }
-        if len(args.IfUnmodifiedSince) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE, args.IfUnmodifiedSince)
-        }
+        setOptionalNullHeaders(req, map[string]string{
+            http.BCE_COPY_SOURCE_IF_MATCH: args.IfMatch,
+            http.BCE_COPY_SOURCE_IF_NONE_MATCH: args.IfNoneMatch,
+            http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: args.IfModifiedSince,
+            http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: args.IfUnmodifiedSince,
+        })
+
         if validMetadataDirective(args.MetadataDirective) {
             req.SetHeader(http.BCE_COPY_METADATA_DIRECTIVE, args.MetadataDirective)
         } else {
@@ -103,7 +98,8 @@ func CopyObject(cli bce.Client, bucket, object, source string,
             req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
         } else {
             if len(args.StorageClass) != 0 {
-                return nil, bce.NewBceClientError("invalid storage class value: " + args.StorageClass)
+                return nil, bce.NewBceClientError("invalid storage class value: " +
+                    args.StorageClass)
             }
         }
     }
@@ -176,7 +172,6 @@ func GetObject(cli bce.Client, bucket, object string,
     if resp.IsFail() {
         return nil, resp.ServiceError()
     }
-    var size int64 = 0
     headers := resp.Headers()
     result := &GetObjectResult{}
     if val, ok := headers[http.CACHE_CONTROL]; ok {
@@ -187,7 +182,6 @@ func GetObject(cli bce.Client, bucket, object string,
     }
     if val, ok := headers[http.CONTENT_LENGTH]; ok {
         result.ContentLength = val
-        size, _ = strconv.ParseInt(val, 10, 64)
     }
     if val, ok := headers[http.CONTENT_RANGE]; ok {
         result.ContentRange = val
@@ -219,7 +213,7 @@ func GetObject(cli bce.Client, bucket, object string,
             result.UserMeta[k] = v
         }
     }
-    result.Body = &http.BodyStream{resp.Body(), size}
+    result.Body = resp.Body()
     return result, nil
 }
 
@@ -322,7 +316,8 @@ func FetchObject(cli bce.Client, bucket, object, source string,
             req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
         } else {
             if len(args.StorageClass) != 0 {
-                return nil, bce.NewBceClientError("invalid storage class value: " + args.StorageClass)
+                return nil, bce.NewBceClientError("invalid storage class value: " +
+                    args.StorageClass)
             }
         }
     }
@@ -355,7 +350,7 @@ func FetchObject(cli bce.Client, bucket, object, source string,
  *     - *AppendObjectResult: the result status for this api
  *     - error: nil if ok otherwise the specific error
  */
-func AppendObject(cli bce.Client, bucket, object string, content *http.BodyStream,
+func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
         args *AppendObjectArgs) (*AppendObjectResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
@@ -372,26 +367,20 @@ func AppendObject(cli bce.Client, bucket, object string, content *http.BodyStrea
         if args.Offset > 0 {
             req.SetParam("offset", fmt.Sprintf("%d", args.Offset))
         }
-        if len(args.CacheControl) != 0 {
-            req.SetHeader(http.CACHE_CONTROL, args.CacheControl)
-        }
-        if len(args.ContentDisposition) != 0 {
-            req.SetHeader(http.CONTENT_DISPOSITION, args.ContentDisposition)
-        }
-        if len(args.ContentMD5) != 0 {
-            req.SetHeader(http.CONTENT_MD5, args.ContentMD5)
-        }
-        if len(args.Expires) != 0 {
-            req.SetHeader(http.EXPIRES, args.Expires)
-        }
-        if len(args.ContentSha256) != 0 {
-            req.SetHeader(http.BCE_CONTENT_SHA256, args.ContentSha256)
-        }
+        setOptionalNullHeaders(req, map[string]string{
+            http.CACHE_CONTROL: args.CacheControl,
+            http.CONTENT_DISPOSITION: args.ContentDisposition,
+            http.CONTENT_MD5: args.ContentMD5,
+            http.EXPIRES: args.Expires,
+            http.BCE_CONTENT_SHA256: args.ContentSha256,
+        })
+
         if validStorageClass(args.StorageClass) {
             req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
         } else {
             if len(args.StorageClass) != 0 {
-                return nil, bce.NewBceClientError("invalid storage class value: " + args.StorageClass)
+                return nil, bce.NewBceClientError("invalid storage class value: " +
+                    args.StorageClass)
             }
         }
         if args.UserMeta != nil {
@@ -412,7 +401,7 @@ func AppendObject(cli bce.Client, bucket, object string, content *http.BodyStrea
     nextOffset, offsetErr := strconv.ParseInt(
         resp.Header(http.BCE_PREFIX + "next-append-offset"), 10, 64)
     if offsetErr != nil {
-        nextOffset = content.Len()
+        nextOffset = content.Size
     }
     result := &AppendObjectResult{resp.Header(http.CONTENT_MD5), nextOffset, resp.Header(http.ETAG)}
     return result, nil
@@ -455,7 +444,7 @@ func DeleteObject(cli bce.Client, bucket, object string) error {
  *     - error: nil if ok otherwise the specific error
  */
 func DeleteMultipleObjects(cli bce.Client, bucket string,
-        objectListStream *http.BodyStream) (*DeleteMultipleObjectsResult, error) {
+        objectListStream *bce.Body) (*DeleteMultipleObjectsResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
     req.SetMethod(http.POST)

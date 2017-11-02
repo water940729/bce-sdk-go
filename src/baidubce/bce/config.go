@@ -24,13 +24,20 @@ import (
     "baidubce/auth"
 )
 
-// Constants for BceClientConfiguration
-var (
+// Constants and default values for the package bce
+const (
+    SDK_VERSION           = "0.1.0"
+    URI_PREFIX            = "/" // now support uri without prefix "v1" so just set root path
+    DEFAULT_DOMAIN        = "baidubce.com"
     DEFAULT_PROTOCOL      = "http"
     DEFAULT_REGION        = "bj"
+    DEFAULT_CONTENT_TYPE  = "application/json;charset=utf-8"
+    DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 50 * 1000
+)
+
+var(
     DEFAULT_USER_AGENT    string
     DEFAULT_RETRY_POLICY  = NewBackOffRetryPolicy(3, 20000, 300)
-    DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 50 * 1000
 )
 
 func init() {

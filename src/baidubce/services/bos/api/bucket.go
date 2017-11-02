@@ -203,26 +203,26 @@ func GetBucketLocation(cli bce.Client, bucket string) (string, error) {
  *     - cli: the client agent which can perform sending request
  *     - bucket: the bucket name
  *     - cannedAcl: support private, public-read, public-read-write
- *     - aclStream: the acl file stream
+ *     - aclBody: the acl file body
  * RETURNS:
  *     - error: nil if delete success otherwise the specific error
  */
-func PutBucketAcl(cli bce.Client, bucket, cannedAcl string, aclStream *http.BodyStream) error {
+func PutBucketAcl(cli bce.Client, bucket, cannedAcl string, aclBody *bce.Body) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
     req.SetMethod(http.PUT)
     req.SetParam("acl", "")
 
     // The acl setting
-    if len(cannedAcl) != 0 && aclStream != nil {
+    if len(cannedAcl) != 0 && aclBody != nil {
         return bce.NewBceClientError("BOS does not support cannedAcl and acl file at the same time")
     }
     if validCannedAcl(cannedAcl) {
         req.SetHeader(http.BCE_ACL, cannedAcl)
     }
-    if aclStream != nil {
-        req.SetHeader(http.CONTENT_TYPE, "application/json; charset=utf-8")
-        req.SetBody(aclStream)
+    if aclBody != nil {
+        req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
+        req.SetBody(aclBody)
     }
 
     resp := &bce.BceResponse{}
@@ -271,11 +271,11 @@ func GetBucketAcl(cli bce.Client, bucket string) (*GetBucketAclResult, error) {
  * PARAMS:
  *     - cli: the client agent which can perform sending request
  *     - bucket: the bucket name
- *     - logging: the logging prefix json string stream
+ *     - logging: the logging prefix json string body
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func PutBucketLogging(cli bce.Client, bucket string, logging *http.BodyStream) error {
+func PutBucketLogging(cli bce.Client, bucket string, logging *bce.Body) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
     req.SetMethod(http.PUT)
@@ -351,11 +351,11 @@ func DeleteBucketLogging(cli bce.Client, bucket string) error {
  * PARAMS:
  *     - cli: the client agent which can perform sending request
  *     - bucket: the bucket name
- *     - lifecycle: the lifecycle rule json string stream
+ *     - lifecycle: the lifecycle rule json string body
  * RETURNS:
  *     - error: nil if success otherwise the specific error
  */
-func PutBucketLifecycle(cli bce.Client, bucket string, lifecycle *http.BodyStream) error {
+func PutBucketLifecycle(cli bce.Client, bucket string, lifecycle *bce.Body) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
     req.SetMethod(http.PUT)
@@ -446,7 +446,11 @@ func PutBucketStorageclass(cli bce.Client, bucket, storageClass string) error {
     if jsonErr != nil {
         return jsonErr
     }
-    req.SetBody(http.NewBodyStreamFromBytes(jsonBytes))
+    body, err := bce.NewBodyFromBytes(jsonBytes)
+    if err != nil {
+        return err
+    }
+    req.SetBody(body)
 
     resp := &bce.BceResponse{}
     if err := cli.SendRequest(req, resp); err != nil {

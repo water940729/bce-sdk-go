@@ -17,72 +17,13 @@
 package http
 
 import (
-    "bufio"
-    "bytes"
     "fmt"
     "io"
-    "os"
     "strings"
     "strconv"
 
     "baidubce/util"
 )
-
-// BodyStream is used for internal request body stream implements the io.ReadCloser interface
-// for adapting the `Body` field in the net/http.Request, as well as the `Len` method to set
-// the content-length.
-type BodyStream struct {
-    Entity io.ReadCloser // abstract entity that can `Read` and `Close`
-    Size   int64         // the body size that returned by `Len`
-}
-
-func (b *BodyStream) Read(p []byte) (int, error) { return b.Entity.Read(p) }
-
-func (b *BodyStream) Close() error { return b.Entity.Close() }
-
-func (b *BodyStream) Len() int64 { return b.Size }
-
-// BufferedFileStream is an adapter of buffered file stream to `BodyStream`.
-type bufferedFileStream struct {
-    buffer *bufio.Reader
-    closer io.Closer
-}
-
-func (b *bufferedFileStream) Read(p []byte) (int, error) { return b.buffer.Read(p) }
-
-func (b *bufferedFileStream) Close() error { return b.closer.Close() }
-
-func NewBodyStreamFromFile(fname string) (*BodyStream, error) {
-    file, err := os.Open(fname)
-    if err != nil {
-        return nil, err
-    }
-    fileInfo, e := file.Stat()
-    if e != nil {
-        return nil, e
-    }
-    adapter := &bufferedFileStream{bufio.NewReader(file), file}
-    return &BodyStream{adapter, fileInfo.Size()}, nil
-}
-
-// StringStream is an adapter of common strings to `BodyStream`.
-type stringStream struct { buffer *bytes.Buffer }
-
-func (s *stringStream) Read(p []byte) (int, error) { return s.buffer.Read(p) }
-
-func (s *stringStream) Close() error { return nil }
-
-func NewBodyStreamFromBytes(stream []byte) *BodyStream {
-    buf := bytes.NewBuffer(stream)
-    adapter := &stringStream{buf}
-    return &BodyStream{adapter, int64(buf.Len())}
-}
-
-func NewBodyStreamFromString(stream string) *BodyStream {
-    buf := bytes.NewBufferString(stream)
-    adapter := &stringStream{buf}
-    return &BodyStream{adapter, int64(buf.Len())}
-}
 
 // Reauest stands for the general http request structure to make request to the BCE services.
 type Request struct {
@@ -95,7 +36,10 @@ type Request struct {
     timeout     int
     headers     map[string]string
     params      map[string]string
-    body        *BodyStream // Optional stream from which to read the payload
+
+    // Optional body and length fields to set the body stream and content length
+    body        io.ReadCloser
+    length        int64
 }
 
 func (r *Request) Protocol() string {
@@ -239,12 +183,20 @@ func (r *Request) SetTimeout(timeout int) {
     r.timeout = timeout
 }
 
-func (r *Request) Body() *BodyStream {
+func (r *Request) Body() io.ReadCloser {
     return r.body
 }
 
-func (r *Request) SetBody(stream *BodyStream) {
+func (r *Request) SetBody(stream io.ReadCloser) {
     r.body = stream
+}
+
+func (r *Request) Length() int64 {
+    return r.length
+}
+
+func (r *Request) SetLength(l int64) {
+    r.length = l
 }
 
 func (r *Request) GenerateUrl(addPort bool) string {

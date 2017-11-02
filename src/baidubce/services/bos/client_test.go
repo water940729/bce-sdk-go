@@ -1,27 +1,47 @@
 package bos
 
 import (
+    "encoding/json"
     "os"
+    "path/filepath"
+    "runtime"
     "testing"
 
     "baidubce/bce"
-    "baidubce/http"
     "baidubce/services/bos/api"
+    "baidubce/util/log"
 )
 
 var (
-    AK = "ab3e8280a5ff436eb5c5b9d7fa14fde9"
-    SK = "2544e6b152a94241b8af9dbb25245c5e"
     BOS_CLIENT *Client
-
     EXISTS_BUCKET = "bos-rd-ssy"
 )
 
-func init() {
-    BOS_CLIENT, _ = NewClient(AK, SK)
+// For security reason, ak/sk should not hard write here.
+type Conf struct {
+    AK string
+    SK string
+}
 
-    bce.SetLogHandler(false, false) // close the internal logger
-    //bce.SetLogHandler(true, false) // set log to stderr and not to file
+func init() {
+    _, f, _, _ := runtime.Caller(0)
+    for i := 0; i < 5; i++ {
+        f = filepath.Dir(f)
+    }
+    conf := filepath.Join(f, "config.json")
+    fp, err := os.Open(conf)
+    if err != nil {
+        log.Fatal("config json file of ak/sk not given:", conf)
+        os.Exit(1)
+    }
+    decoder := json.NewDecoder(fp)
+    confObj := &Conf{}
+    decoder.Decode(confObj)
+
+    BOS_CLIENT, _ = NewClient(confObj.AK, confObj.SK)
+    log.SetLogHandler(log.STDERR | log.FILE)
+    log.SetRotateType(log.ROTATE_SIZE)
+    //log.SetLogLevel(log.WARN)
 }
 
 func TestListBuckets(t *testing.T) {
@@ -82,8 +102,8 @@ func TestPutBucketAcl(t *testing.T) {
         }
     ]
 }`
-    stream := http.NewBodyStreamFromString(acl)
-    err := BOS_CLIENT.PutBucketAcl(EXISTS_BUCKET, stream)
+    body, _ := bce.NewBodyFromString(acl)
+    err := BOS_CLIENT.PutBucketAcl(EXISTS_BUCKET, body)
     if err != nil {
         t.Error(err)
     }
@@ -116,23 +136,23 @@ func TestPutBucketAclFromFile(t *testing.T) {
     f, _ := os.Create(fname)
     f.WriteString(acl)
     f.Close()
-
     err := BOS_CLIENT.PutBucketAclFromFile(EXISTS_BUCKET, fname)
     if err != nil {
         t.Error(err)
     }
     res, _ := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
     t.Logf("%+v", res)
+    os.Remove(fname)
 }
 
 func TestPutBucketAclFromStruct(t *testing.T) {
     args := &api.PutBucketAclArgs{
         []api.GrantType{
             api.GrantType{
-                []api.GranteeType{
+                Grantee: []api.GranteeType{
                     api.GranteeType{"e13b12d0131b4c8bae959df4969387b8"},
                 },
-                []string{
+                Permission: []string{
                     "FULL_CONTROL",
                 },
             },
@@ -147,9 +167,9 @@ func TestPutBucketAclFromStruct(t *testing.T) {
 }
 
 func TestPutBucketLogging(t *testing.T) {
-    stream := http.NewBodyStreamFromString(
+    body, _ := bce.NewBodyFromString(
         `{"targetBucket": "bos-rd-ssy", "targetPrefix": "my-log/"}`)
-    err := BOS_CLIENT.PutBucketLogging(EXISTS_BUCKET, stream)
+    err := BOS_CLIENT.PutBucketLogging(EXISTS_BUCKET, body)
     if err != nil {
         t.Error(err)
     }
@@ -204,8 +224,8 @@ func TestPutBucketLifecycle(t *testing.T) {
         }
     ]
 }`
-    stream := http.NewBodyStreamFromString(str)
-    err := BOS_CLIENT.PutBucketLifecycle(EXISTS_BUCKET, stream)
+    body, _ := bce.NewBodyFromString(str)
+    err := BOS_CLIENT.PutBucketLifecycle(EXISTS_BUCKET, body)
     if err != nil {
         t.Error(err)
     }
@@ -266,8 +286,8 @@ func TestGetBucketStorageClass(t *testing.T) {
 }
 
 func TestPutObject(t *testing.T) {
-    stream := http.NewBodyStreamFromString("aaaaaaaaaaa")
-    res, err := BOS_CLIENT.PutObject(EXISTS_BUCKET, "test-put-object", stream)
+    body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
+    res, err := BOS_CLIENT.PutObject(EXISTS_BUCKET, "test-put-object", body)
     if err != nil {
         t.Error(err)
     }
@@ -292,6 +312,7 @@ func TestPutObjectFromFile(t *testing.T) {
         t.Error(err)
     }
     t.Logf("etag: %v", res)
+    os.Remove(fname)
 }
 
 func TestCopyObject(t *testing.T) {
@@ -323,7 +344,7 @@ func TestGetObject(t *testing.T) {
     t.Logf("%+v", res)
 
     defer res.Body.Close()
-    t.Logf("%d", res.Body.Len())
+    t.Logf("%v", res.ContentLength)
     for {
         buf := make([]byte, 1024)
         n, e := res.Body.Read(buf)
@@ -342,7 +363,7 @@ func TestBasicGetObject(t *testing.T) {
     t.Logf("%+v", res)
 
     defer res.Body.Close()
-    t.Logf("%d", res.Body.Len())
+    t.Logf("%v", res.ContentLength)
     for {
         buf := make([]byte, 1024)
         n, e := res.Body.Read(buf)
@@ -362,7 +383,7 @@ func TestSimpleGetObject(t *testing.T) {
     t.Logf("%+v", res)
 
     defer res.Body.Close()
-    t.Logf("%d", res.Body.Len())
+    t.Logf("%v", res.ContentLength)
     for {
         buf := make([]byte, 1024)
         n, e := res.Body.Read(buf)
@@ -379,6 +400,7 @@ func TestGetObjectToFile(t *testing.T) {
     if err != nil {
         t.Error(err)
     }
+    os.Remove(fname)
 }
 
 func TestGetObjectMeta(t *testing.T) {
@@ -416,8 +438,8 @@ func TestBasicFetchObject(t *testing.T) {
 
 func TestAppendObject(t *testing.T) {
     args := &api.AppendObjectArgs{}
-    stream := http.NewBodyStreamFromString("aaaaaaaaaaa")
-    res, err := BOS_CLIENT.AppendObject(EXISTS_BUCKET, "test-append-object", stream, args)
+    body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
+    res, err := BOS_CLIENT.AppendObject(EXISTS_BUCKET, "test-append-object", body, args)
     if err != nil {
         t.Error(err)
     }
@@ -425,8 +447,8 @@ func TestAppendObject(t *testing.T) {
 }
 
 func TestBasicAppendObject(t *testing.T) {
-    stream := http.NewBodyStreamFromString("bbbbbbbbbbb")
-    res, err := BOS_CLIENT.BasicAppendObject(EXISTS_BUCKET, "test-append-object", stream)
+    body, _ := bce.NewBodyFromString("bbbbbbbbbbb")
+    res, err := BOS_CLIENT.BasicAppendObject(EXISTS_BUCKET, "test-append-object", body)
     if err != nil {
         t.Error(err)
     }
@@ -451,6 +473,7 @@ func TestBasicAppendObjectFromFile(t *testing.T) {
         t.Error(err)
     }
     t.Logf("%+v", res)
+    os.Remove(fname)
 }
 
 func TestDeleteObject(t *testing.T) {
@@ -530,5 +553,12 @@ func TestBasicListMultipartUploads(t *testing.T) {
         t.Error(err)
     }
     t.Logf("%+v", res)
+}
+
+func TestUploadSuperFile(t *testing.T) {
+    err := BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "super-object", "/tmp/super-file", "")
+    if err != nil {
+        t.Error(err)
+    }
 }
 

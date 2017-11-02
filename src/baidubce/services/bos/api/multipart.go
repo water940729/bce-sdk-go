@@ -18,6 +18,7 @@ package api
 
 import (
     "fmt"
+    "strings"
 
     "baidubce/bce"
     "baidubce/http"
@@ -44,20 +45,25 @@ func InitiateMultipartUpload(cli bce.Client, bucket, object, contentType string,
     req.SetMethod(http.POST)
     req.SetParam("uploads", "")
     if len(contentType) == 0 {
-        contentType = DEFAULT_CONTENT_TYPE
+        contentType = RAW_CONTENT_TYPE
     }
     req.SetHeader(http.CONTENT_TYPE, contentType)
 
     // Optional arguments settings
     if args != nil {
-        if len(args.CacheControl) != 0 {
-            req.SetHeader(http.CACHE_CONTROL, args.CacheControl)
-        }
-        if len(args.ContentDisposition) != 0 {
-            req.SetHeader(http.CONTENT_DISPOSITION, args.ContentDisposition)
-        }
-        if len(args.Expires) != 0 {
-            req.SetHeader(http.EXPIRES, args.Expires)
+        setOptionalNullHeaders(req, map[string]string{
+            http.CACHE_CONTROL: args.CacheControl,
+            http.CONTENT_DISPOSITION: args.ContentDisposition,
+            http.EXPIRES: args.Expires,
+        })
+
+        if validStorageClass(args.StorageClass) {
+            req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
+        } else {
+            if len(args.StorageClass) != 0 {
+                return nil, bce.NewBceClientError("invalid storage class value: " +
+                    args.StorageClass)
+            }
         }
     }
 
@@ -92,7 +98,7 @@ func InitiateMultipartUpload(cli bce.Client, bucket, object, contentType string,
  *     - error: nil if ok otherwise the specific error
  */
 func UploadPart(cli bce.Client, bucket, object, uploadId string, partNumber int,
-        content *http.BodyStream, args *UploadPartArgs) (string, error) {
+        content *bce.Body, args *UploadPartArgs) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
     req.SetMethod(http.PUT)
@@ -105,12 +111,10 @@ func UploadPart(cli bce.Client, bucket, object, uploadId string, partNumber int,
 
     // Optional arguments settings
     if args != nil {
-        if len(args.ContentMD5) != 0 {
-            req.SetHeader(http.CONTENT_MD5, args.ContentMD5)
-        }
-        if len(args.ContentSha256) != 0 {
-            req.SetHeader(http.BCE_CONTENT_SHA256, args.ContentSha256)
-        }
+        setOptionalNullHeaders(req, map[string]string{
+            http.CONTENT_MD5: args.ContentMD5,
+            http.BCE_CONTENT_SHA256: args.ContentSha256,
+        })
     }
 
     // Send request and get the result
@@ -121,7 +125,7 @@ func UploadPart(cli bce.Client, bucket, object, uploadId string, partNumber int,
     if resp.IsFail() {
         return "", resp.ServiceError()
     }
-    return resp.Header(http.ETAG), nil
+    return strings.Trim(resp.Header(http.ETAG), "\""), nil
 }
 
 /*
@@ -153,21 +157,13 @@ func UploadPartCopy(cli bce.Client, bucket, object, source, uploadId string, par
 
     // Optional arguments settings
     if args != nil {
-        if len(args.SourceRange) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_RANGE, args.SourceRange)
-        }
-        if len(args.IfMatch) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_MATCH, args.IfMatch)
-        }
-        if len(args.IfNoneMatch) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_NONE_MATCH, args.IfNoneMatch)
-        }
-        if len(args.IfModifiedSince) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE, args.IfModifiedSince)
-        }
-        if len(args.IfUnmodifiedSince) != 0 {
-            req.SetHeader(http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE, args.IfUnmodifiedSince)
-        }
+        setOptionalNullHeaders(req, map[string]string{
+            http.BCE_COPY_SOURCE_RANGE: args.SourceRange,
+            http.BCE_COPY_SOURCE_IF_MATCH: args.IfMatch,
+            http.BCE_COPY_SOURCE_IF_NONE_MATCH: args.IfNoneMatch,
+            http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: args.IfModifiedSince,
+            http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: args.IfUnmodifiedSince,
+        })
     }
 
     // Send request and get the result
@@ -200,7 +196,7 @@ func UploadPartCopy(cli bce.Client, bucket, object, source, uploadId string, par
  *     - error: nil if ok otherwise the specific error
  */
 func CompleteMultipartUpload(cli bce.Client, bucket, object, uploadId string,
-        parts *http.BodyStream, meta map[string]string) (*CompleteMultipartUploadResult, error) {
+        parts *bce.Body, meta map[string]string) (*CompleteMultipartUploadResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
     req.SetMethod(http.POST)

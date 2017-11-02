@@ -30,8 +30,6 @@
 //     The request instance stands for an request to access the BCE services.
 // - BceResponse:
 //     The response instance stands for an response from the BCE services.
-// - Log facility functions:
-//     Define some global functions to set the log handler, log level and log directory.
 package bce
 
 import (
@@ -40,20 +38,8 @@ import (
 
     "baidubce/auth"
     "baidubce/http"
-    "baidubce/thirdlib/glog"
     "baidubce/util"
-)
-
-const (
-    SDK_VERSION            = "0.1.0"
-    URI_PREFIX             = "/v1/"
-    DEFAULT_SERVICE_DOMAIN = "bcebos.com"
-
-    LOG_DEBUG int32 = iota
-    LOG_INFO
-    LOG_WARN
-    LOG_ERROR
-    LOG_FATAL
+    "baidubce/util/log"
 )
 
 // Client is the general interface which can perform sending request. Different service
@@ -92,9 +78,9 @@ func (c *BceClient) buildHttpRequest(request *BceRequest) {
     request.SetHeader(http.HOST, request.Host())
     request.SetHeader(http.USER_AGENT, c.Config.UserAgent)
     request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(c.Config.SignOption.Timestamp))
-    if request.Body() != nil {
-        request.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", request.Body().Len()))
-    }
+    //if request.Body() != nil {
+    //    request.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", request.Body().Len()))
+    //}
 
     // Generate the auth string
     c.Signer.Sign(&request.Request, c.Config.Credentials, c.Config.SignOption)
@@ -117,7 +103,7 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 
     // Build the http request and prepare to send
     c.buildHttpRequest(req)
-    glog.Infof("send http request: %v", req)
+    log.Infof("send http request: %v", req)
 
     // Send request with the given retry policy
     retries := 0
@@ -133,19 +119,19 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
                                     retries, err)}
             }
             retries++
-            glog.Warningf("send request failed, retry for %d time(s)", retries)
+            log.Warnf("send request failed, retry for %d time(s)", retries)
             continue
         }
         resp.SetHttpResponse(httpResp)
         resp.ParseResponse()
 
-        glog.Infof("receive http response: status: %s, debugId: %s, requestId: %s, elapsed: %v",
+        log.Infof("receive http response: status: %s, debugId: %s, requestId: %s, elapsed: %v",
             resp.StatusText(), resp.DebugId(), resp.RequestId(), resp.ElapsedTime())
         if resp.IsFail() {
             return resp.ServiceError()
         }
         for k, v := range resp.Headers() {
-            glog.Debugf("%s=%s", k, v)
+            log.Debugf("%s=%s", k, v)
         }
         return nil
     }
@@ -153,49 +139,5 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 
 func NewBceClient(conf *BceClientConfiguration, sign auth.Signer) *BceClient {
     return &BceClient{conf, sign}
-}
-
-/*
- * SetLogHandler - set the log handler of where to log, default is to stderr
- *
- * PARAMS:
- *     -toStderr: set weather logging to stderr(default true)
- *     -toFile: set weather logging to file(default false) and if set to file all levels are logged
- */
-func SetLogHandler(toStderr, toFile bool) {
-    glog.SetLogToStderr(toStderr)
-
-    if toFile {
-        glog.SetLogAlsoToStderr(toStderr)
-    }
-
-    if !toStderr && !toFile {
-        glog.SetLogStderrThreshold(5)
-    }
-}
-
-/*
- * SetLogLevel - if log to stderr and file, set the level to be logged(default error)
- *
- * PARAMS:
- *     -level: if set logging to stderr and file, only the message whose level is greater or equal
- *             than this value will be logged to stderr. Default is 3(error).
- *             available value: 0=debug, 1=info, 2=warning, 3=error, 4=fatal
- */
-func SetLogLevel(level int32) {
-    if level >= LOG_DEBUG && level <= LOG_FATAL {
-        glog.SetLogStderrThreshold(level)
-    }
-    glog.SetLogStderrThreshold(LOG_ERROR)
-}
-
-/*
- * SetLogDir - set the directory in which puts the log files
- *
- * PARAMS:
- *     -logDir: the log directory value
- */
-func SetLogDir(logDir string) {
-    glog.SetLogToDir(logDir)
 }
 

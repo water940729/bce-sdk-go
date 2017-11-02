@@ -21,7 +21,7 @@ import (
     "net"
     "net/http"
 
-    "baidubce/thirdlib/glog"
+    "baidubce/util/log"
 )
 
 // RetryPolicy defines the two methods to retry for sending request.
@@ -71,21 +71,20 @@ func (b *BackOffRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
 
     // Only retry on a service error
     if realErr, ok := err.(*BceServiceError); ok {
-        if realErr.StatusCode == http.StatusInternalServerError {
-            glog.Warning("retry for internal server error(500)")
+        switch realErr.StatusCode {
+        case http.StatusInternalServerError:
+            log.Warn("retry for internal server error(500)")
             return true
-        }
-        if realErr.StatusCode == http.StatusBadGateway {
-            glog.Warning("retry for bad gateway(502)")
+        case http.StatusBadGateway:
+            log.Warn("retry for bad gateway(502)")
             return true
-        }
-        if realErr.StatusCode == http.StatusServiceUnavailable {
-            glog.Warning("retry for service unavailable(503)")
+        case http.StatusServiceUnavailable:
+            log.Warn("retry for service unavailable(503)")
             return true
         }
 
         if realErr.Code == EREQUEST_EXPIRED {
-            glog.Warning("retry for request expired")
+            log.Warn("retry for request expired")
             return true;
         }
     }

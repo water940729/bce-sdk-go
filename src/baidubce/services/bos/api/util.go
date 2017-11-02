@@ -20,6 +20,7 @@ import (
     "bytes"
 
     "baidubce/bce"
+    "baidubce/http"
 )
 
 const (
@@ -33,21 +34,21 @@ const (
     FETCH_MODE_SYNC  = "sync"
     FETCH_MODE_ASYNC = "async"
 
-    CANNED_ACL_PRIVATE = "private"
-    CANNED_ACL_PUBLIC_READ = "public-read"
+    CANNED_ACL_PRIVATE           = "private"
+    CANNED_ACL_PUBLIC_READ       = "public-read"
     CANNED_ACL_PUBLIC_READ_WRITE = "public-read-write"
 
-    DEFAULT_CONTENT_TYPE = "application/octet-stream"
+    RAW_CONTENT_TYPE = "application/octet-stream"
 )
 
 var (
-    GET_OBJECT_ALLOWED_RESPONSE_HEADERS = map[string]bool{
-        "ContentDisposition": true,
-        "ContentType": true,
-        "ContentLanguage": true,
-        "Expires": true,
-        "CacheControl": true,
-        "ContentEncoding": true,
+    GET_OBJECT_ALLOWED_RESPONSE_HEADERS = map[string]struct{}{
+        "ContentDisposition": {},
+        "ContentType": {},
+        "ContentLanguage": {},
+        "Expires": {},
+        "CacheControl": {},
+        "ContentEncoding": {},
     }
 )
 
@@ -106,5 +107,25 @@ func toHttpHeaderKey(key string) string {
         }
     }
     return result.String()
+}
+
+func setOptionalNullHeaders(req *bce.BceRequest, args map[string]string) {
+    for k, v := range args {
+        if len(v) == 0 {
+            continue
+        }
+        switch k {
+        case http.CACHE_CONTROL: fallthrough
+        case http.CONTENT_DISPOSITION: fallthrough
+        case http.CONTENT_MD5: fallthrough
+        case http.EXPIRES: fallthrough
+        case http.BCE_CONTENT_SHA256: fallthrough
+        case http.BCE_COPY_SOURCE_RANGE: fallthrough
+        case http.BCE_COPY_SOURCE_IF_MATCH: fallthrough
+        case http.BCE_COPY_SOURCE_IF_NONE_MATCH: fallthrough
+        case http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: fallthrough
+        case http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: req.SetHeader(k, v)
+        }
+    }
 }
 

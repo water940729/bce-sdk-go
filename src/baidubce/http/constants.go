@@ -12,10 +12,22 @@
  * and limitations under the License.
  */
 
-// headers.go - defines the HTTP header constants
+// constants.go - defines constants of the BCE http package including headers and methods
 
 package http
 
+import "net/http"
+
+// Constants of the supported HTTP methods for BCE
+const (
+    GET    = http.MethodGet
+    PUT    = http.MethodPut
+    POST   = http.MethodPost
+    DELETE = http.MethodDelete
+    HEAD   = http.MethodHead
+)
+
+// Constants of the HTTP headers for BCE
 const (
     // Standard HTTP Headers
     AUTHORIZATION = "Authorization"

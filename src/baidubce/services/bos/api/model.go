@@ -12,12 +12,12 @@
  * and limitations under the License.
  */
 
-// schema.go - definitions of the request and response arguments and results data structure
+// model.go - definitions of the request arguments and results data structure model
 
 package api
 
 import (
-    "baidubce/http"
+    "io"
 )
 
 type ownerType struct {
@@ -85,10 +85,23 @@ type GranteeType struct {
     Id string `json:"id"`
 }
 
+type AclRefererType struct {
+    StringLike   []string `json:"stringLike"`
+    StringEquals []string `json:"stringEquals"`
+}
+
+type AclCondType struct {
+    IpAddress []string       `json:"ipAddress"`
+    Referer   AclRefererType `json:"referer"`
+}
+
 // GrantType defines the grant struct in ACL setting
 type GrantType struct {
-    Grantee    []GranteeType `json:"grantee"`
-    Permission []string      `json:"permission"`
+    Grantee     []GranteeType `json:"grantee"`
+    Permission  []string      `json:"permission"`
+    Resource    []string      `json:"resource,omitempty"`
+    NotResource []string      `json:"notResource,omitempty"`
+    Condition   AclCondType   `json:"condition,omitempty"`
 }
 
 // PutBucketAclArgs defines the input args structure for putting bucket acl.
@@ -194,7 +207,7 @@ type GetObjectResult struct {
     objectMeta
     ContentLanguage string
     ContentEncoding string
-    Body            *http.BodyStream
+    Body            io.ReadCloser
 }
 
 // GetObjectMetaResult defines the result data of the get object meta api.
@@ -262,6 +275,7 @@ type InitiateMultipartUploadArgs struct {
     CacheControl       string
     ContentDisposition string
     Expires            string
+    StorageClass       string
 }
 
 // InitiateMultipartUploadResult defines the result structure to initiate a multipart upload.

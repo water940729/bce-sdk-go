@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build gosdk project and run the testing
+# Build gosdk project for publish
 # Author: songshuangyang@baidu.com
 # Time:   2017.8
 

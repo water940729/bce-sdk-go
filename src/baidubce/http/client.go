@@ -69,11 +69,9 @@ func Execute(request *Request) (*Response, error) {
     // Variable body's type is `*BodyStream`. If its value is nil, the `Body` field must be
     // explicitly assigned `nil` value, otherwise nil pointer dereference will arise.
     body := request.Body()
-    if body == nil {
-        httpRequest.Body = nil
-    } else {
+    if body != nil {
         httpRequest.Body = body
-        httpRequest.ContentLength = body.Len()
+        httpRequest.ContentLength = request.Length()
     }
 
     // Set the proxy setting if needed

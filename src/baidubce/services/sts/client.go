@@ -26,6 +26,8 @@ import (
     "baidubce/util"
 )
 
+const DEFAULT_SERVICE_DOMAIN = "sts." + bce.DEFAULT_REGION + "." + bce.DEFAULT_DOMAIN
+
 // Client of STS service is a kind of BceClient, so it derived from the BceClient and it only
 // supports the GetSessionToken API. There is no other fields needed.
 type Client struct {
@@ -38,7 +40,7 @@ func (c *Client) GetSessionToken(duration int, acl string) (*api.GetSessionToken
 
 // NewClient make the STS service client with default configuration.
 // Use `cli.Config.xxx` to access the config or change it to non-default value.
-func NewClient(ak, sk, endpoint string) (*Client, error) {
+func NewClient(ak, sk string) (*Client, error) {
     credentials, err := auth.NewBceCredentials(ak, sk)
     if err != nil {
         return nil, err
@@ -48,7 +50,7 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
         util.NowUTCSeconds(),
         auth.DEFAULT_EXPIRE_SECONDS}
     defaultConf := &bce.BceClientConfiguration{
-        Endpoint: endpoint,
+        Endpoint: DEFAULT_SERVICE_DOMAIN,
         Region: bce.DEFAULT_REGION,
         UserAgent: bce.DEFAULT_USER_AGENT,
         Credentials: credentials,

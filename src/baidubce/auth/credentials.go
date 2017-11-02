@@ -29,11 +29,11 @@ type BceCredentials struct {
 }
 
 func (b *BceCredentials) String() string {
-    aksk := "ak: " + b.AccessKeyId + ", sk: " + b.SecretAccessKey
+    str := "ak: " + b.AccessKeyId + ", sk: " + b.SecretAccessKey
     if len(b.SessionToken) != 0 {
-        return aksk + ", sessionToken: " + b.SessionToken
+        return str + ", sessionToken: " + b.SessionToken
     }
-    return aksk
+    return str
 }
 
 func NewBceCredentials(ak, sk string) (*BceCredentials, error) {

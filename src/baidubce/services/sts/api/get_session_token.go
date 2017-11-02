@@ -26,7 +26,8 @@ import (
 
 const (
     DEFAULT_DURATION_SECONDS = 43200 // default duration is 12 hours
-    REQUEST_URI = "sessionToken"
+    URI_PREFIX  = bce.URI_PREFIX + "v1" // sts service not support uri without prefix "v1"
+    REQUEST_URI = "/sessionToken"
 )
 
 type GetSessionTokenResult struct {
@@ -57,12 +58,16 @@ func GetSessionToken(cli bce.Client, durationSec int, acl string) (*GetSessionTo
 
     // Build the request
     req := &bce.BceRequest{}
-    req.SetUri(bce.URI_PREFIX + REQUEST_URI)
+    req.SetUri(URI_PREFIX + REQUEST_URI)
     req.SetMethod(http.POST)
     req.SetParam("durationSeconds", strconv.Itoa(durationSec))
     if len(acl) > 0 {
-        req.SetHeader(http.CONTENT_TYPE, "application/json; charset=utf-8")
-        req.SetBody(http.NewBodyStreamFromString(acl))
+        req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
+        body, err := bce.NewBodyFromString(acl)
+        if err != nil {
+            return nil, err
+        }
+        req.SetBody(body)
     }
 
     // Send requet and get response
