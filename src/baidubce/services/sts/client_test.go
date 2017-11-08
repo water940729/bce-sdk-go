@@ -45,8 +45,8 @@ func ExpectEqual(alert func(format string, args ...interface{}),
     expectedValue, actualValue := reflect.ValueOf(expected), reflect.ValueOf(actual)
     switch {
     case expected == nil && actual == nil: return true
-    case expected != nil && actual == nil: return !expectedValue.IsValid()
-    case expected == nil && actual != nil: return !actualValue.IsValid()
+    case expected != nil && actual == nil: return expectedValue.IsNil()
+    case expected == nil && actual != nil: return actualValue.IsNil()
     }
 
     equal := false

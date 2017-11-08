@@ -77,13 +77,7 @@ func (c *BceClient) buildHttpRequest(request *BceRequest) {
     // Set the BCE request headers
     request.SetHeader(http.HOST, request.Host())
     request.SetHeader(http.USER_AGENT, c.Config.UserAgent)
-
-    // Set the request time and modify the sign time to the same if not match
-    nowSeconds := util.NowUTCSeconds()
-    request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(nowSeconds))
-    if nowSeconds != c.Config.SignOption.Timestamp {
-        c.Config.SignOption.Timestamp = nowSeconds
-    }
+    request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(util.NowUTCSeconds()))
 
     // Generate the auth string if needed
     if c.Config.Credentials != nil {

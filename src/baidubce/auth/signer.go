@@ -84,7 +84,11 @@ func (b *BceV1Signer) Sign(req *http.Request, cred *BceCredentials, opt *SignOpt
     // Prepare parameters
     accessKeyId     := cred.AccessKeyId
     secretAccessKey := cred.SecretAccessKey
-    signDate        := util.FormatISO8601Date(opt.Timestamp)
+    signDate        := util.FormatISO8601Date(util.NowUTCSeconds())
+    // Modify the sign time if it is not the default value but specified by client
+    if opt.Timestamp != 0 {
+        signDate = util.FormatISO8601Date(opt.Timestamp)
+    }
 
     // Set security token if using session credentials
     if len(cred.SessionToken) != 0 {

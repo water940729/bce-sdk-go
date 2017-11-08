@@ -51,8 +51,8 @@ func ExpectEqual(alert func(format string, args ...interface{}),
     expectedValue, actualValue := reflect.ValueOf(expected), reflect.ValueOf(actual)
     switch {
     case expected == nil && actual == nil: return true
-    case expected != nil && actual == nil: return !expectedValue.IsValid()
-    case expected == nil && actual != nil: return !actualValue.IsValid()
+    case expected != nil && actual == nil: return expectedValue.IsNil()
+    case expected == nil && actual != nil: return actualValue.IsNil()
     }
 
     equal := false
@@ -473,6 +473,23 @@ func TestBasicInitiateMultipartUpload(t *testing.T) {
     err1 := BOS_CLIENT.AbortMultipartUpload(EXISTS_BUCKET,
         "test-multipart-upload", res.UploadId)
     ExpectEqual(t.Errorf, err1, nil)
+}
+
+func TestUploadPart(t *testing.T) {
+    res, err := BOS_CLIENT.UploadPart(EXISTS_BUCKET, "a", "b", 1, nil, nil)
+    t.Logf("%+v, %+v", res, err)
+}
+
+func TestUploadPartCopy(t *testing.T) {
+    res, err := BOS_CLIENT.UploadPartCopy(EXISTS_BUCKET, "test-multipart-upload",
+        EXISTS_BUCKET, "test-multipart-copy", "12345", 1, nil)
+    t.Logf("%+v, %+v", res, err)
+}
+
+func TestBasicUploadPartCopy(t *testing.T) {
+    res, err := BOS_CLIENT.BasicUploadPartCopy(EXISTS_BUCKET, "test-multipart-upload",
+        EXISTS_BUCKET, "test-multipart-copy", "12345", 1)
+    t.Logf("%+v, %+v", res, err)
 }
 
 func TestListMultipartUploads(t *testing.T) {
