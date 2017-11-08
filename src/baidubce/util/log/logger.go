@@ -352,7 +352,7 @@ func NewLogger() *logger {
         writerChan: make(chan *writerArgs),
         logFormat: gDefaultLogFormat,
         levelThreshold: DEBUG,
-        handler: STDOUT,
+        handler: NONE,
     }
 
     // The backend writer goroutine to write each log record

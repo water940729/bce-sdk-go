@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "os"
     "path/filepath"
+    "reflect"
     "runtime"
     "testing"
 
@@ -34,11 +35,39 @@ func init() {
     decoder.Decode(confObj)
 
     CLIENT, _ = NewClient(confObj.AK, confObj.SK)
-    log.SetLogHandler(log.STDERR)
-    log.SetLogLevel(log.INFO)
+    //log.SetLogHandler(log.STDERR)
+    //log.SetLogLevel(log.INFO)
+}
+
+// ExpectEqual is the helper function for test each case
+func ExpectEqual(alert func(format string, args ...interface{}),
+        expected interface{}, actual interface{}) bool {
+    expectedValue, actualValue := reflect.ValueOf(expected), reflect.ValueOf(actual)
+    switch {
+    case expected == nil && actual == nil: return true
+    case expected != nil && actual == nil: return !expectedValue.IsValid()
+    case expected == nil && actual != nil: return !actualValue.IsValid()
+    }
+
+    equal := false
+    if actualType := reflect.TypeOf(actual); actualType != nil {
+        if expectedValue.IsValid() && expectedValue.Type().ConvertibleTo(actualType) {
+            equal = reflect.DeepEqual(expectedValue.Convert(actualType).Interface(), actual)
+        }
+    }
+    if !equal {
+        _, file, line, _ := runtime.Caller(1)
+        alert("%s:%d: missmatch, expect %v but %v", file, line, expected, actual)
+        return false
+    }
+    return true
 }
 
 func TestGetSessionToken(t *testing.T) {
+    res, err := CLIENT.GetSessionToken(-1, "")
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("%+v", res)
+
     acl := `
 {
     "id":"10eb6f5ff6ff4605bf044313e8f3ffa5",
@@ -53,15 +82,12 @@ func TestGetSessionToken(t *testing.T) {
     }
     ]
 }`
-    res, err := CLIENT.GetSessionToken(10, acl)
-    if err != nil {
-        t.Error(err)
-    } else {
-        t.Logf("ak: %v", res.AccessKeyId)
-        t.Logf("sk: %v", res.SecretAccessKey)
-        t.Logf("sessionToken: %v", res.SessionToken)
-        t.Logf("createTime: %v", res.CreateTime)
-        t.Logf("expiration: %v", res.Expiration)
-        t.Logf("userId: %v", res.UserId)
-    }
+    res, err = CLIENT.GetSessionToken(10, acl)
+    ExpectEqual(t.Fatalf, err, nil)
+    t.Logf("ak: %v", res.AccessKeyId)
+    t.Logf("sk: %v", res.SecretAccessKey)
+    t.Logf("sessionToken: %v", res.SessionToken)
+    t.Logf("createTime: %v", res.CreateTime)
+    t.Logf("expiration: %v", res.Expiration)
+    t.Logf("userId: %v", res.UserId)
 }

@@ -28,6 +28,7 @@ import (
     "baidubce/auth"
     "baidubce/bce"
     "baidubce/util"
+    "baidubce/util/log"
     "baidubce/services/bos/api"
 )
 
@@ -54,17 +55,26 @@ type Client struct {
 
 // NewClient make the BOS service client with default configuration.
 // Use `cli.Config.xxx` to access the config or change it to non-default value.
-func NewClient(ak, sk string) (*Client, error) {
-    credentials, err := auth.NewBceCredentials(ak, sk)
-    if err != nil {
-        return nil, err
+func NewClient(ak, sk, endpoint string) (*Client, error) {
+    var credentials *auth.BceCredentials
+    var err error
+    if len(ak) == 0 && len(sk) == 0 { // to support public-read-write request
+        credentials, err = nil, nil
+    } else {
+        credentials, err = auth.NewBceCredentials(ak, sk)
+        if err != nil {
+            return nil, err
+        }
+    }
+    if len(endpoint) == 0 {
+        endpoint = DEFAULT_SERVICE_DOMAIN
     }
     defaultSignOptions := &auth.SignOptions{
         auth.DEFAULT_HEADERS_TO_SIGN,
         util.NowUTCSeconds(),
         auth.DEFAULT_EXPIRE_SECONDS}
     defaultConf := &bce.BceClientConfiguration{
-        Endpoint: DEFAULT_SERVICE_DOMAIN,
+        Endpoint: endpoint,
         Region: bce.DEFAULT_REGION,
         UserAgent: bce.DEFAULT_USER_AGENT,
         Credentials: credentials,
@@ -1027,6 +1037,7 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
         partSize = (partSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
         partNum  = (size + partSize - 1) / partSize
     }
+    log.Debugf("starting upload super file, total parts: %d, part size: %d", partNum, partSize)
 
     // Inner wrapper function of parallel uploading each part to get the ETag of the part
     uploadPart := func(bucket, object, uploadId string, partNumber int, body *bce.Body,
@@ -1081,6 +1092,7 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
         } else {
             uploaded := <-uploadedResult
             completeArgs.Parts[uploaded.PartNumber - 1] = *uploaded
+            log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
         }
     }
     if !success {
@@ -1091,6 +1103,85 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
             uploadId, completeArgs, nil); err != nil {
         c.AbortMultipartUpload(bucket, object, uploadId)
         return err
+    }
+    return nil
+}
+
+/*
+ * DownloadSuperFile - parallel download the super file using the get object with range
+ *
+ * PARAMS:
+ *     - bucket: the destination bucket name
+ *     - object: the destination object name
+ *     - fileName: the local full path filename to store the object
+ * RETURNS:
+ *     - error: nil if ok otherwise the specific error
+ */
+func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
+    file, fileErr := os.OpenFile(fileName, os.O_WRONLY | os.O_TRUNC | os.O_CREATE, 0644)
+    if fileErr != nil {
+        return fileErr
+    }
+    defer file.Close()
+
+    meta, metaErr := c.GetObjectMeta(bucket, object)
+    if metaErr != nil {
+        return metaErr
+    }
+    size, _ := strconv.ParseInt(meta.ContentLength, 10, 64)
+    partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
+    partNum  := (size + partSize - 1) / partSize
+    log.Debugf("starting download super file, total parts: %d, part size: %d", partNum, partSize)
+
+    bodyChan := make(chan *struct{
+        stream io.ReadCloser
+        offset int64
+        size   int64
+    }, c.MaxParallel)
+    workerPool := make(chan int64, c.MaxParallel)
+    for i := int64(0); i < c.MaxParallel; i++ {
+        workerPool <- i
+    }
+    for i := int64(0); i < partNum; i++ {
+        rangeStart := i * partSize
+        rangeEnd := (i + 1) * partSize - 1
+        if rangeEnd > size - 1 {
+            rangeEnd = size - 1
+        }
+        select {
+        case workerId := <-workerPool:
+            go func(rangeStart, rangeEnd, workerId int64) {
+                args := &api.GetObjectArgs{
+                    RangeStart: rangeStart,
+                    RangeEnd: rangeEnd,
+                }
+                returnBody := &struct{
+                    stream io.ReadCloser
+                    offset int64
+                    size   int64
+                }{}
+                if res, err := c.GetObject(bucket, object, args); err == nil {
+                    returnBody.stream = res.Body
+                    returnBody.offset = rangeStart
+                    returnBody.size, _ = strconv.ParseInt(res.ContentLength, 10, 64)
+                }
+                bodyChan <- returnBody
+                workerPool <- workerId
+            }(rangeStart, rangeEnd, workerId)
+        }
+    }
+
+    for i := partNum; i > 0; i-- {
+        body := <-bodyChan
+        log.Debugf("writing part %d with offset=%d, size=%d", body.offset / partSize,
+            body.offset, body.size)
+        if body.stream == nil {
+            return fmt.Errorf("%s", "download object failed")
+        }
+        file.Seek(body.offset, 0)
+        if _, err := io.CopyN(file, body.stream, body.size); err != nil {
+            return err
+        }
     }
     return nil
 }
