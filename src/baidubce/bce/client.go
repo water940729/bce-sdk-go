@@ -127,7 +127,16 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
         log.Infof("receive http response: status: %s, debugId: %s, requestId: %s, elapsed: %v",
             resp.StatusText(), resp.DebugId(), resp.RequestId(), resp.ElapsedTime())
         if resp.IsFail() {
-            return resp.ServiceError()
+            err := resp.ServiceError()
+            if c.Config.Retry.ShouldRetry(err, retries) {
+                delay_in_mills := c.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
+                time.Sleep(delay_in_mills)
+            } else {
+                return err
+            }
+            retries++
+            log.Warnf("send request failed, retry for %d time(s)", retries)
+            continue
         }
         for k, v := range resp.Headers() {
             log.Debugf("%s=%s", k, v)
