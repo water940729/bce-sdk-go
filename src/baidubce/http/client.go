@@ -85,11 +85,18 @@ func Execute(request *Request) (*Response, error) {
     httpClient.Transport = tr
 
     // Perform the http request and get response
+    // It needs to actively close the keep-alive connections when occurs error for those request
+    // that may continue sending request's data subsequently.
     start := time.Now()
     httpResponse, err := httpClient.Do(httpRequest)
     end := time.Now()
     if err != nil {
+        tr.CloseIdleConnections()
         return nil, err
+    }
+    if httpResponse.StatusCode >= 400 &&
+            (httpRequest.Method == PUT || httpRequest.Method == POST) {
+        tr.CloseIdleConnections()
     }
     response := &Response{httpResponse, end.Sub(start)}
     return response, nil

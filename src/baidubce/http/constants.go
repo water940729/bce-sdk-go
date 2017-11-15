@@ -16,15 +16,13 @@
 
 package http
 
-import "net/http"
-
 // Constants of the supported HTTP methods for BCE
 const (
-    GET    = http.MethodGet
-    PUT    = http.MethodPut
-    POST   = http.MethodPost
-    DELETE = http.MethodDelete
-    HEAD   = http.MethodHead
+    GET    = "GET"
+    PUT    = "PUT"
+    POST   = "POST"
+    DELETE = "DELETE"
+    HEAD   = "HEAD"
 )
 
 // Constants of the HTTP headers for BCE
