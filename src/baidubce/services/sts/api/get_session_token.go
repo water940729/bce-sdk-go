@@ -39,17 +39,16 @@ type GetSessionTokenResult struct {
     UserId          string
 }
 
-/*
- * GetSessionToken - get the session token from the STS service
- *
- * PARAMS:
- *     - cli: the client object which can perform sending request
- *     - durationSec: the duration seconds of the token
- *     - acl: the acl string
- * RETURNS:
- *     - *GetSessionTokenResult: result of this api
- *     - error: nil if ok otherwise the specific error
- */
+// GetSessionToken - get the session token from the STS service
+//
+// PARAMS:
+//     - cli: the client object which can perform sending request
+//     - durationSec: the duration seconds of the token
+//     - acl: the acl string
+//
+// RETURNS:
+//     - *GetSessionTokenResult: result of this api
+//     - error: nil if ok otherwise the specific error
 func GetSessionToken(cli bce.Client, durationSec int, acl string) (*GetSessionTokenResult, error) {
     // If the duration seconds is not a positive, use the default value
     if durationSec <= 0 {

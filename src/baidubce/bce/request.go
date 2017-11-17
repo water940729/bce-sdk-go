@@ -37,6 +37,14 @@ type Body struct {
     ContentMD5 string
 }
 
+// NewBodyFromBytes - build a Body object from the byte stream to be used in the http request, it
+// calculates the content-md5 of the byte stream and store the size as well as the stream.
+//
+// PARAMS:
+//     - stream: byte stream
+// RETURNS:
+//     - *Body: the return Body object
+//     - error: error if any specific error occurs
 func NewBodyFromBytes(stream []byte) (*Body, error) {
     buf := bytes.NewBuffer(stream)
     size := int64(buf.Len())
@@ -48,6 +56,14 @@ func NewBodyFromBytes(stream []byte) (*Body, error) {
     return &Body{ioutil.NopCloser(buf), size, contentMD5}, nil
 }
 
+// NewBodyFromString - build a Body object from the string to be used in the http request, it
+// calculates the content-md5 of the byte stream and store the size as well as the stream.
+//
+// PARAMS:
+//     - str: the input string
+// RETURNS:
+//     - *Body: the return Body object
+//     - error: error if any specific error occurs
 func NewBodyFromString(str string) (*Body, error) {
     buf := bytes.NewBufferString(str)
     size := int64(len(str))
@@ -59,6 +75,14 @@ func NewBodyFromString(str string) (*Body, error) {
     return &Body{ioutil.NopCloser(buf), size, contentMD5}, nil
 }
 
+// NewBodyFromFile - build a Body object from the given file name to be used in the http request,
+// it calculates the content-md5 of the byte stream and store the size as well as the stream.
+//
+// PARAMS:
+//     - fname: the given file name
+// RETURNS:
+//     - *Body: the return Body object
+//     - error: error if any specific error occurs
 func NewBodyFromFile(fname string) (*Body, error) {
     file, err := os.Open(fname)
     if err != nil {
@@ -78,6 +102,16 @@ func NewBodyFromFile(fname string) (*Body, error) {
     return &Body{file, fileInfo.Size(), contentMD5}, nil
 }
 
+// NewBodyFromSectionFile - build a Body object from the given file pointer with offset and size.
+// it calculates the content-md5 of the given content and store the size as well as the stream.
+//
+// PARAMS:
+//     - file: the input file pointer
+//     - off: offset of current section body
+//     - size: current section body size
+// RETURNS:
+//     - *Body: the return Body object
+//     - error: error if any specific error occurs
 func NewBodyFromSectionFile(file *os.File, off, size int64) (*Body, error) {
     if _, err := file.Seek(off, 0); err != nil {
         return nil, err

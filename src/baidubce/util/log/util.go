@@ -154,46 +154,38 @@ func Panicf(format string, msg...interface{}) {
     panic(record)
 }
 
-/*
- * SetLogHandler - set the handler of the logger
- *
- * PARAMS:
- *     - Handler: the handler defined in this package, now just support STDOUT, STDERR, FILE
- */
+// SetLogHandler - set the handler of the logger
+// 
+// PARAMS:
+//     - Handler: the handler defined in this package, now just support STDOUT, STDERR, FILE
 func SetLogHandler(h Handler) {
     gDefaultLogger.handler = h
 }
 
-/*
- * SetLogLevel - set the level threshold of the logger, only level equal to or bigger than this
- *               value will be logged.
- *
- * PARAMS:
- *     - Level: the level defined in this package, now support 6 levels.
- */
+// SetLogLevel - set the level threshold of the logger, only level equal to or bigger than this
+// value will be logged.
+// 
+// PARAMS:
+//     - Level: the level defined in this package, now support 6 levels.
 func SetLogLevel(l Level) {
     gDefaultLogger.levelThreshold = l
 }
 
-/*
- * SetLogFormat - set the log component of each record when logging it. The default log format is
- *                {FMT_LEVEL, FMT_LTIME, FMT_LOCATION, FMT_MSG}.
- *
- * PARAMS:
- *     - format: the format component array.
- */
+// SetLogFormat - set the log component of each record when logging it. The default log format is
+// {FMT_LEVEL, FMT_LTIME, FMT_LOCATION, FMT_MSG}.
+//
+// PARAMS:
+//     - format: the format component array.
 func SetLogFormat(format []string) {
     gDefaultLogger.logFormat = format
 }
 
-/*
- * SetLogDir - set the logging directory if logging to file.
- *
- * PARAMS:
- *     - dir: the logging directory
- * RETURNS:
- *     - error: check the directory and try to make it, otherwise return the error.
- */
+// SetLogDir - set the logging directory if logging to file.
+//
+// PARAMS:
+//     - dir: the logging directory
+// RETURNS:
+//     - error: check the directory and try to make it, otherwise return the error.
 func SetLogDir(dir string) error {
     if _, err := os.Stat(dir); err != nil {
         if os.IsNotExist(err) {
@@ -208,24 +200,20 @@ func SetLogDir(dir string) error {
     return nil
 }
 
-/*
- * SetRotateType - set the rotating strategy if logging to file.
- *
- * PARAMS:
- *     - RotateStrategy: the rotate strategy defined in this package, now support 5 strategy.
- */
+// SetRotateType - set the rotating strategy if logging to file.
+// 
+// PARAMS:
+//     - RotateStrategy: the rotate strategy defined in this package, now support 5 strategy.
 func SetRotateType(r RotateStrategy) {
     gDefaultLogger.rotateType = r
 }
 
-/*
- * SetRotateSize - set the rotating size if logging to file and set the strategy of size.
- *
- * PARAMS:
- *     - size: the rotating size
- * RETURNS:
- *     - error: check the value and return any error if error occurs.
- */
+// SetRotateSize - set the rotating size if logging to file and set the strategy of size.
+//
+// PARAMS:
+//     - size: the rotating size
+// RETURNS:
+//     - error: check the value and return any error if error occurs.
 func SetRotateSize(size int64) error {
     if size <= 0 {
         return fmt.Errorf("%s", "rotate size should not be negative")

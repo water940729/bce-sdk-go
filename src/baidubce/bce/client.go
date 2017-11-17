@@ -15,19 +15,24 @@
 // client.go - definiton the BceClientConfiguration and BceClient structure
 
 // Package bce implements the infrastructure to access BCE services.
+//
 // - BceClient:
 //     It is the general client of BCE to access all services. It builds http request to access the
 //     services based on the given client configuration.
+//
 // - BceClientConfiguration:
 //     The client configuration data structure which contains endpoint, region, credentials, retry
 //     policy, sign options and so on. It supports most of the default value and user can also
 //     access or change the default with its public fields' name.
+//
 // - Error types:
 //     The error types when making request or receiving response to the BCE services contains two
 //     types: the BceClientError when making request to BCE services and the BceServiceError when
 //     recieving response from them.
+//
 // - BceRequest:
 //     The request instance stands for an request to access the BCE services.
+//
 // - BceResponse:
 //     The response instance stands for an response from the BCE services.
 package bce
@@ -54,12 +59,10 @@ type BceClient struct {
     Signer    auth.Signer // the sign algorithm
 }
 
-/*
- * BuildHttpRequest - the helper method for the client to build http request
- *
- * PARAMS:
- *     - request: the input request object to be built
- */
+// BuildHttpRequest - the helper method for the client to build http request
+//
+// PARAMS:
+//     - request: the input request object to be built
 func (c *BceClient) buildHttpRequest(request *BceRequest) {
     // Construct the http request instance for the special fields
     request.BuildHttpRequest()
@@ -85,15 +88,14 @@ func (c *BceClient) buildHttpRequest(request *BceRequest) {
     }
 }
 
-/*
- * SendRequest - the client performs sending the http request with retry policy and receive the
- *               response from the BCE services.
- * PARAMS:
- *     - req: the request object to be sent to the BCE service
- *     - resp: the response object to receive the content from BCE service
- * RETURNS:
- *     - error: nil if ok otherwise the specific error
- */
+// SendRequest - the client performs sending the http request with retry policy and receive the
+// response from the BCE services.
+//
+// PARAMS:
+//     - req: the request object to be sent to the BCE service
+//     - resp: the response object to receive the content from BCE service
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
     // Return client error if it is not nil
     if req.ClientError() != nil {

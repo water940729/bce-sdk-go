@@ -25,18 +25,16 @@ import (
     "baidubce/http"
 )
 
-/*
- * PutObject - put the object from the string or the stream
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name of the object
- *     - object: the name of the object
- *     - body: the input content of the object
- * RETURNS:
- *     - string: the etag of the object
- *     - error: nil if ok otherwise the specific error
- */
+// PutObject - put the object from the string or the stream
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name of the object
+//     - object: the name of the object
+//     - body: the input content of the object
+// RETURNS:
+//     - string: the etag of the object
+//     - error: nil if ok otherwise the specific error
 func PutObject(cli bce.Client, bucket, object string, body *bce.Body) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
@@ -53,20 +51,18 @@ func PutObject(cli bce.Client, bucket, object string, body *bce.Body) (string, e
     return resp.Header(http.ETAG), nil
 }
 
-/*
- * CopyObject - copy one object to a new object with new bucket and/or name. It can alse set the
- *              metadata of the object with the same source and target.
- *
- * PARAMS:
- *     - cli: the client object which can perform sending request
- *     - bucket: the bucket name of the target object
- *     - object: the name of the target object
- *     - source: the source object uri
- *     - *CopyObjectArgs: the optional input args for copying object
- * RETURNS:
- *     - *CopyObjectResult: the result object which contains etag and lastmodified
- *     - error: nil if ok otherwise the specific error
- */
+// CopyObject - copy one object to a new object with new bucket and/or name. It can alse set the
+// metadata of the object with the same source and target.
+//
+// PARAMS:
+//     - cli: the client object which can perform sending request
+//     - bucket: the bucket name of the target object
+//     - object: the name of the target object
+//     - source: the source object uri
+//     - *CopyObjectArgs: the optional input args for copying object
+// RETURNS:
+//     - *CopyObjectResult: the result object which contains etag and lastmodified
+//     - error: nil if ok otherwise the specific error
 func CopyObject(cli bce.Client, bucket, object, source string,
         args *CopyObjectArgs) (*CopyObjectResult, error) {
     req := &bce.BceRequest{}
@@ -119,18 +115,16 @@ func CopyObject(cli bce.Client, bucket, object, source string,
     return jsonBody, nil
 }
 
-/*
- * GetObject - get the object content with range and response-headers-specified support
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name of the object
- *     - object: the name of the object
- *     - args: the optional arguments to get the given object
- * RETURNS:
- *     - *GetObjectResult: the output content result of the object
- *     - error: nil if ok otherwise the specific error
- */
+// GetObject - get the object content with range and response-headers-specified support
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name of the object
+//     - object: the name of the object
+//     - args: the optional arguments to get the given object
+// RETURNS:
+//     - *GetObjectResult: the output content result of the object
+//     - error: nil if ok otherwise the specific error
 func GetObject(cli bce.Client, bucket, object string,
         args *GetObjectArgs) (*GetObjectResult, error) {
     if args == nil {
@@ -217,17 +211,15 @@ func GetObject(cli bce.Client, bucket, object string,
     return result, nil
 }
 
-/*
- * GetObjectMeta - get the meta data of the given object
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name of the object
- *     - object: the name of the object
- * RETURNS:
- *     - *GetObjectMetaResult: the result of this api
- *     - error: nil if ok otherwise the specific error
- */
+// GetObjectMeta - get the meta data of the given object
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name of the object
+//     - object: the name of the object
+// RETURNS:
+//     - *GetObjectMetaResult: the result of this api
+//     - error: nil if ok otherwise the specific error
 func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
@@ -279,19 +271,17 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
     return result, nil
 }
 
-/*
- * FetchObject - fetch the object by the given url and store it to a bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name to store the object
- *     - object: the name of the object to be stored
- *     - source: the source url to fetch
- *     - args: the optional arguments to perform the fetch operation
- * RETURNS:
- *     - *FetchObjectArgs: the result of this api
- *     - error: nil if ok otherwise the specific error
- */
+// FetchObject - fetch the object by the given url and store it to a bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name to store the object
+//     - object: the name of the object to be stored
+//     - source: the source url to fetch
+//     - args: the optional arguments to perform the fetch operation
+// RETURNS:
+//     - *FetchObjectArgs: the result of this api
+//     - error: nil if ok otherwise the specific error
 func FetchObject(cli bce.Client, bucket, object, source string,
         args *FetchObjectArgs) (*FetchObjectResult, error) {
     req := &bce.BceRequest{}
@@ -337,19 +327,17 @@ func FetchObject(cli bce.Client, bucket, object, source string,
     return jsonBody, nil
 }
 
-/*
- * AppendObject - append the gievn content to a new or existed object which is appendable
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name of the object
- *     - object: the name of the object
- *     - content: the content to be appended
- *     - args: the optional arguments to perform the append operation
- * RETURNS:
- *     - *AppendObjectResult: the result status for this api
- *     - error: nil if ok otherwise the specific error
- */
+// AppendObject - append the gievn content to a new or existed object which is appendable
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name of the object
+//     - object: the name of the object
+//     - content: the content to be appended
+//     - args: the optional arguments to perform the append operation
+// RETURNS:
+//     - *AppendObjectResult: the result status for this api
+//     - error: nil if ok otherwise the specific error
 func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
         args *AppendObjectArgs) (*AppendObjectResult, error) {
     req := &bce.BceRequest{}
@@ -407,16 +395,14 @@ func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
     return result, nil
 }
 
-/*
- * DeleteObject - delete the given object
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name of the object to be deleted
- *     - object: the name of the object
- * RETURNS:
- *     - error: nil if ok otherwise the specific error
- */
+// DeleteObject - delete the given object
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name of the object to be deleted
+//     - object: the name of the object
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func DeleteObject(cli bce.Client, bucket, object string) error {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
@@ -432,17 +418,15 @@ func DeleteObject(cli bce.Client, bucket, object string) error {
     return nil
 }
 
-/*
- * DeleteMultipleObjects - delete the given objects within a single http request
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name of the objects to be deleted
- *     - objectListStream: the objects list to be delete with json format
- * RETURNS:
- *     - *DeleteMultipleObjectsResult: the objects failed to delete
- *     - error: nil if ok otherwise the specific error
- */
+// DeleteMultipleObjects - delete the given objects within a single http request
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name of the objects to be deleted
+//     - objectListStream: the objects list to be delete with json format
+// RETURNS:
+//     - *DeleteMultipleObjectsResult: the objects failed to delete
+//     - error: nil if ok otherwise the specific error
 func DeleteMultipleObjects(cli bce.Client, bucket string,
         objectListStream *bce.Body) (*DeleteMultipleObjectsResult, error) {
     req := &bce.BceRequest{}

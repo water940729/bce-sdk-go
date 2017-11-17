@@ -25,15 +25,13 @@ import (
     "baidubce/http"
 )
 
-/*
- * ListBuckets - list all buckets of the account
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- * RETURNS:
- *     - *ListBucketsResult: the result bucket list structure
- *     - error: nil if ok otherwise the specific error
- */
+// ListBuckets - list all buckets of the account
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+// RETURNS:
+//     - *ListBucketsResult: the result bucket list structure
+//     - error: nil if ok otherwise the specific error
 func ListBuckets(cli bce.Client) (*ListBucketsResult, error) {
     req := &bce.BceRequest{}
     req.SetMethod(http.GET)
@@ -51,17 +49,15 @@ func ListBuckets(cli bce.Client) (*ListBucketsResult, error) {
     return result, nil
 }
 
-/*
- * ListObjects - list all objects of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- *     - args: the optional arguments to list objects
- * RETURNS:
- *     - *ListObjectsResult: the result object list structure
- *     - error: nil if ok otherwise the specific error
- */
+// ListObjects - list all objects of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - args: the optional arguments to list objects
+// RETURNS:
+//     - *ListObjectsResult: the result object list structure
+//     - error: nil if ok otherwise the specific error
 func ListObjects(cli bce.Client, bucket string,
         args *ListObjectsArgs) (*ListObjectsResult, error) {
     req := &bce.BceRequest{}
@@ -97,15 +93,13 @@ func ListObjects(cli bce.Client, bucket string,
     return result, nil
 }
 
-/*
- * HeadBucket - test the given bucket existed and access authority
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - error: nil if exists and have authority otherwise the specific error
- */
+// HeadBucket - test the given bucket existed and access authority
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if exists and have authority otherwise the specific error
 func HeadBucket(cli bce.Client, bucket string) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -120,16 +114,14 @@ func HeadBucket(cli bce.Client, bucket string) error {
     return nil
 }
 
-/*
- * PutBucket - create a new bucket with the given name
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the new bucket name
- * RETURNS:
- *     - string: the location of the new bucket if create success
- *     - error: nil if create success otherwise the specific error
- */
+// PutBucket - create a new bucket with the given name
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the new bucket name
+// RETURNS:
+//     - string: the location of the new bucket if create success
+//     - error: nil if create success otherwise the specific error
 func PutBucket(cli bce.Client, bucket string) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -144,15 +136,13 @@ func PutBucket(cli bce.Client, bucket string) (string, error) {
     return resp.Header(http.LOCATION), nil
 }
 
-/*
- * DeleteBucket - delete an empty bucket by given name
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name to be deleted
- * RETURNS:
- *     - error: nil if delete success otherwise the specific error
- */
+// DeleteBucket - delete an empty bucket by given name
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name to be deleted
+// RETURNS:
+//     - error: nil if delete success otherwise the specific error
 func DeleteBucket(cli bce.Client, bucket string) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -167,16 +157,14 @@ func DeleteBucket(cli bce.Client, bucket string) error {
     return nil
 }
 
-/*
- * GetBucketLocation - get the location of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - string: the location of the bucket
- *     - error: nil if delete success otherwise the specific error
- */
+// GetBucketLocation - get the location of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - string: the location of the bucket
+//     - error: nil if delete success otherwise the specific error
 func GetBucketLocation(cli bce.Client, bucket string) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -196,17 +184,15 @@ func GetBucketLocation(cli bce.Client, bucket string) (string, error) {
     return result.LocationConstraint, nil
 }
 
-/*
- * PutBucketAcl - set the acl of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- *     - cannedAcl: support private, public-read, public-read-write
- *     - aclBody: the acl file body
- * RETURNS:
- *     - error: nil if delete success otherwise the specific error
- */
+// PutBucketAcl - set the acl of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - cannedAcl: support private, public-read, public-read-write
+//     - aclBody: the acl file body
+// RETURNS:
+//     - error: nil if delete success otherwise the specific error
 func PutBucketAcl(cli bce.Client, bucket, cannedAcl string, aclBody *bce.Body) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -235,16 +221,14 @@ func PutBucketAcl(cli bce.Client, bucket, cannedAcl string, aclBody *bce.Body) e
     return nil
 }
 
-/*
- * GetBucketAcl - get the acl of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - *GetBucketAclResult: the result of the bucket acl
- *     - error: nil if success otherwise the specific error
- */
+// GetBucketAcl - get the acl of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - *GetBucketAclResult: the result of the bucket acl
+//     - error: nil if success otherwise the specific error
 func GetBucketAcl(cli bce.Client, bucket string) (*GetBucketAclResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -265,16 +249,14 @@ func GetBucketAcl(cli bce.Client, bucket string) (*GetBucketAclResult, error) {
     return result, nil
 }
 
-/*
- * PutBucketLogging - set the logging prefix of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- *     - logging: the logging prefix json string body
- * RETURNS:
- *     - error: nil if success otherwise the specific error
- */
+// PutBucketLogging - set the logging prefix of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - logging: the logging prefix json string body
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func PutBucketLogging(cli bce.Client, bucket string, logging *bce.Body) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -291,16 +273,14 @@ func PutBucketLogging(cli bce.Client, bucket string, logging *bce.Body) error {
     return nil
 }
 
-/*
- * GetBucketLogging - get the logging config of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - *GetBucketLoggingResult: the logging setting of the bucket
- *     - error: nil if success otherwise the specific error
- */
+// GetBucketLogging - get the logging config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - *GetBucketLoggingResult: the logging setting of the bucket
+//     - error: nil if success otherwise the specific error
 func GetBucketLogging(cli bce.Client, bucket string) (*GetBucketLoggingResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -321,15 +301,13 @@ func GetBucketLogging(cli bce.Client, bucket string) (*GetBucketLoggingResult, e
     return result, nil
 }
 
-/*
- * DeleteBucketLogging - delete the logging setting of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - error: nil if success otherwise the specific error
- */
+// DeleteBucketLogging - delete the logging setting of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func DeleteBucketLogging(cli bce.Client, bucket string) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -345,16 +323,14 @@ func DeleteBucketLogging(cli bce.Client, bucket string) error {
     return nil
 }
 
-/*
- * PutBucketLifecycle - set the lifecycle rule of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- *     - lifecycle: the lifecycle rule json string body
- * RETURNS:
- *     - error: nil if success otherwise the specific error
- */
+// PutBucketLifecycle - set the lifecycle rule of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - lifecycle: the lifecycle rule json string body
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func PutBucketLifecycle(cli bce.Client, bucket string, lifecycle *bce.Body) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -371,16 +347,14 @@ func PutBucketLifecycle(cli bce.Client, bucket string, lifecycle *bce.Body) erro
     return nil
 }
 
-/*
- * GetBucketLifecycle - get the lifecycle rule of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - *GetBucketLifecycleResult: the lifecycle rule of the bucket
- *     - error: nil if success otherwise the specific error
- */
+// GetBucketLifecycle - get the lifecycle rule of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - *GetBucketLifecycleResult: the lifecycle rule of the bucket
+//     - error: nil if success otherwise the specific error
 func GetBucketLifecycle(cli bce.Client, bucket string) (*GetBucketLifecycleResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -401,15 +375,13 @@ func GetBucketLifecycle(cli bce.Client, bucket string) (*GetBucketLifecycleResul
     return result, nil
 }
 
-/*
- * DeleteBucketLifecycle - delete the lifecycle rule of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - error: nil if success otherwise the specific error
- */
+// DeleteBucketLifecycle - delete the lifecycle rule of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func DeleteBucketLifecycle(cli bce.Client, bucket string) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -425,16 +397,14 @@ func DeleteBucketLifecycle(cli bce.Client, bucket string) error {
     return nil
 }
 
-/*
- * PutBucketStorageclass - set the storage class of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- *     - storageClass: the storage class string
- * RETURNS:
- *     - error: nil if success otherwise the specific error
- */
+// PutBucketStorageclass - set the storage class of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - storageClass: the storage class string
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func PutBucketStorageclass(cli bce.Client, bucket, storageClass string) error {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
@@ -462,16 +432,14 @@ func PutBucketStorageclass(cli bce.Client, bucket, storageClass string) error {
     return nil
 }
 
-/*
- * GetBucketStorageclass - get the storage class of the given bucket
- *
- * PARAMS:
- *     - cli: the client agent which can perform sending request
- *     - bucket: the bucket name
- * RETURNS:
- *     - string: the storage class of the bucket
- *     - error: nil if success otherwise the specific error
- */
+// GetBucketStorageclass - get the storage class of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - string: the storage class of the bucket
+//     - error: nil if success otherwise the specific error
 func GetBucketStorageclass(cli bce.Client, bucket string) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getBucketUri(bucket))
