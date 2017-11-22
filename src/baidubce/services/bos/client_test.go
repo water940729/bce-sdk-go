@@ -522,7 +522,8 @@ func TestGeneratePresignedUrl(t *testing.T) {
     ExpectEqual(t.Errorf, err, nil)
     ExpectEqual(t.Errorf, resp.StatusCode, 200)
 
-    url = BOS_CLIENT.GeneratePresignedUrl(EXISTS_BUCKET, "glog.go", 100, "HEAD", nil, nil)
+    params := map[string]string{"responseContentType": "text"}
+    url = BOS_CLIENT.GeneratePresignedUrl(EXISTS_BUCKET, "glog.go", 100, "HEAD", nil, params)
     resp, err = http.Head(url)
     ExpectEqual(t.Errorf, err, nil)
     ExpectEqual(t.Errorf, resp.StatusCode, 200)
