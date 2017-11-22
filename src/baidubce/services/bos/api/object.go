@@ -21,8 +21,10 @@ import (
     "strconv"
     "strings"
 
+    "baidubce/auth"
     "baidubce/bce"
     "baidubce/http"
+    "baidubce/util"
 )
 
 // PutObject - put the object from the string or the stream
@@ -448,5 +450,58 @@ func DeleteMultipleObjects(cli bce.Client, bucket string,
         return nil, err
     }
     return jsonBody, nil
+}
+
+// GeneratePresignedUrl - generate an authorization url with expire time and optional arguments
+//
+// PARAMS:
+//     - conf: the client configuration
+//     - signer: the client signer object to generate the authorization string
+//     - bucket: the target bucket name
+//     - object: the target object name
+//     - expire: expire time in seconds
+//     - method: optional sign method, default is GET
+//     - headers: optional sign headers, default just set the Host
+//     - params: optional sign params, default is empty
+// RETURNS:
+//     - string: the presigned url with authorization string
+func GeneratePresignedUrl(conf *bce.BceClientConfiguration, signer auth.Signer, bucket,
+        object string, expire int, method string, headers, params map[string]string) string {
+    req := &bce.BceRequest{}
+
+    // Set basic arguments
+    req.SetUri(getObjectUri(bucket, object))
+    if len(method) == 0 {
+        method = http.GET
+    }
+    req.SetMethod(method)
+    req.SetEndpoint(conf.Endpoint)
+    if req.Protocol() == "" {
+        req.SetProtocol(bce.DEFAULT_PROTOCOL)
+    }
+
+    // Set headers and params if given.
+    req.SetHeader(http.HOST, req.Host())
+    if headers != nil {
+        for k, v := range headers {
+            req.SetHeader(k, v)
+        }
+    }
+    if params != nil {
+        for k, v := range params {
+            req.SetParam(k, v)
+        }
+    }
+
+    // Copy one SignOptions object to rewrite it.
+    option := *conf.SignOption
+    if expire != 0 {
+        option.ExpireSeconds = expire
+    }
+
+    // Generate the authorization string and return the signed url.
+    signer.Sign(&req.Request, conf.Credentials, &option)
+    return fmt.Sprintf("%s://%s%s?authorization=%s", req.Protocol(), req.Host(),
+        req.Uri(), util.UriEncode(req.Header(http.AUTHORIZATION), true))
 }
 

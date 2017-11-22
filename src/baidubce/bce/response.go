@@ -39,30 +39,18 @@ func (r *BceResponse) IsFail() bool {
 }
 
 func (r *BceResponse) StatusCode() int {
-    if r.statusCode == 0 {
-        r.ParseResponse()
-    }
     return r.statusCode
 }
 
 func (r *BceResponse) StatusText() string {
-    if r.statusText == "" {
-        r.ParseResponse()
-    }
     return r.statusText
 }
 
 func (r *BceResponse) RequestId() string {
-    if r.requestId == "" {
-        r.ParseResponse()
-    }
     return r.requestId
 }
 
 func (r *BceResponse) DebugId() string {
-    if r.debugId == "" {
-        r.ParseResponse()
-    }
     return r.debugId
 }
 

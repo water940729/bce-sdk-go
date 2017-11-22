@@ -2,6 +2,7 @@ package bos
 
 import (
     "encoding/json"
+    "net/http"
     "os"
     "path/filepath"
     "reflect"
@@ -513,5 +514,17 @@ func TestUploadSuperFile(t *testing.T) {
 func TestDownloadSuperFile(t *testing.T) {
     err := BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "super-object", "/tmp/download-super-file")
     ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestGeneratePresignedUrl(t *testing.T) {
+    url := BOS_CLIENT.BasicGeneratePresignedUrl(EXISTS_BUCKET, "glog.go", 100)
+    resp, err := http.Get(url)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, resp.StatusCode, 200)
+
+    url = BOS_CLIENT.GeneratePresignedUrl(EXISTS_BUCKET, "glog.go", 100, "HEAD", nil, nil)
+    resp, err = http.Head(url)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, resp.StatusCode, 200)
 }
 

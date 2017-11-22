@@ -1069,3 +1069,33 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
     return nil
 }
 
+// GeneratePresignedUrl - generate an authorization url with expire time and optional arguments
+//
+// PARAMS:
+//     - bucket: the target bucket name
+//     - object: the target object name
+//     - expireInSeconds: the expire time in seconds of the signed url
+//     - method: optional sign method, default is GET
+//     - headers: optional sign headers, default just set the Host
+//     - params: optional sign params, default is empty
+// RETURNS:
+//     - string: the presigned url with authorization string
+func (c *Client) GeneratePresignedUrl(bucket, object string, expireInSeconds int, method string,
+        headers, params map[string]string) string {
+    return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
+        expireInSeconds, method, headers, params)
+}
+
+// BasicGeneratePresignedUrl - basic interface to generate an authorization url with expire time
+//
+// PARAMS:
+//     - bucket: the target bucket name
+//     - object: the target object name
+//     - expireInSeconds: the expire time in seconds of the signed url
+// RETURNS:
+//     - string: the presigned url with authorization string
+func (c *Client) BasicGeneratePresignedUrl(bucket, object string, expireInSeconds int) string {
+    return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
+        expireInSeconds, "", nil, nil)
+}
+
