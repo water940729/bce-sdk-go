@@ -83,6 +83,12 @@ func TestListObjects(t *testing.T) {
     t.Logf("%+v", res)
 }
 
+func TestSimpleListObjects(t *testing.T) {
+    res, err := BOS_CLIENT.SimpleListObjects(EXISTS_BUCKET, "test", 10, "", "")
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("%+v", res)
+}
+
 func TestHeadBucket(t *testing.T) {
     err := BOS_CLIENT.HeadBucket(EXISTS_BUCKET)
     ExpectEqual(t.Errorf, err, nil)
@@ -119,15 +125,20 @@ func TestPutBucketAcl(t *testing.T) {
     body, _ := bce.NewBodyFromString(acl)
     err := BOS_CLIENT.PutBucketAcl(EXISTS_BUCKET, body)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[0].Id,
+        "e13b12d0131b4c8bae959df4969387b8")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "FULL_CONTROL")
 }
 
 func TestPutBucketAclFromCanned(t *testing.T) {
     err := BOS_CLIENT.PutBucketAclFromCanned(EXISTS_BUCKET, api.CANNED_ACL_PUBLIC_READ)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[0].Id, "*")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "READ")
 }
 
 func TestPutBucketAclFromFile(t *testing.T) {
@@ -148,9 +159,37 @@ func TestPutBucketAclFromFile(t *testing.T) {
     f.Close()
     err := BOS_CLIENT.PutBucketAclFromFile(EXISTS_BUCKET, fname)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
     os.Remove(fname)
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[0].Id,
+        "e13b12d0131b4c8bae959df4969387b8")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[1].Id,
+        "a13b12d0131b4c8bae959df4969387b8")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "FULL_CONTROL")
+}
+
+func TestPutBucketAclFromString(t *testing.T) {
+    acl := `{
+    "accessControlList":[
+        {
+            "grantee":[
+                {"id":"e13b12d0131b4c8bae959df4969387b8"},
+                {"id":"a13b12d0131b4c8bae959df4969387b8"}
+            ],
+            "permission":["FULL_CONTROL"]
+        }
+    ]
+}`
+    err := BOS_CLIENT.PutBucketAclFromString(EXISTS_BUCKET, acl)
+    ExpectEqual(t.Errorf, err, nil)
+    res, err := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[0].Id,
+        "e13b12d0131b4c8bae959df4969387b8")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[1].Id,
+        "a13b12d0131b4c8bae959df4969387b8")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "FULL_CONTROL")
 }
 
 func TestPutBucketAclFromStruct(t *testing.T) {
@@ -168,8 +207,11 @@ func TestPutBucketAclFromStruct(t *testing.T) {
     }
     err := BOS_CLIENT.PutBucketAclFromStruct(EXISTS_BUCKET, args)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketAcl(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Grantee[0].Id,
+        "e13b12d0131b4c8bae959df4969387b8")
+    ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "FULL_CONTROL")
 }
 
 func TestPutBucketLogging(t *testing.T) {
@@ -177,31 +219,41 @@ func TestPutBucketLogging(t *testing.T) {
         `{"targetBucket": "bos-rd-ssy", "targetPrefix": "my-log/"}`)
     err := BOS_CLIENT.PutBucketLogging(EXISTS_BUCKET, body)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.TargetBucket, "bos-rd-ssy")
+    ExpectEqual(t.Errorf, res.Status, "enabled")
+    ExpectEqual(t.Errorf, res.TargetPrefix, "my-log/")
 }
 
 func TestPutBucketLoggingFromString(t *testing.T) {
     logging := `{"targetBucket": "bos-rd-ssy", "targetPrefix": "my-log2/"}`
     err := BOS_CLIENT.PutBucketLoggingFromString(EXISTS_BUCKET, logging)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.TargetBucket, "bos-rd-ssy")
+    ExpectEqual(t.Errorf, res.Status, "enabled")
+    ExpectEqual(t.Errorf, res.TargetPrefix, "my-log2/")
 }
 
 func TestPutBucketLoggingFromStruct(t *testing.T) {
     obj := &api.PutBucketLoggingArgs{"bos-rd-ssy", "my-log3/"}
     err := BOS_CLIENT.PutBucketLoggingFromStruct(EXISTS_BUCKET, obj)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.TargetBucket, "bos-rd-ssy")
+    ExpectEqual(t.Errorf, res.Status, "enabled")
+    ExpectEqual(t.Errorf, res.TargetPrefix, "my-log3/")
 }
 
 func TestDeleteBucketLogging(t *testing.T) {
     err := BOS_CLIENT.DeleteBucketLogging(EXISTS_BUCKET)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketLogging(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.Status, "disabled")
 }
 
 func TestPutBucketLifecycle(t *testing.T) {
@@ -225,8 +277,13 @@ func TestPutBucketLifecycle(t *testing.T) {
     body, _ := bce.NewBodyFromString(str)
     err := BOS_CLIENT.PutBucketLifecycle(EXISTS_BUCKET, body)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketLifecycle(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketLifecycle(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.Rule[0].Id, "transition-to-cold")
+    ExpectEqual(t.Errorf, res.Rule[0].Status, "enabled")
+    ExpectEqual(t.Errorf, res.Rule[0].Resource[0], "bos-rd-ssy/test*")
+    ExpectEqual(t.Errorf, res.Rule[0].Condition.Time.DateGreaterThan, "2018-09-07T00:00:00Z")
+    ExpectEqual(t.Errorf, res.Rule[0].Action.Name, "DeleteObject")
 }
 
 func TestPutBucketLifecycleFromString(t *testing.T) {
@@ -249,8 +306,13 @@ func TestPutBucketLifecycleFromString(t *testing.T) {
 }`
     err := BOS_CLIENT.PutBucketLifecycleFromString(EXISTS_BUCKET, obj)
     ExpectEqual(t.Errorf, err, nil)
-    res, _ := BOS_CLIENT.GetBucketLifecycle(EXISTS_BUCKET)
-    t.Logf("%+v", res)
+    res, err := BOS_CLIENT.GetBucketLifecycle(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.Rule[0].Id, "transition-to-cold")
+    ExpectEqual(t.Errorf, res.Rule[0].Status, "enabled")
+    ExpectEqual(t.Errorf, res.Rule[0].Resource[0], "bos-rd-ssy/test*")
+    ExpectEqual(t.Errorf, res.Rule[0].Condition.Time.DateGreaterThan, "2018-09-07T00:00:00Z")
+    ExpectEqual(t.Errorf, res.Rule[0].Action.Name, "DeleteObject")
 }
 
 func TestDeleteBucketLifecycle(t *testing.T) {
@@ -263,6 +325,9 @@ func TestDeleteBucketLifecycle(t *testing.T) {
 func TestPutBucketStorageClass(t *testing.T) {
     err := BOS_CLIENT.PutBucketStorageclass(EXISTS_BUCKET, api.STORAGE_CLASS_STANDARD_IA)
     ExpectEqual(t.Errorf, err, nil)
+    res, err := BOS_CLIENT.GetBucketStorageclass(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res, api.STORAGE_CLASS_STANDARD_IA)
 }
 
 func TestGetBucketStorageClass(t *testing.T) {
@@ -396,6 +461,14 @@ func TestBasicFetchObject(t *testing.T) {
     t.Logf("meta: %+v", res1)
 }
 
+func TestSimpleFetchObject(t *testing.T) {
+    res, err := BOS_CLIENT.SimpleFetchObject(EXISTS_BUCKET, "test-fetch-object",
+        "https://cloud.baidu.com/doc/BOS/API.html",
+        api.FETCH_MODE_ASYNC, api.STORAGE_CLASS_COLD)
+    ExpectEqual(t.Errorf, err, nil)
+    ExpectEqual(t.Errorf, res.Code, "success")
+}
+
 func TestAppendObject(t *testing.T) {
     args := &api.AppendObjectArgs{}
     body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
@@ -451,6 +524,13 @@ func TestDeleteMultipleObjectsFromStruct(t *testing.T) {
     multiDeleteObj := &api.DeleteMultipleObjectsArgs{[]api.DeleteObjectArgs{
         api.DeleteObjectArgs{"1"}, api.DeleteObjectArgs{"test-fetch-object"}}}
     res, err := BOS_CLIENT.DeleteMultipleObjectsFromStruct(EXISTS_BUCKET, multiDeleteObj)
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("%+v", res)
+}
+
+func TestDeleteMultipleObjectsFromKeyList(t *testing.T) {
+    keyList := []string{"aaaa", "test-copy-object", "test-append-object", "cccc"}
+    res, err := BOS_CLIENT.DeleteMultipleObjectsFromKeyList(EXISTS_BUCKET, keyList)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("%+v", res)
 }

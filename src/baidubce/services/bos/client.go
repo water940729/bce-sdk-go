@@ -90,7 +90,7 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 //
 // RETURNS:
 //     - *api.ListBucketsResult: the all buckets
-//     - error: the uploaded error if any occurs
+//     - error: the return error if any occurs
 func (c *Client) ListBuckets() (*api.ListBucketsResult, error) {
     return api.ListBuckets(c)
 }
@@ -102,9 +102,26 @@ func (c *Client) ListBuckets() (*api.ListBucketsResult, error) {
 //     - args: the optional arguments to list objects
 // RETURNS:
 //     - *api.ListObjectsResult: the all objects of the bucket
-//     - error: the uploaded error if any occurs
+//     - error: the return error if any occurs
 func (c *Client) ListObjects(bucket string,
         args *api.ListObjectsArgs) (*api.ListObjectsResult, error) {
+    return api.ListObjects(c, bucket, args)
+}
+
+// SimpleListObjects - list all objects of the given bucket with simple arguments
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - prefix: the prefix for listing
+//     - maxKeys: the max number of result objects
+//     - marker: the marker to mark the beginning for the listing
+//     - delimiter: the delimiter for list objects
+// RETURNS:
+//     - *api.ListObjectsResult: the all objects of the bucket
+//     - error: the return error if any occurs
+func (c *Client) SimpleListObjects(bucket, prefix string, maxKeys int, marker,
+        delimiter string) (*api.ListObjectsResult, error) {
+    args := &api.ListObjectsArgs{delimiter, marker, maxKeys, prefix}
     return api.ListObjects(c, bucket, args)
 }
 
@@ -181,6 +198,21 @@ func (c *Client) PutBucketAclFromCanned(bucket, cannedAcl string) error {
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAclFromFile(bucket, aclFile string) error {
     body, err := bce.NewBodyFromFile(aclFile)
+    if err != nil {
+        return err
+    }
+    return api.PutBucketAcl(c, bucket, "", body)
+}
+
+// PutBucketAclFromString - set the acl of the given bucket with acl json string
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - aclString: the acl string with json format
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketAclFromString(bucket, aclString string) error {
+    body, err := bce.NewBodyFromString(aclString)
     if err != nil {
         return err
     }
@@ -559,6 +591,23 @@ func (c *Client) BasicFetchObject(bucket, object, source string) (*api.FetchObje
     return api.FetchObject(c, bucket, object, source, nil)
 }
 
+// SimpleFetchObject - fetch object with simple arguments interface
+//
+// PARAMS:
+//     - bucket: the name of the bucket to store
+//     - object: the name of the object to store
+//     - source: fetch source url
+//     - mode: fetch mode which supports sync and async
+//     - storageClass: the storage class of the fetched object
+// RETURNS:
+//     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
+//     - error: any error if it occurs
+func (c *Client) SimpleFetchObject(bucket, object, source, mode,
+        storageClass string) (*api.FetchObjectResult, error) {
+    args := &api.FetchObjectArgs{mode, storageClass}
+    return api.FetchObject(c, bucket, object, source, args)
+}
+
 // AppendObject - append the gievn content to a new or existed object which is appendable
 //
 // PARAMS:
@@ -674,6 +723,35 @@ func (c *Client) DeleteMultipleObjectsFromString(bucket,
 func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
         objectListStruct *api.DeleteMultipleObjectsArgs) (*api.DeleteMultipleObjectsResult, error) {
     jsonBytes, jsonErr := json.Marshal(objectListStruct)
+    if jsonErr != nil {
+        return nil, jsonErr
+    }
+    body, err := bce.NewBodyFromBytes(jsonBytes)
+    if err != nil {
+        return nil, err
+    }
+    return api.DeleteMultipleObjects(c, bucket, body)
+}
+
+// DeleteMultipleObjectsFromKeyList - delete a list of objects with given key string array
+//
+// PARAMS:
+//     - bucket: the name of the bucket to delete
+//     - keyList: the key stirng list to be deleted
+// RETURNS:
+//     - error: any error if it occurs
+func (c *Client) DeleteMultipleObjectsFromKeyList(bucket string,
+        keyList []string) (*api.DeleteMultipleObjectsResult, error) {
+    if len(keyList) == 0 {
+        return nil, fmt.Errorf("the key list to be deleted is empty")
+    }
+    args := make([]api.DeleteObjectArgs, len(keyList))
+    for i, k := range keyList {
+        args[i].Key = k
+    }
+    argsContainer := &api.DeleteMultipleObjectsArgs{args}
+
+    jsonBytes, jsonErr := json.Marshal(argsContainer)
     if jsonErr != nil {
         return nil, jsonErr
     }
