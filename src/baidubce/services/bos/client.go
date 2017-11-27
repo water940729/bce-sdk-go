@@ -515,7 +515,7 @@ func (c *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd int
     return api.GetObject(c, bucket, object, args)
 }
 
-// GetObjectToFile - get the given object to the given file path
+// BasicGetObjectToFile - use basic interface to get the given object to the given file path
 //
 // PARAMS:
 //     - bucket: the name of the bucket
@@ -523,7 +523,7 @@ func (c *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd int
 //     - filePath: the file path to store the object content
 // RETURNS:
 //     - error: any error if it occurs
-func (c *Client) GetObjectToFile(bucket, object, filePath string) error {
+func (c *Client) BasicGetObjectToFile(bucket, object, filePath string) error {
     res, err := api.GetObject(c, bucket, object, nil)
     if err != nil {
         return err

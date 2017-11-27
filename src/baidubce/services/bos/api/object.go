@@ -187,6 +187,9 @@ func GetObject(cli bce.Client, bucket, object string,
     if val, ok := headers[http.EXPIRES]; ok {
         result.Expires = val
     }
+    if val, ok := headers[http.LAST_MODIFIED]; ok {
+        result.LastModified = val
+    }
     if val, ok := headers[http.ETAG]; ok {
         result.ETag = val
     }
@@ -253,6 +256,9 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
     }
     if val, ok := headers[http.EXPIRES]; ok {
         result.Expires = val
+    }
+    if val, ok := headers[http.LAST_MODIFIED]; ok {
+        result.LastModified = val
     }
     if val, ok := headers[http.ETAG]; ok {
         result.ETag = val

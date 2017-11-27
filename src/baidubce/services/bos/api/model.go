@@ -197,6 +197,7 @@ type objectMeta struct {
     ContentRange       string
     ContentType        string
     Expires            string
+    LastModified       string
     ETag               string
     UserMeta           map[string]string
     StorageClass       string

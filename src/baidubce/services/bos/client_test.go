@@ -429,9 +429,9 @@ func TestSimpleGetObject(t *testing.T) {
     }
 }
 
-func TestGetObjectToFile(t *testing.T) {
+func TestBasicGetObjectToFile(t *testing.T) {
     fname := "/tmp/test-get-object"
-    err := BOS_CLIENT.GetObjectToFile(EXISTS_BUCKET, "test-put-object", fname)
+    err := BOS_CLIENT.BasicGetObjectToFile(EXISTS_BUCKET, "test-put-object", fname)
     ExpectEqual(t.Errorf, err, nil)
     os.Remove(fname)
 }
