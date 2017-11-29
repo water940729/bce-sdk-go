@@ -167,6 +167,17 @@ type storageClassType struct {
     StorageClass string `json:"storageClass"`
 }
 
+// PutObjectArgs defines the optional args structure for the put object api.
+type PutObjectArgs struct {
+    CacheControl       string
+    ContentDisposition string
+    ContentMD5         string
+    Expires            string
+    UserMeta           map[string]string
+    ContentSha256      string
+    StorageClass       string
+}
+
 // CopyObjectArgs defines the optional args structure for the copy object api.
 type CopyObjectArgs struct {
     MetadataDirective string

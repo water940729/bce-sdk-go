@@ -337,14 +337,22 @@ func TestGetBucketStorageClass(t *testing.T) {
 }
 
 func TestPutObject(t *testing.T) {
+    args := &api.PutObjectArgs{StorageClass: api.STORAGE_CLASS_COLD}
     body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
-    res, err := BOS_CLIENT.PutObject(EXISTS_BUCKET, "test-put-object", body)
+    res, err := BOS_CLIENT.PutObject(EXISTS_BUCKET, "test-put-object", body, args)
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("etag: %v", res)
+}
+
+func TestBasicPutObject(t *testing.T) {
+    body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
+    res, err := BOS_CLIENT.BasicPutObject(EXISTS_BUCKET, "test-put-object", body)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("etag: %v", res)
 }
 
 func TestPutObjectFromString(t *testing.T) {
-    res, err := BOS_CLIENT.PutObjectFromString(EXISTS_BUCKET, "test-put-object", "123")
+    res, err := BOS_CLIENT.PutObjectFromString(EXISTS_BUCKET, "test-put-object", "123", nil)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("etag: %v", res)
 }
@@ -354,7 +362,7 @@ func TestPutObjectFromFile(t *testing.T) {
     f, _ := os.Create(fname)
     f.WriteString("12345")
     f.Close()
-    res, err := BOS_CLIENT.PutObjectFromFile(EXISTS_BUCKET, "test-put-object", fname)
+    res, err := BOS_CLIENT.PutObjectFromFile(EXISTS_BUCKET, "test-put-object", fname, nil)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("etag: %v", res)
     os.Remove(fname)

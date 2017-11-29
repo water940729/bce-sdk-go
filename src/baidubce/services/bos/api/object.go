@@ -33,14 +33,41 @@ import (
 //     - bucket: the bucket name of the object
 //     - object: the name of the object
 //     - body: the input content of the object
+//     - args: the optional arguments of this api
 // RETURNS:
 //     - string: the etag of the object
 //     - error: nil if ok otherwise the specific error
-func PutObject(cli bce.Client, bucket, object string, body *bce.Body) (string, error) {
+func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
+        args *PutObjectArgs) (string, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
     req.SetMethod(http.PUT)
     req.SetBody(body)
+
+    // Optional arguments settings
+    if args != nil {
+        setOptionalNullHeaders(req, map[string]string{
+            http.CACHE_CONTROL: args.CacheControl,
+            http.CONTENT_DISPOSITION: args.ContentDisposition,
+            http.CONTENT_MD5: args.ContentMD5,
+            http.EXPIRES: args.Expires,
+            http.BCE_CONTENT_SHA256: args.ContentSha256,
+        })
+
+        if validStorageClass(args.StorageClass) {
+            req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
+        } else {
+            if len(args.StorageClass) != 0 {
+                return "", bce.NewBceClientError("invalid storage class value: " +
+                    args.StorageClass)
+            }
+        }
+        if args.UserMeta != nil {
+            for k, v := range args.UserMeta {
+                req.SetHeader(k, v)
+            }
+        }
+    }
 
     resp := &bce.BceResponse{}
     if err := cli.SendRequest(req, resp); err != nil {

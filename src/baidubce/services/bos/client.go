@@ -390,11 +390,26 @@ func (c *Client) GetBucketStorageclass(bucket string) (string, error) {
 //     - bucket: the name of the bucket to store the object
 //     - object: the name of the object
 //     - body: the object content body
+//     - args: the optional arguments
 // RETURNS:
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
-func (c *Client) PutObject(bucket, object string, body *bce.Body) (string, error) {
-    return api.PutObject(c, bucket, object, body)
+func (c *Client) PutObject(bucket, object string, body *bce.Body,
+        args *api.PutObjectArgs) (string, error) {
+    return api.PutObject(c, bucket, object, body, args)
+}
+
+// BasicPutObject - the basic interface of uploading an object
+//
+// PARAMS:
+//     - bucket: the name of the bucket to store the object
+//     - object: the name of the object
+//     - body: the object content body
+// RETURNS:
+//     - string: etag of the uploaded object
+//     - error: the uploaded error if any occurs
+func (c *Client) BasicPutObject(bucket, object string, body *bce.Body) (string, error) {
+    return api.PutObject(c, bucket, object, body, nil)
 }
 
 // PutObjectFromString - upload a new object or rewrite the existed object from a string
@@ -403,15 +418,17 @@ func (c *Client) PutObject(bucket, object string, body *bce.Body) (string, error
 //     - bucket: the name of the bucket to store the object
 //     - object: the name of the object
 //     - content: the content string
+//     - args: the optional arguments
 // RETURNS:
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
-func (c *Client) PutObjectFromString(bucket, object, content string) (string, error) {
+func (c *Client) PutObjectFromString(bucket, object, content string,
+        args *api.PutObjectArgs) (string, error) {
     body, err := bce.NewBodyFromString(content)
     if err != nil {
         return "", err
     }
-    return api.PutObject(c, bucket, object, body)
+    return api.PutObject(c, bucket, object, body, args)
 }
 
 // PutObjectFromFile - upload a new object or rewrite the existed object from a local file
@@ -420,15 +437,17 @@ func (c *Client) PutObjectFromString(bucket, object, content string) (string, er
 //     - bucket: the name of the bucket to store the object
 //     - object: the name of the object
 //     - fileName: the local file full path name
+//     - args: the optional arguments
 // RETURNS:
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
-func (c *Client) PutObjectFromFile(bucket, object, fileName string) (string, error) {
+func (c *Client) PutObjectFromFile(bucket, object, fileName string,
+        args *api.PutObjectArgs) (string, error) {
     body, err := bce.NewBodyFromFile(fileName)
     if err != nil {
         return "", err
     }
-    return api.PutObject(c, bucket, object, body)
+    return api.PutObject(c, bucket, object, body, args)
 }
 
 // CopyObject - copy a remote object to another one
