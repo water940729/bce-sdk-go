@@ -104,6 +104,16 @@ func CopyObject(cli bce.Client, bucket, object, source string,
     // Optional arguments settings
     if args != nil {
         setOptionalNullHeaders(req, map[string]string{
+            http.CACHE_CONTROL: args.CacheControl,
+            http.CONTENT_DISPOSITION: args.ContentDisposition,
+            http.CONTENT_LENGTH: args.ContentLength,
+            http.CONTENT_RANGE: args.ContentRange,
+            http.CONTENT_TYPE: args.ContentType,
+            http.EXPIRES: args.Expires,
+            http.LAST_MODIFIED: args.LastModified,
+            http.ETAG: args.ETag,
+            http.CONTENT_MD5: args.ContentMD5,
+            http.BCE_CONTENT_SHA256: args.ContentSha256,
             http.BCE_COPY_SOURCE_IF_MATCH: args.IfMatch,
             http.BCE_COPY_SOURCE_IF_NONE_MATCH: args.IfNoneMatch,
             http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: args.IfModifiedSince,
@@ -124,6 +134,11 @@ func CopyObject(cli bce.Client, bucket, object, source string,
             if len(args.StorageClass) != 0 {
                 return nil, bce.NewBceClientError("invalid storage class value: " +
                     args.StorageClass)
+            }
+        }
+        if args.UserMeta != nil {
+            for k, v := range args.UserMeta {
+                req.SetHeader(k, v)
             }
         }
     }

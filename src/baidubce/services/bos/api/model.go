@@ -180,8 +180,10 @@ type PutObjectArgs struct {
 
 // CopyObjectArgs defines the optional args structure for the copy object api.
 type CopyObjectArgs struct {
+    objectMeta
+    ContentMD5        string
+    ContentSha256     string
     MetadataDirective string
-    StorageClass      string
     IfMatch           string
     IfNoneMatch       string
     IfModifiedSince   string

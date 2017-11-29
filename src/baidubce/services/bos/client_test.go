@@ -369,7 +369,8 @@ func TestPutObjectFromFile(t *testing.T) {
 }
 
 func TestCopyObject(t *testing.T) {
-    args := &api.CopyObjectArgs{StorageClass: api.STORAGE_CLASS_COLD}
+    args := new(api.CopyObjectArgs)
+    args.StorageClass = api.STORAGE_CLASS_COLD
     res, err := BOS_CLIENT.CopyObject(EXISTS_BUCKET, "test-copy-object",
         EXISTS_BUCKET, "test-put-object", args)
     ExpectEqual(t.Errorf, err, nil)
