@@ -22,6 +22,7 @@ import (
     "encoding/json"
     "fmt"
     "io"
+    "net/http"
     "os"
     "strconv"
 
@@ -133,6 +134,29 @@ func (c *Client) SimpleListObjects(bucket, prefix string, maxKeys int, marker,
 //     - error: nil if exists and have authority otherwise the specific error
 func (c *Client) HeadBucket(bucket string) error {
     return api.HeadBucket(c, bucket)
+}
+
+// DoesBucketExist - test the given bucket existed or not
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - bool: true if exists and false if not exists or occrus error
+//     - error: nil if exists or not exist, otherwise the specific error
+func (c *Client) DoesBucketExist(bucket string) (bool, error) {
+    err := api.HeadBucket(c, bucket)
+    if err == nil {
+        return true, nil
+    }
+    if realErr, ok := err.(*bce.BceServiceError); ok {
+        if realErr.StatusCode == http.StatusForbidden {
+            return true, nil
+        }
+        if realErr.StatusCode == http.StatusNotFound {
+            return false, nil
+        }
+    }
+    return false, err
 }
 
 // PutBucket - create a new bucket

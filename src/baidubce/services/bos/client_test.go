@@ -94,6 +94,15 @@ func TestHeadBucket(t *testing.T) {
     ExpectEqual(t.Errorf, err, nil)
 }
 
+func TestDoesBucketExist(t *testing.T) {
+    exist, err := BOS_CLIENT.DoesBucketExist(EXISTS_BUCKET)
+    ExpectEqual(t.Errorf, exist, true)
+    ExpectEqual(t.Errorf, err, nil)
+
+    exist, err = BOS_CLIENT.DoesBucketExist("xxx")
+    ExpectEqual(t.Errorf, exist, false)
+}
+
 func TestPutBucket(t *testing.T) {
     res, err := BOS_CLIENT.PutBucket("test-put-bucket")
     ExpectEqual(t.Errorf, err, nil)
