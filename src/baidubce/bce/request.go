@@ -146,7 +146,9 @@ func (b *BceRequest) SetBody(body *Body) { // override SetBody derived from http
     b.Request.SetBody(body.Stream)
     b.SetLength(body.Size) // set field of "net/http.Request.ContentLength"
     b.SetHeader(http.CONTENT_MD5, body.ContentMD5)
-    b.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", body.Size))
+    if body.Size > 0 {
+        b.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", body.Size))
+    }
 }
 
 func (b *BceRequest) BuildHttpRequest() {

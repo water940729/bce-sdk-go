@@ -436,6 +436,25 @@ func (c *Client) BasicPutObject(bucket, object string, body *bce.Body) (string, 
     return api.PutObject(c, bucket, object, body, nil)
 }
 
+// PutObjectFromBytes - upload a new object or rewrite the existed object from a byte array
+//
+// PARAMS:
+//     - bucket: the name of the bucket to store the object
+//     - object: the name of the object
+//     - bytesArr: the content byte array
+//     - args: the optional arguments
+// RETURNS:
+//     - string: etag of the uploaded object
+//     - error: the uploaded error if any occurs
+func (c *Client) PutObjectFromBytes(bucket, object string, bytesArr []byte,
+        args *api.PutObjectArgs) (string, error) {
+    body, err := bce.NewBodyFromBytes(bytesArr)
+    if err != nil {
+        return "", err
+    }
+    return api.PutObject(c, bucket, object, body, args)
+}
+
 // PutObjectFromString - upload a new object or rewrite the existed object from a string
 //
 // PARAMS:

@@ -76,7 +76,7 @@ func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
     if resp.IsFail() {
         return "", resp.ServiceError()
     }
-    return resp.Header(http.ETAG), nil
+    return strings.Trim(resp.Header(http.ETAG), "\""), nil
 }
 
 // CopyObject - copy one object to a new object with new bucket and/or name. It can alse set the

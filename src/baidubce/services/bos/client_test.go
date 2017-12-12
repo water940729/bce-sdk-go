@@ -360,6 +360,13 @@ func TestBasicPutObject(t *testing.T) {
     t.Logf("etag: %v", res)
 }
 
+func TestPutObjectFromBytes(t *testing.T) {
+    arr := []byte("123")
+    res, err := BOS_CLIENT.PutObjectFromBytes(EXISTS_BUCKET, "test-put-object", arr, nil)
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("etag: %v", res)
+}
+
 func TestPutObjectFromString(t *testing.T) {
     res, err := BOS_CLIENT.PutObjectFromString(EXISTS_BUCKET, "test-put-object", "123", nil)
     ExpectEqual(t.Errorf, err, nil)
