@@ -125,7 +125,7 @@ type PutBucketLoggingArgs struct {
 type GetBucketLoggingResult struct {
     Status       string `json:"status"`
     TargetBucket string `json:"targetBucket,omitempty"`
-    TargetPrefix string `json:targetPrefix, omitempty"`
+    TargetPrefix string `json:"targetPrefix, omitempty"`
 }
 
 // LifecycleConditionTimeType defines the structure of time condition
@@ -353,7 +353,7 @@ type ListPartsResult struct {
     UploadId             string         `json:"uploadId"`
     Initiated            string         `json:"initiated"`
     Owner                ownerType      `json:"owner"`
-    PartNumberMarker     string         `json:"partNumberMarker"`
+    PartNumberMarker     int            `json:"partNumberMarker"`
     NextPartNumberMarker int            `json:"nextPartNumberMarker"`
     MaxParts             int            `json:"maxParts"`
     IsTruncated          bool           `json:"isTruncated"`
