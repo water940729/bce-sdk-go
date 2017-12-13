@@ -339,8 +339,8 @@ type ListPartsArgs struct {
     PartNumberMarker string
 }
 
-type listPartType struct {
-    PartNumber   string `json:"partNumber"`
+type ListPartType struct {
+    PartNumber   int    `json:"partNumber"`
     LastModified string `json:"lastModified"`
     ETag         string `json:"eTag"`
     Size         int    `json:"size"`
@@ -358,7 +358,7 @@ type ListPartsResult struct {
     NextPartNumberMarker int            `json:"nextPartNumberMarker"`
     MaxParts             int            `json:"maxParts"`
     IsTruncated          bool           `json:"isTruncated"`
-    Parts                []listPartType `json:"parts"`
+    Parts                []ListPartType `json:"parts"`
 }
 
 // ListMultipartUploadsArgs defines the optional arguments for ListMultipartUploads.
@@ -380,7 +380,7 @@ type ListMultipartUploadsType struct {
 // ListMultipartUploadsResult defines the multipart uploads result structure.
 type ListMultipartUploadsResult struct {
     Bucket         string                     `json:"bucket"`
-    CommonPrefixes []string                   `json:"commonPrefixes"`
+    CommonPrefixes []PrefixType               `json:"commonPrefixes"`
     Delimiter      string                     `json:"delimiter"`
     Prefix         string                     `json:"prefix"`
     IsTruncated    bool                       `json:"isTruncated"`
