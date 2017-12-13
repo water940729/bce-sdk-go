@@ -106,7 +106,7 @@ func CopyObject(cli bce.Client, bucket, object, source string,
         setOptionalNullHeaders(req, map[string]string{
             http.CACHE_CONTROL: args.CacheControl,
             http.CONTENT_DISPOSITION: args.ContentDisposition,
-            http.CONTENT_LENGTH: args.ContentLength,
+            http.CONTENT_ENCODING: args.ContentEncoding,
             http.CONTENT_RANGE: args.ContentRange,
             http.CONTENT_TYPE: args.ContentType,
             http.EXPIRES: args.Expires,
@@ -119,7 +119,9 @@ func CopyObject(cli bce.Client, bucket, object, source string,
             http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: args.IfModifiedSince,
             http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: args.IfUnmodifiedSince,
         })
-
+        if args.ContentLength != 0 {
+            req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
+        }
         if validMetadataDirective(args.MetadataDirective) {
             req.SetHeader(http.BCE_COPY_METADATA_DIRECTIVE, args.MetadataDirective)
         } else {
@@ -218,13 +220,18 @@ func GetObject(cli bce.Client, bucket, object string,
         result.ContentDisposition = val
     }
     if val, ok := headers[http.CONTENT_LENGTH]; ok {
-        result.ContentLength = val
+        if length, err := strconv.ParseInt(val, 10, 64); err == nil {
+            result.ContentLength = length
+        }
     }
     if val, ok := headers[http.CONTENT_RANGE]; ok {
         result.ContentRange = val
     }
     if val, ok := headers[http.CONTENT_TYPE]; ok {
         result.ContentType = val
+    }
+    if val, ok := headers[http.CONTENT_MD5]; ok {
+        result.ContentMD5 = val
     }
     if val, ok := headers[http.EXPIRES]; ok {
         result.Expires = val
@@ -233,13 +240,16 @@ func GetObject(cli bce.Client, bucket, object string,
         result.LastModified = val
     }
     if val, ok := headers[http.ETAG]; ok {
-        result.ETag = val
+        result.ETag = strings.Trim(val, "\"")
     }
     if val, ok := headers[http.CONTENT_LANGUAGE]; ok {
         result.ContentLanguage = val
     }
     if val, ok := headers[http.CONTENT_ENCODING]; ok {
         result.ContentEncoding = val
+    }
+    if val, ok := headers[toHttpHeaderKey(http.BCE_CONTENT_SHA256)]; ok {
+        result.ContentSha256 = val
     }
     if val, ok := headers[toHttpHeaderKey(http.BCE_STORAGE_CLASS)]; ok {
         result.StorageClass = val
@@ -288,13 +298,18 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
         result.ContentDisposition = val
     }
     if val, ok := headers[http.CONTENT_LENGTH]; ok {
-        result.ContentLength = val
+        if length, err := strconv.ParseInt(val, 10, 64); err == nil {
+            result.ContentLength = length
+        }
     }
     if val, ok := headers[http.CONTENT_RANGE]; ok {
         result.ContentRange = val
     }
     if val, ok := headers[http.CONTENT_TYPE]; ok {
         result.ContentType = val
+    }
+    if val, ok := headers[http.CONTENT_MD5]; ok {
+        result.ContentMD5 = val
     }
     if val, ok := headers[http.EXPIRES]; ok {
         result.Expires = val
@@ -303,7 +318,13 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
         result.LastModified = val
     }
     if val, ok := headers[http.ETAG]; ok {
-        result.ETag = val
+        result.ETag = strings.Trim(val, "\"")
+    }
+    if val, ok := headers[http.CONTENT_ENCODING]; ok {
+        result.ContentEncoding = val
+    }
+    if val, ok := headers[toHttpHeaderKey(http.BCE_CONTENT_SHA256)]; ok {
+        result.ContentSha256 = val
     }
     if val, ok := headers[toHttpHeaderKey(http.BCE_STORAGE_CLASS)]; ok {
         result.StorageClass = val

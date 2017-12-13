@@ -24,7 +24,6 @@ import (
     "io"
     "net/http"
     "os"
-    "strconv"
 
     "baidubce/auth"
     "baidubce/bce"
@@ -534,7 +533,7 @@ func (c *Client) BasicCopyObject(bucket, object, srcBucket,
 //     - object: the name of the object
 //     - args: the optional arguments of getting the object
 // RETURNS:
-//     - *api.CopyObjectResult: result struct which contains "Body" and header fields
+//     - *api.GetObjectResult: result struct which contains "Body" and header fields
 //       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
 func (c *Client) GetObject(bucket, object string,
@@ -548,7 +547,7 @@ func (c *Client) GetObject(bucket, object string,
 //     - bucket: the name of the bucket
 //     - object: the name of the object
 // RETURNS:
-//     - *api.CopyObjectResult: result struct which contains "Body" and header fields
+//     - *api.GetObjectResult: result struct which contains "Body" and header fields
 //       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
 func (c *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, error) {
@@ -565,7 +564,7 @@ func (c *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, er
 //     - responseHeaders: the user specified headers when return, only support 5 headers:
 //       ContentDisposition, ContentType, ContentLanguage, Expires, CacheControl, ContentEncoding
 // RETURNS:
-//     - *api.CopyObjectResult: result struct which contains "Body" and header fields
+//     - *api.GetObjectResult: result struct which contains "Body" and header fields
 //       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
 func (c *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd int64,
@@ -598,15 +597,11 @@ func (c *Client) BasicGetObjectToFile(bucket, object, filePath string) error {
     }
     defer file.Close()
 
-    size, lenErr := strconv.ParseInt(res.ContentLength, 10, 64)
-    if lenErr != nil {
-        return lenErr
-    }
-    written, writeErr := io.CopyN(file, res.Body, size)
+    written, writeErr := io.CopyN(file, res.Body, res.ContentLength)
     if writeErr != nil {
         return writeErr
     }
-    if written != size {
+    if written != res.ContentLength {
         return fmt.Errorf("written content size does not match the response content")
     }
     return nil
@@ -1151,7 +1146,7 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
     if metaErr != nil {
         return metaErr
     }
-    size, _ := strconv.ParseInt(meta.ContentLength, 10, 64)
+    size := meta.ContentLength
     partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
     partNum  := (size + partSize - 1) / partSize
     log.Debugf("starting download super file, total parts: %d, part size: %d", partNum, partSize)
@@ -1186,7 +1181,7 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
                 if res, err := c.GetObject(bucket, object, args); err == nil {
                     returnBody.stream = res.Body
                     returnBody.offset = rangeStart
-                    returnBody.size, _ = strconv.ParseInt(res.ContentLength, 10, 64)
+                    returnBody.size   = res.ContentLength
                 }
                 bodyChan <- returnBody
                 workerPool <- workerId

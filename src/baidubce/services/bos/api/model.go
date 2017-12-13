@@ -20,12 +20,12 @@ import (
     "io"
 )
 
-type ownerType struct {
+type OwnerType struct {
     Id          string `json:"id"`
     DisplayName string `json:"displayName"`
 }
 
-type bucketSummaryType struct {
+type BucketSummaryType struct {
     Name         string `json:"name"`
     Location     string `json:"location"`
     CreationDate string `json:"creationDate"`
@@ -33,8 +33,8 @@ type bucketSummaryType struct {
 
 // ListBucketsResult defines the result structure of ListBuckets api.
 type ListBucketsResult struct {
-    Owner   ownerType     `json:"owner"`
-    Buckets []bucketSummaryType `json:"buckets"`
+    Owner   OwnerType     `json:"owner"`
+    Buckets []BucketSummaryType `json:"buckets"`
 }
 
 // ListObjectsArgs defines the optional arguments for ListObjects api.
@@ -45,16 +45,16 @@ type ListObjectsArgs struct {
     Prefix    string `json:"prefix"`
 }
 
-type objectSummaryType struct {
+type ObjectSummaryType struct {
     Key          string    `json:"key"`
     LastModified string    `json:"lastModified"`
     ETag         string    `json:"eTag"`
     Size         int       `json:"size"`
     StorageClass string    `json:"storageClass"`
-    Owner        ownerType `json:"owner"`
+    Owner        OwnerType `json:"owner"`
 }
 
-type prefixType struct {
+type PrefixType struct {
     Prefix string `json:"prefix"`
 }
 
@@ -67,11 +67,11 @@ type ListObjectsResult struct {
     NextMarker     string `json:"nextMarker,omitempty"`
     MaxKeys        int    `json:"maxKeys"`
     IsTruncated    bool   `json:"isTruncated"`
-    Contents       []objectSummaryType `json:"contents"`
-    CommonPrefixes []prefixType        `json:"commonPrefixes"`
+    Contents       []ObjectSummaryType `json:"contents"`
+    CommonPrefixes []PrefixType        `json:"commonPrefixes"`
 }
 
-type locationType struct {
+type LocationType struct {
     LocationConstraint string `json:"locationConstraint"`
 }
 
@@ -163,7 +163,7 @@ type GetBucketLifecycleResult struct {
     Rule []LifecycleRuleType `json:"rule"`
 }
 
-type storageClassType struct {
+type StorageClassType struct {
     StorageClass string `json:"storageClass"`
 }
 
@@ -180,9 +180,7 @@ type PutObjectArgs struct {
 
 // CopyObjectArgs defines the optional args structure for the copy object api.
 type CopyObjectArgs struct {
-    objectMeta
-    ContentMD5        string
-    ContentSha256     string
+    ObjectMeta
     MetadataDirective string
     IfMatch           string
     IfNoneMatch       string
@@ -203,12 +201,15 @@ type GetObjectArgs struct {
     ResponseHeaders map[string]string
 }
 
-type objectMeta struct {
+type ObjectMeta struct {
     CacheControl       string
     ContentDisposition string
-    ContentLength      string
+    ContentEncoding    string
+    ContentLength      int64
     ContentRange       string
     ContentType        string
+    ContentMD5         string
+    ContentSha256      string
     Expires            string
     LastModified       string
     ETag               string
@@ -218,15 +219,14 @@ type objectMeta struct {
 
 // GetObjectResult defines the result data of the get object api.
 type GetObjectResult struct {
-    objectMeta
+    ObjectMeta
     ContentLanguage string
-    ContentEncoding string
     Body            io.ReadCloser
 }
 
 // GetObjectMetaResult defines the result data of the get object meta api.
 type GetObjectMetaResult struct {
-    objectMeta
+    ObjectMeta
 }
 
 // FetchObjectArgs defines the optional arguments structure for the fetch object api.
@@ -352,7 +352,8 @@ type ListPartsResult struct {
     Key                  string         `json:"key"`
     UploadId             string         `json:"uploadId"`
     Initiated            string         `json:"initiated"`
-    Owner                ownerType      `json:"owner"`
+    Owner                OwnerType      `json:"owner"`
+    StorageClass         string         `json:"storageClass"`
     PartNumberMarker     int            `json:"partNumberMarker"`
     NextPartNumberMarker int            `json:"nextPartNumberMarker"`
     MaxParts             int            `json:"maxParts"`
@@ -368,10 +369,10 @@ type ListMultipartUploadsArgs struct {
     Prefix     string
 }
 
-type listMultipartUploadsType struct {
+type ListMultipartUploadsType struct {
     Key          string    `json:"key"`
     UploadId     string    `json:"uploadId"`
-    Owner        ownerType `json:"owner"`
+    Owner        OwnerType `json:"owner"`
     Initiated    string    `json:"initiated"`
     StorageClass string    `json:"storageClass,omitempty"`
 }
@@ -379,13 +380,13 @@ type listMultipartUploadsType struct {
 // ListMultipartUploadsResult defines the multipart uploads result structure.
 type ListMultipartUploadsResult struct {
     Bucket         string                     `json:"bucket"`
-    CommonPrefixes string                     `json:"commonPrefixes"`
+    CommonPrefixes []string                   `json:"commonPrefixes"`
     Delimiter      string                     `json:"delimiter"`
     Prefix         string                     `json:"prefix"`
     IsTruncated    bool                       `json:"isTruncated"`
     KeyMarker      string                     `json:"keyMarker"`
     MaxUploads     int                        `json:"maxUploads"`
     NextKeyMarker  string                     `json:"nextKeyMarker"`
-    Uploads        []listMultipartUploadsType `json:"uploads"`
+    Uploads        []ListMultipartUploadsType `json:"uploads"`
 }
 

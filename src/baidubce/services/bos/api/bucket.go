@@ -177,7 +177,7 @@ func GetBucketLocation(cli bce.Client, bucket string) (string, error) {
     if resp.IsFail() {
         return "", resp.ServiceError()
     }
-    result := &locationType{}
+    result := &LocationType{}
     if err := resp.ParseJsonBody(result); err != nil {
         return "", err
     }
@@ -411,7 +411,7 @@ func PutBucketStorageclass(cli bce.Client, bucket, storageClass string) error {
     req.SetMethod(http.PUT)
     req.SetParam("storageClass", "")
 
-    obj := &storageClassType{storageClass}
+    obj := &StorageClassType{storageClass}
     jsonBytes, jsonErr := json.Marshal(obj)
     if jsonErr != nil {
         return jsonErr
@@ -453,7 +453,7 @@ func GetBucketStorageclass(cli bce.Client, bucket string) (string, error) {
     if resp.IsFail() {
         return "", resp.ServiceError()
     }
-    result := &storageClassType{}
+    result := &StorageClassType{}
     if err := resp.ParseJsonBody(result); err != nil {
         return "", err
     }
