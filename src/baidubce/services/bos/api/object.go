@@ -465,7 +465,10 @@ func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
     if offsetErr != nil {
         nextOffset = content.Size
     }
-    result := &AppendObjectResult{resp.Header(http.CONTENT_MD5), nextOffset, resp.Header(http.ETAG)}
+    result := &AppendObjectResult{
+        resp.Header(http.CONTENT_MD5),
+        nextOffset,
+        strings.Trim(resp.Header(http.ETAG), "\"")}
     return result, nil
 }
 

@@ -502,25 +502,26 @@ func TestAppendObject(t *testing.T) {
     t.Logf("%+v", res)
 }
 
-func TestBasicAppendObject(t *testing.T) {
+func TestSimpleAppendObject(t *testing.T) {
     body, _ := bce.NewBodyFromString("bbbbbbbbbbb")
-    res, err := BOS_CLIENT.BasicAppendObject(EXISTS_BUCKET, "test-append-object", body)
+    res, err := BOS_CLIENT.SimpleAppendObject(EXISTS_BUCKET, "test-append-object", body, 11)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("%+v", res)
 }
 
-func TestBasicAppendObjectFromString(t *testing.T) {
-    res, err := BOS_CLIENT.BasicAppendObjectFromString(EXISTS_BUCKET, "test-append-object", "123")
+func TestSimpleAppendObjectFromString(t *testing.T) {
+    res, err := BOS_CLIENT.SimpleAppendObjectFromString(
+        EXISTS_BUCKET, "test-append-object", "123", 22)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("%+v", res)
 }
 
-func TestBasicAppendObjectFromFile(t *testing.T) {
+func TestSimpleAppendObjectFromFile(t *testing.T) {
     fname := "/tmp/test-append-file"
     f, _ := os.Create(fname)
     f.WriteString("12345")
     f.Close()
-    res, err := BOS_CLIENT.BasicAppendObjectFromFile(EXISTS_BUCKET, "test-append-object", fname)
+    res, err := BOS_CLIENT.SimpleAppendObjectFromFile(EXISTS_BUCKET, "test-append-object", fname, 25)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("%+v", res)
     os.Remove(fname)

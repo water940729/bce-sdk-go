@@ -673,61 +673,64 @@ func (c *Client) SimpleFetchObject(bucket, object, source, mode,
 //     - content: the append object stream
 //     - args: the optional arguments to append object
 // RETURNS:
-//     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
+//     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
 func (c *Client) AppendObject(bucket, object string, content *bce.Body,
         args *api.AppendObjectArgs) (*api.AppendObjectResult, error) {
     return api.AppendObject(c, bucket, object, content, args)
 }
 
-// BasicAppendObject - basic interface to append object
+// SimpleAppendObject - the interface to append object with simple offset argument
 //
 // PARAMS:
 //     - bucket: the name of the bucket
 //     - object: the name of the object
 //     - content: the append object stream
+//     - offset: the offset of where to append
 // RETURNS:
-//     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
+//     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
-func (c *Client) BasicAppendObject(bucket, object string,
-        content *bce.Body) (*api.AppendObjectResult, error) {
-    return api.AppendObject(c, bucket, object, content, nil)
+func (c *Client) SimpleAppendObject(bucket, object string, content *bce.Body,
+        offset int64) (*api.AppendObjectResult, error) {
+    return api.AppendObject(c, bucket, object, content, &api.AppendObjectArgs{Offset: offset})
 }
 
-// BasicAppendObjectFromString - basic interface of appending an object from a string
+// SimpleAppendObjectFromString - the simple interface of appending an object from a string
 //
 // PARAMS:
 //     - bucket: the name of the bucket
 //     - object: the name of the object
 //     - content: the object string to append
+//     - offset: the offset of where to append
 // RETURNS:
-//     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
+//     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
-func (c *Client) BasicAppendObjectFromString(bucket, object,
-        content string) (*api.AppendObjectResult, error) {
+func (c *Client) SimpleAppendObjectFromString(bucket, object, content string,
+        offset int64) (*api.AppendObjectResult, error) {
     body, err := bce.NewBodyFromString(content)
     if err != nil {
         return nil, err
     }
-    return api.AppendObject(c, bucket, object, body, nil)
+    return api.AppendObject(c, bucket, object, body, &api.AppendObjectArgs{Offset: offset})
 }
 
-// BasicAppendObjectFromFile - basic interface of appending an object from a file
+// SimpleAppendObjectFromFile - the simple interface of appending an object from a file
 //
 // PARAMS:
 //     - bucket: the name of the bucket
 //     - object: the name of the object
 //     - filePath: the full file path
+//     - offset: the offset of where to append
 // RETURNS:
-//     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
+//     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
-func (c *Client) BasicAppendObjectFromFile(bucket, object,
-        filePath string) (*api.AppendObjectResult, error) {
+func (c *Client) SimpleAppendObjectFromFile(bucket, object, filePath string,
+        offset int64) (*api.AppendObjectResult, error) {
     body, err := bce.NewBodyFromFile(filePath)
     if err != nil {
         return nil, err
     }
-    return api.AppendObject(c, bucket, object, body, nil)
+    return api.AppendObject(c, bucket, object, body, &api.AppendObjectArgs{Offset: offset})
 }
 
 // DeleteObject - delete the given object

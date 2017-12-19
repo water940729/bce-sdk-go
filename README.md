@@ -585,16 +585,20 @@ etag, err := bosClient.PutObjectFromFile(bucketName, objectName, fileName, nil)
 str := "test put object"
 etag, err := bosClient.PutObjectFromFile(bucketName, objectName, str, nil)
 
-// 3. 从数据流上传
+// 3. 从字节数组上传
+byteArr := []byte("test put object")
+etag, err := bosClient.PutObjectFromBytes(bucketName, objectName, byteArr, nil)
+
+// 4. 从数据流上传
 bodyStream, err := bce.NewBodyFromFile(fileName)
 etag, err := bosClient.PutObject(bucketName, objectName, bodyStream, nil)
 
-// 4. 使用基本接口，提供必需参数从数据流上传
+// 5. 使用基本接口，提供必需参数从数据流上传
 bodyStream, err := bce.NewBodyFromFile(fileName)
 etag, err := bosClient.BasicPutObject(bucketName, objectName, bodyStream)
 ```
 
-上述前三个接口的最后一个参数为可选参数，用户可进行自定义设置，为空
+上述前四个接口的最后一个参数为可选参数，用户可进行自定义设置，为空
 表示使用默认值。上述上传Object接口只支持不超过5GB的Object上传。在
 请求处理成功后，BOS会在Header中返回Object的ETag作为文件标识。
 
@@ -639,7 +643,8 @@ res, err := bosClient. CopyObject(bucket, object, bucket, object, args)
 BOS支持AppendObject，即以追加写的方式上传文件，适用场景如日志追加及直播
 等实时视频文件上传。通过AppendObject操作创建的Object类型为Appendable
 Object，可以对该Object追加数据；而通过PutObject上传的Object是Normal Object，
-不可进行数据追加写。AppendObject大小限制为0~5G，下面为示例：
+不可进行数据追加写。如果不设置offset，默认为0，也就是会覆盖原来的对象。
+AppendObject大小限制为0~5G，下面为示例：
 
 ```
 // 1. 原始接口上传，设置为低频存储和追加的偏移
@@ -648,14 +653,14 @@ args.StorageClass = api.STORAGE_CLASS_STANDARD_IA
 args.Offset = 1024
 res, err := bosClient.AppendObject(bucketName, objectName, bodyStream, args)
 
-// 2. 只提供必需参数的基本接口
-res, err := bosClient.BasicAppendObject(bucketName, objectName, bodyStream)
+// 2. 封装的简单接口，仅支持设置offset
+res, err := bosClient.SimpleAppendObject(bucketName, objectName, bodyStream, offset)
 
-// 3. 从字符串上传，只提供必需参数的基本接口
-res, err := bosClient.BasicAppendObjectFromString(bucketName, objectName, "abc")
+// 3. 封装的从字符串上传接口，仅支持设置offset
+res, err := bosClient.SimpleAppendObjectFromString(bucketName, objectName, "abc", offset)
 
-// 4. 给出文件名上传文件，只提供必需参数的基本接口
-res, err := bosClient.BasicAppendObjectFromFile(bucketName, objectName, "<path-to-local-file>")
+// 4. 封装的从给出的文件名上传文件的接口，仅支持设置offset
+res, err := bosClient.SimpleAppendObjectFromFile(bucketName, objectName, "<path-to-local-file>", offset)
 ```
 
 ### 抓取Object
