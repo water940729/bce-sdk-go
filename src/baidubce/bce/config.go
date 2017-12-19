@@ -32,7 +32,7 @@ const (
     DEFAULT_PROTOCOL      = "http"
     DEFAULT_REGION        = "bj"
     DEFAULT_CONTENT_TYPE  = "application/json;charset=utf-8"
-    DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 50 * 1000
+    DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 1200 * 1000
 )
 
 var(

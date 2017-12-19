@@ -614,10 +614,16 @@ func TestBasicListMultipartUploads(t *testing.T) {
 func TestUploadSuperFile(t *testing.T) {
     err := BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "super-object", "/tmp/super-file", "")
     ExpectEqual(t.Errorf, err, nil)
+
+    err = BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "not-exist", "not-exist", "")
+    ExpectEqual(t.Errorf, err, nil)
 }
 
 func TestDownloadSuperFile(t *testing.T) {
     err := BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "super-object", "/tmp/download-super-file")
+    ExpectEqual(t.Errorf, err, nil)
+
+    err = BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "not-exist", "/tmp/not-exist")
     ExpectEqual(t.Errorf, err, nil)
 }
 

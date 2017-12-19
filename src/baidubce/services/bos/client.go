@@ -1138,16 +1138,21 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 //     - fileName: the local full path filename to store the object
 // RETURNS:
 //     - error: nil if ok otherwise the specific error
-func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
-    file, fileErr := os.OpenFile(fileName, os.O_WRONLY | os.O_TRUNC | os.O_CREATE, 0644)
-    if fileErr != nil {
-        return fileErr
+func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) {
+    file, err := os.OpenFile(fileName, os.O_WRONLY | os.O_TRUNC | os.O_CREATE, 0644)
+    if err != nil {
+        return
     }
-    defer file.Close()
+    defer func() {
+        file.Close()
+        if err != nil {
+            os.Remove(fileName)
+        }
+    }()
 
-    meta, metaErr := c.GetObjectMeta(bucket, object)
-    if metaErr != nil {
-        return metaErr
+    meta, err := c.GetObjectMeta(bucket, object)
+    if err != nil {
+        return
     }
     size := meta.ContentLength
     partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
@@ -1163,7 +1168,6 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
     done := make(chan struct{}, c.MaxParallel)
 
     // Let the background goroutine to write the downloaded object
-    // [TODO] add error retrun facility
     go func() {
         for i := partNum; i > 0; i-- {
             select {
@@ -1207,16 +1211,19 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
                     offset int64
                     size   int64
                 }{}
-                if res, err := c.GetObject(bucket, object, args); err == nil {
-                    returnBody.stream = res.Body
-                    returnBody.offset = rangeStart
-                    returnBody.size   = res.ContentLength
+                res, err := c.GetObject(bucket, object, args)
+                if err != nil {
+                    errorChan <- err
+                    return
                 }
+                returnBody.stream = res.Body
+                returnBody.offset = rangeStart
+                returnBody.size   = res.ContentLength
                 bodyChan <- returnBody
                 workerPool <- workerId
             }(rangeStart, rangeEnd, workerId)
-        case err := <-errorChan: // return the error that occurs during downloading any part
-            return err
+        case err = <-errorChan: // return the error that occurs during downloading any part
+            return
         }
     }
 
