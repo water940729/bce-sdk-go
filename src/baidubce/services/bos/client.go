@@ -760,6 +760,7 @@ func (c *Client) DeleteMultipleObjects(bucket string,
 //     - bucket: the name of the bucket to delete
 //     - objectListString: the object list string to be deleted
 // RETURNS:
+//     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjectsFromString(bucket,
         objectListString string) (*api.DeleteMultipleObjectsResult, error) {
@@ -776,6 +777,7 @@ func (c *Client) DeleteMultipleObjectsFromString(bucket,
 //     - bucket: the name of the bucket to delete
 //     - objectListStruct: the object list struct to be deleted
 // RETURNS:
+//     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
         objectListStruct *api.DeleteMultipleObjectsArgs) (*api.DeleteMultipleObjectsResult, error) {
@@ -796,6 +798,7 @@ func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
 //     - bucket: the name of the bucket to delete
 //     - keyList: the key stirng list to be deleted
 // RETURNS:
+//     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjectsFromKeyList(bucket string,
         keyList []string) (*api.DeleteMultipleObjectsResult, error) {
@@ -1156,6 +1159,32 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
         offset int64
         size   int64
     }, c.MaxParallel)
+    errorChan := make(chan error)
+    done := make(chan struct{}, c.MaxParallel)
+
+    // Let the background goroutine to write the downloaded object
+    // [TODO] add error retrun facility
+    go func() {
+        for i := partNum; i > 0; i-- {
+            select {
+            case body := <-bodyChan:
+                log.Debugf("writing part %d with offset=%d, size=%d", body.offset / partSize,
+                    body.offset, body.size)
+                if body.stream == nil {
+                    errorChan <- fmt.Errorf("%s", "download object failed")
+                    return
+                }
+                file.Seek(body.offset, 0)
+                if _, err := io.CopyN(file, body.stream, body.size); err != nil {
+                    errorChan <- err
+                    return
+                }
+                done <- struct{}{}
+            }
+        }
+    }()
+
+    // Set up multiple goroutine workers to download the object
     workerPool := make(chan int64, c.MaxParallel)
     for i := int64(0); i < c.MaxParallel; i++ {
         workerPool <- i
@@ -1186,20 +1215,14 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) error {
                 bodyChan <- returnBody
                 workerPool <- workerId
             }(rangeStart, rangeEnd, workerId)
+        case err := <-errorChan: // return the error that occurs during downloading any part
+            return err
         }
     }
 
+    // Wait for writing to local file done
     for i := partNum; i > 0; i-- {
-        body := <-bodyChan
-        log.Debugf("writing part %d with offset=%d, size=%d", body.offset / partSize,
-            body.offset, body.size)
-        if body.stream == nil {
-            return fmt.Errorf("%s", "download object failed")
-        }
-        file.Seek(body.offset, 0)
-        if _, err := io.CopyN(file, body.stream, body.size); err != nil {
-            return err
-        }
+        <-done
     }
     return nil
 }

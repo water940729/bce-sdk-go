@@ -17,9 +17,12 @@
 package bce
 
 import (
-    "io"
-    "time"
+    "bytes"
     "encoding/json"
+    "io"
+    "io/ioutil"
+    "strings"
+    "time"
 
     "baidubce/http"
 )
@@ -84,16 +87,32 @@ func (r *BceResponse) ParseResponse() {
     r.requestId = r.response.GetHeader(http.BCE_REQUEST_ID)
     r.debugId = r.response.GetHeader(http.BCE_DEBUG_ID)
     if r.IsFail() {
-        r.serviceError = &BceServiceError{}
-        err := r.ParseJsonBody(r.serviceError)
-        if err != nil {
-            r.serviceError = NewBceServiceError(
-                EMALFORMED_JSON,
-                "Service json error message decode failed",
-                r.requestId,
-                r.statusCode)
+        r.serviceError = NewBceServiceError("", r.statusText, r.requestId, r.statusCode)
+
+        // First try to read the error `Code' and `Message' from body
+        rawBody, _ := ioutil.ReadAll(r.Body())
+        if len(rawBody) != 0 {
+            jsonDecoder := json.NewDecoder(bytes.NewBuffer(rawBody))
+            if err := jsonDecoder.Decode(r.serviceError); err != nil {
+                r.serviceError = NewBceServiceError(
+                    EMALFORMED_JSON,
+                    "Service json error message decode failed",
+                    r.requestId,
+                    r.statusCode)
+            }
+            return
         }
-        r.serviceError.StatusCode = r.statusCode
+
+        // Then guess the `Message' from by the return status code
+        switch r.statusCode {
+        case 400: r.serviceError.Code = EINVALID_HTTP_REQUEST
+        case 403: r.serviceError.Code = EACCESS_DENIED
+        case 412: r.serviceError.Code = EPRECONDITION_FAILED
+        case 500: r.serviceError.Code = EINTERNAL_ERROR
+        default:
+            words := strings.Split(r.statusText, " ")
+            r.serviceError.Code = strings.Join(words[1:], "")
+        }
     }
 }
 

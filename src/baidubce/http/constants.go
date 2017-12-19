@@ -34,7 +34,7 @@ const (
     CONTENT_ENCODING = "Content-Encoding"
     CONTENT_LANGUAGE = "Content-Language"
     CONTENT_LENGTH = "Content-Length"
-    CONTENT_MD5 = "Content-MD5"
+    CONTENT_MD5 = "Content-Md5"
     CONTENT_RANGE = "Content-Range"
     CONTENT_TYPE = "Content-Type"
     DATE = "Date"

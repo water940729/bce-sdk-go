@@ -39,6 +39,8 @@ var httpClient = &http.Client{}
 func Execute(request *Request) (*Response, error) {
     // Build the request object for the current requesting
     httpRequest := &http.Request{}
+    defaultTr := http.DefaultTransport
+    tr, _ := defaultTr.(*http.Transport)
 
     // Set the connection timeout for current request
     httpClient.Timeout = time.Duration(request.Timeout()) * time.Second
@@ -73,18 +75,16 @@ func Execute(request *Request) (*Response, error) {
     }
 
     // Set the proxy setting if needed
-    defaultTr := http.DefaultTransport
-    tr, _ := defaultTr.(*http.Transport)
     if len(request.ProxyUrl()) != 0 {
         tr.Proxy = func(_ *http.Request) (*url.URL, error) {
             return url.Parse(request.ProxyUrl())
         }
     }
-    httpClient.Transport = tr
 
     // Perform the http request and get response
-    // It needs to actively close the keep-alive connections when occurs error for those request
+    // It needs to explicitly close the keep-alive connections when error occurs for the request
     // that may continue sending request's data subsequently.
+    httpClient.Transport = tr
     start := time.Now()
     httpResponse, err := httpClient.Do(httpRequest)
     end := time.Now()

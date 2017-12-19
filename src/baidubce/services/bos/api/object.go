@@ -50,9 +50,13 @@ func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
             http.CACHE_CONTROL: args.CacheControl,
             http.CONTENT_DISPOSITION: args.ContentDisposition,
             http.CONTENT_MD5: args.ContentMD5,
+            http.CONTENT_TYPE: args.ContentType,
             http.EXPIRES: args.Expires,
             http.BCE_CONTENT_SHA256: args.ContentSha256,
         })
+        if args.ContentLength != 0 {
+            req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
+        }
 
         if validStorageClass(args.StorageClass) {
             req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
