@@ -118,6 +118,8 @@ func CopyObject(cli bce.Client, bucket, object, source string,
             http.ETAG: args.ETag,
             http.CONTENT_MD5: args.ContentMD5,
             http.BCE_CONTENT_SHA256: args.ContentSha256,
+            http.BCE_OBJECT_TYPE: args.ObjectType,
+            http.BCE_NEXT_APPEND_OFFSET: args.NextAppendOffset,
             http.BCE_COPY_SOURCE_IF_MATCH: args.IfMatch,
             http.BCE_COPY_SOURCE_IF_NONE_MATCH: args.IfNoneMatch,
             http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: args.IfModifiedSince,
@@ -170,41 +172,33 @@ func CopyObject(cli bce.Client, bucket, object, source string,
 //     - cli: the client agent which can perform sending request
 //     - bucket: the bucket name of the object
 //     - object: the name of the object
-//     - args: the optional arguments to get the given object
+//     - responseHeaders: the optional response headers to get the given object
+//     - ranges: the optional range start and end to get the given object
 // RETURNS:
 //     - *GetObjectResult: the output content result of the object
 //     - error: nil if ok otherwise the specific error
-func GetObject(cli bce.Client, bucket, object string,
-        args *GetObjectArgs) (*GetObjectResult, error) {
-    if args == nil {
-        args = &GetObjectArgs{-1, -1, nil}
-    }
+func GetObject(cli bce.Client, bucket, object string, responseHeaders map[string]string,
+        ranges...int64) (*GetObjectResult, error) {
     req := &bce.BceRequest{}
     req.SetUri(getObjectUri(bucket, object))
     req.SetMethod(http.GET)
 
     // Optional arguments settings
-    if args != nil {
-        var rangeStr string
-        if args.RangeStart == -1 && args.RangeEnd >= 0 {
-            rangeStr = fmt.Sprintf("bytes=-%d", args.RangeEnd)
-        } else if args.RangeStart >= 0 && args.RangeEnd == -1 {
-            rangeStr = fmt.Sprintf("bytes=%d-", args.RangeStart)
-        } else if args.RangeStart >= 0 && args.RangeEnd >= 0 {
-            rangeStr = fmt.Sprintf("bytes=%d-%d", args.RangeStart, args.RangeEnd)
-        } else {
-            rangeStr = ""
-        }
-        if len(rangeStr) != 0 {
-            req.SetHeader("Range", rangeStr)
-        }
-        if args.ResponseHeaders != nil {
-            for k, v := range args.ResponseHeaders {
-                if _, ok := GET_OBJECT_ALLOWED_RESPONSE_HEADERS[k]; ok {
-                    req.SetParam("response" + k, v)
-                }
+    if responseHeaders != nil {
+        for k, v := range responseHeaders {
+            if _, ok := GET_OBJECT_ALLOWED_RESPONSE_HEADERS[k]; ok {
+                req.SetParam("response" + k, v)
             }
         }
+    }
+    if len(ranges) != 0 {
+        rangeStr := "bytes="
+        if len(ranges) == 1 {
+            rangeStr += fmt.Sprintf("%d", ranges[0]) + "-"
+        } else {
+            rangeStr += fmt.Sprintf("%d", ranges[0]) + "-" + fmt.Sprintf("%d", ranges[1])
+        }
+        req.SetHeader("Range", rangeStr)
     }
 
     // Send request and get the result
@@ -266,6 +260,12 @@ func GetObject(cli bce.Client, bucket, object string,
             }
             result.UserMeta[k] = v
         }
+    }
+    if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
+        result.ObjectType = val
+    }
+    if val, ok := headers[toHttpHeaderKey(http.BCE_NEXT_APPEND_OFFSET)]; ok {
+        result.NextAppendOffset = val
     }
     result.Body = resp.Body()
     return result, nil
@@ -341,6 +341,12 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
             }
             result.UserMeta[k] = v
         }
+    }
+    if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
+        result.ObjectType = val
+    }
+    if val, ok := headers[toHttpHeaderKey(http.BCE_NEXT_APPEND_OFFSET)]; ok {
+        result.NextAppendOffset = val
     }
     return result, nil
 }

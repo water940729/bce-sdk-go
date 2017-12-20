@@ -401,44 +401,42 @@ func TestBasicCopyObject(t *testing.T) {
 }
 
 func TestGetObject(t *testing.T) {
-    respHeaders := map[string]string{"ContentEncoding" : "qqqqqqqqqqqqq"}
-    args := &api.GetObjectArgs{2, 4, respHeaders}
-    res, err := BOS_CLIENT.GetObject(EXISTS_BUCKET, "test-put-object", args)
+    res, err := BOS_CLIENT.GetObject(EXISTS_BUCKET, "test-put-object", nil)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("%+v", res)
-
-    defer res.Body.Close()
     t.Logf("%v", res.ContentLength)
-    for {
-        buf := make([]byte, 1024)
-        n, e := res.Body.Read(buf)
-        t.Logf("%s", buf[0:n])
-        if e != nil {
-            break
-        }
-    }
+    buf := make([]byte, 1024)
+    n, _ := res.Body.Read(buf)
+    t.Logf("%s", buf[0:n])
+    res.Body.Close()
+
+    respHeaders := map[string]string{"ContentEncoding" : "qqqqqqqqqqqqq"}
+    res, err = BOS_CLIENT.GetObject(EXISTS_BUCKET, "test-put-object", respHeaders)
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("%+v", res)
+    t.Logf("%v", res.ContentLength)
+    n, _ = res.Body.Read(buf)
+    t.Logf("%s", buf[0:n])
+    res.Body.Close()
+
+    res, err = BOS_CLIENT.GetObject(EXISTS_BUCKET, "test-put-object", respHeaders, 2)
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("%+v", res)
+    t.Logf("%v", res.ContentLength)
+    n, _ = res.Body.Read(buf)
+    t.Logf("%s", buf[0:n])
+
+    res, err = BOS_CLIENT.GetObject(EXISTS_BUCKET, "test-put-object", respHeaders, 2, 4)
+    ExpectEqual(t.Errorf, err, nil)
+    t.Logf("%+v", res)
+    t.Logf("%v", res.ContentLength)
+    n, _ = res.Body.Read(buf)
+    t.Logf("%s", buf[0:n])
+    res.Body.Close()
 }
 
 func TestBasicGetObject(t *testing.T) {
     res, err := BOS_CLIENT.BasicGetObject(EXISTS_BUCKET, "test-put-object")
-    ExpectEqual(t.Errorf, err, nil)
-    t.Logf("%+v", res)
-
-    defer res.Body.Close()
-    t.Logf("%v", res.ContentLength)
-    for {
-        buf := make([]byte, 1024)
-        n, e := res.Body.Read(buf)
-        t.Logf("%s", buf[0:n])
-        if e != nil {
-            break
-        }
-    }
-}
-
-func TestSimpleGetObject(t *testing.T) {
-    respHeaders := map[string]string{"ContentEncoding" : "qqqqqqqqqqqqq"}
-    res, err := BOS_CLIENT.SimpleGetObject(EXISTS_BUCKET, "test-put-object", 0, 5, respHeaders)
     ExpectEqual(t.Errorf, err, nil)
     t.Logf("%+v", res)
 

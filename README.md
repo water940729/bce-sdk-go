@@ -147,31 +147,25 @@ BOS Client对象为用户使用BOS服务的客户端，提供了所有API的支�
 `baidubce/services/bos/api`目录下，分为`Bucket`相关接口、`Object`相关接
 口和`Multipart`相关接口三部分。每个接口的参数分为必需参数和可选参数两
 类，必需参数直接作为API函数的参数，可选参数以后缀名为`Args`的`struct`的
-形式定义于`model.go`文件中，如`GetObject`接口的必需参数为`bucket名称`、
-`object名称`，但同时提供可选参数`GetObjectArgs`，包含了三个字段，分别
-是`RangeStart`、`RangeEnd`、`ResponseHeaders`，前两者用来控制下载部分内
-容，第三个用来设置返回的请求的HTTP头部值。每个API函数返回的值也不同，分
-别以后缀名为`Result`的`struct`定义于`model.go`文件中，具体某个API的返回
-参数的字段详见API说明文档，如`GetObject`的返回值定义如下：
+形式定义于`model.go`文件中，如`CopyObject`接口的必需参数为`bucket名称`、
+`object名称`和`CopySource`，但同时提供可选参数`CopyObjectArgs`，分别可以
+用来指定拷贝的相关选项。 每个API函数返回的值也不同，分别以后缀名为`Result`
+的`struct`定义于`model.go`文件中，具体某个API的返回参数的字段详见API说明
+文档，`CopyObject`的参数和返回值定义如下：
 
 ```
-type GetObjectResult struct {
-    objectMeta
-    ContentLanguage string
-    ContentEncoding string
-    Body            io.ReadCloser
+type CopyObjectArgs struct {
+    ObjectMeta
+    MetadataDirective string
+    IfMatch           string
+    IfNoneMatch       string
+    IfModifiedSince   string
+    IfUnmodifiedSince string
 }
 
-type objectMeta struct {
-    CacheControl       string
-    ContentDisposition string
-    ContentLength      string
-    ContentRange       string
-    ContentType        string
-    Expires            string
-    ETag               string
-    UserMeta           map[string]string
-    StorageClass       string
+type CopyObjectResult struct {
+    LastModified string
+    ETag         string
 }
 ```
 
@@ -182,8 +176,7 @@ BOS Client将底层原始API进行了封装，最大程度的方便用户使用�
 种形式调用，以`GetObject` API举例来说明，在BOS Client对象上
   1. 首先提供了`GetObject`方法，直接调用原始API
   2. 封装`BasicGetObject`方法，仅使用必需参数调用
-  3. 封装`SimpleGetObject`方法，可选参数分离，方便调用，不需构造`GetObjectArgs`对象
-  4. 封装`BasicGetObjectToFile`方法，仅使用必须参数调用，将下载对象存入文件
+  3. 封装`BasicGetObjectToFile`方法，仅使用必须参数调用，将下载对象存入文件
 
 用户使用BOS Client对象可以直接使用原始API，也可以使用封装的易用接口，所
 有其他API的封装请使用`go doc`工具生成之后自行阅览，各接口的命名都具有自
@@ -721,21 +714,23 @@ BOS Client提供了四种接口用来获取一个对象的内容，示例代码�
 
 ```
 // 1. 原始接口，可提供可选参数
-args := new(api.GetObjectArgs)
-args.RangeStart = 1024
-args.RangeEnd = 2048
-res, err := bosClient.GetObject(bucketName, objectName, args)
+responseHeaders := map[string]string{"ContentType": "image/gif"}
+rangeStart = 1024
+rangeEnd = 2048
+res, err := bosClient.GetObject(bucketName, objectName, responseHeaders, rangeStart, rangeEnd)
 buf := new(bytes.Buffer)
 io.Copy(buf, res.Body())
+// 只指定start
+res, err := bosClient.GetObject(bucketName, objectName, responseHeaders, rangeStart)
+// 不指定range
+res, err := bosClient.GetObject(bucketName, objectName, responseHeaders)
+// 不指定返回可选头部
+res, err := bosClient.GetObject(bucketName, objectName, nil)
 
 // 2. 基本接口，获取一个对象
 res, err := bosClient.BasicGetObject(bucketName, objectName)
 
-// 3. 易用接口，设置可选参数
-responseHeaders := map[string]string{"responseContentType": "image/gif"}
-res, err := bosClient.SimpleGetObject(bucketName, objectName, 1024, 2048, responseHeaders)
-
-// 4. 基本接口，下载一个对象到本地文件
+// 3. 基本接口，下载一个对象到本地文件
 res, err := bosClient.BasicGetObjectToFile(bucketName, objectName, "path-to-local-file")
 ```
 
@@ -1063,14 +1058,4 @@ if err != nil {
     fmt.Println("create bucket success, bucket location:", bucketLocation)
 }
 ```
-
-## 版本变更记录
-
- - GO SDK开发包[2017-12-12]版本号0.1.0
-   首次发布:
-      - 支持创建、查看、罗列、删除Bucket
-      - 修改、获取Bucket的访问权限
-      - 支持Bucket级别的location、logging、lifecycle、storage class操作
-      - 支持上传、下载、拷贝、追加、删除、Fetch、罗列Object
-
 

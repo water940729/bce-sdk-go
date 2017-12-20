@@ -531,14 +531,15 @@ func (c *Client) BasicCopyObject(bucket, object, srcBucket,
 // PARAMS:
 //     - bucket: the name of the bucket
 //     - object: the name of the object
-//     - args: the optional arguments of getting the object
+//     - responseHeaders: the optional response headers to get the given object
+//     - ranges: the optional range start and end to get the given object
 // RETURNS:
 //     - *api.GetObjectResult: result struct which contains "Body" and header fields
 //       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
-func (c *Client) GetObject(bucket, object string,
-        args *api.GetObjectArgs) (*api.GetObjectResult, error) {
-    return api.GetObject(c, bucket, object, args)
+func (c *Client) GetObject(bucket, object string, responseHeaders map[string]string,
+        ranges...int64) (*api.GetObjectResult, error) {
+    return api.GetObject(c, bucket, object, responseHeaders, ranges...)
 }
 
 // BasicGetObject - the basic interface of geting the given object
@@ -552,28 +553,6 @@ func (c *Client) GetObject(bucket, object string,
 //     - error: any error if it occurs
 func (c *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, error) {
     return api.GetObject(c, bucket, object, nil)
-}
-
-// SimpleGetObject - get the given object with simple arguments interface
-//
-// PARAMS:
-//     - bucket: the name of the bucket
-//     - object: the name of the object
-//     - rangeStart: start offset to get the object
-//     - rangeEnd: end offset to get the object
-//     - responseHeaders: the user specified headers when return, only support 5 headers:
-//       ContentDisposition, ContentType, ContentLanguage, Expires, CacheControl, ContentEncoding
-// RETURNS:
-//     - *api.GetObjectResult: result struct which contains "Body" and header fields
-//       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
-//     - error: any error if it occurs
-func (c *Client) SimpleGetObject(bucket, object string, rangeStart, rangeEnd int64,
-        responseHeaders map[string]string) (*api.GetObjectResult, error) {
-    args := &api.GetObjectArgs{
-        rangeStart,
-        rangeEnd,
-        responseHeaders}
-    return api.GetObject(c, bucket, object, args)
 }
 
 // BasicGetObjectToFile - use basic interface to get the given object to the given file path
@@ -1205,16 +1184,12 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) 
         select {
         case workerId := <-workerPool:
             go func(rangeStart, rangeEnd, workerId int64) {
-                args := &api.GetObjectArgs{
-                    RangeStart: rangeStart,
-                    RangeEnd: rangeEnd,
-                }
                 returnBody := &struct{
                     stream io.ReadCloser
                     offset int64
                     size   int64
                 }{}
-                res, err := c.GetObject(bucket, object, args)
+                res, err := c.GetObject(bucket, object, nil, rangeStart, rangeEnd)
                 if err != nil {
                     errorChan <- err
                     return

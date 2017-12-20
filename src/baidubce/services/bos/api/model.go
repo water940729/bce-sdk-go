@@ -196,13 +196,6 @@ type CopyObjectResult struct {
     ETag         string `json:"eTag"`
 }
 
-// GetObjectArgs defines the optional input arguments of the get object api.
-type GetObjectArgs struct {
-    RangeStart      int64
-    RangeEnd        int64
-    ResponseHeaders map[string]string
-}
-
 type ObjectMeta struct {
     CacheControl       string
     ContentDisposition string
@@ -217,6 +210,8 @@ type ObjectMeta struct {
     ETag               string
     UserMeta           map[string]string
     StorageClass       string
+    NextAppendOffset   string
+    ObjectType         string
 }
 
 // GetObjectResult defines the result data of the get object api.
