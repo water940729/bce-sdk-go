@@ -49,13 +49,31 @@ func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
 		setOptionalNullHeaders(req, map[string]string{
 			http.CACHE_CONTROL:       args.CacheControl,
 			http.CONTENT_DISPOSITION: args.ContentDisposition,
-			http.CONTENT_MD5:         args.ContentMD5,
 			http.CONTENT_TYPE:        args.ContentType,
 			http.EXPIRES:             args.Expires,
 			http.BCE_CONTENT_SHA256:  args.ContentSha256,
 		})
 		if args.ContentLength != 0 {
+			// User specified Content-Length can be smaller than the body size, so the body should
+			// be reset. The `net/http.Client' does not support the Content-Length bigger than the
+			// body size.
+			if args.ContentLength > body.Size() {
+				return "", bce.NewBceClientError("content-length can't be bigger than body size")
+			}
+			if args.ContentLength < 0 {
+				return "", bce.NewBceClientError("content-length can't be a negative number")
+			}
+			body, err := bce.NewBodyFromSizedReader(body.Stream(), args.ContentLength)
+			if err != nil {
+				return "", bce.NewBceClientError(err.Error())
+			}
+			req.SetBody(body)
 			req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
+		}
+
+		// Reset the contentMD5 if set by user
+		if len(args.ContentMD5) != 0 {
+			req.SetHeader(http.CONTENT_MD5, args.ContentMD5)
 		}
 
 		if validStorageClass(args.StorageClass) {
@@ -469,7 +487,7 @@ func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
 	nextOffset, offsetErr := strconv.ParseInt(
 		resp.Header(http.BCE_PREFIX+"next-append-offset"), 10, 64)
 	if offsetErr != nil {
-		nextOffset = content.Size
+		nextOffset = content.Size()
 	}
 	result := &AppendObjectResult{
 		resp.Header(http.CONTENT_MD5),

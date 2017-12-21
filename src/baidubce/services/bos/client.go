@@ -1160,11 +1160,15 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) 
 					errorChan <- fmt.Errorf("%s", "download object failed")
 					return
 				}
-				file.Seek(body.offset, 0)
+				if _, err := file.Seek(body.offset, 0); err != nil {
+					errorChan <- err
+					return
+				}
 				if _, err := io.CopyN(file, body.stream, body.size); err != nil {
 					errorChan <- err
 					return
 				}
+				body.stream.Close()
 				done <- struct{}{}
 			}
 		}

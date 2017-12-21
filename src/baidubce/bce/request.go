@@ -32,10 +32,16 @@ import (
 // to ensure the correctness of the body content forcely, and users can also set the content-sha256
 // header to strengthen the correctness with the "SetHeader" method.
 type Body struct {
-	Stream     io.ReadCloser
-	Size       int64
-	ContentMD5 string
+	stream     io.ReadCloser
+	size       int64
+	contentMD5 string
 }
+
+func (b *Body) Stream() io.ReadCloser { return b.stream }
+
+func (b *Body) Size() int64 { return b.size }
+
+func (b *Body) ContentMD5() string { return b.contentMD5 }
 
 // NewBodyFromBytes - build a Body object from the byte stream to be used in the http request, it
 // calculates the content-md5 of the byte stream and store the size as well as the stream.
@@ -103,7 +109,7 @@ func NewBodyFromFile(fname string) (*Body, error) {
 }
 
 // NewBodyFromSectionFile - build a Body object from the given file pointer with offset and size.
-// it calculates the content-md5 of the given content and store the size as well as the stream.
+// It calculates the content-md5 of the given content and store the size as well as the stream.
 //
 // PARAMS:
 //     - file: the input file pointer
@@ -127,6 +133,37 @@ func NewBodyFromSectionFile(file *os.File, off, size int64) (*Body, error) {
 	return &Body{ioutil.NopCloser(section), size, contentMD5}, nil
 }
 
+// NewBodyFromSizedReader - build a Body object from the given reader with size.
+// It calculates the content-md5 of the given content and store the size as well as the stream.
+//
+// PARAMS:
+//     - r: the input reader
+//     - size: the size to be read from the input reader which must be <= reader size
+// RETURNS:
+//     - *Body: the return Body object
+//     - error: error if any specific error occurs
+func NewBodyFromSizedReader(r io.Reader, size int64) (*Body, error) {
+	var err error
+	var buf1, buf2 bytes.Buffer
+	tee := io.TeeReader(r, &buf1)
+	readerSize, err := io.Copy(&buf2, tee)
+	if err != nil {
+		return nil, err
+	}
+	if readerSize < size {
+		return nil, NewBceClientError("given size can't be bigger than the reader actual size")
+	}
+	contentMD5 := ""
+	if size >= 0 {
+		contentMD5, err = util.CalculateContentMD5(&buf1, size)
+	}
+	if err != nil {
+		return nil, err
+	}
+	stream := io.LimitReader(&buf2, size)
+	return &Body{ioutil.NopCloser(stream), size, contentMD5}, nil
+}
+
 // BceRequest defines the request structure for accessing BCE services
 type BceRequest struct {
 	http.Request
@@ -143,11 +180,11 @@ func (b *BceRequest) ClientError() *BceClientError { return b.clientError }
 func (b *BceRequest) SetClientError(err *BceClientError) { b.clientError = err }
 
 func (b *BceRequest) SetBody(body *Body) { // override SetBody derived from http.Request
-	b.Request.SetBody(body.Stream)
-	b.SetLength(body.Size) // set field of "net/http.Request.ContentLength"
-	b.SetHeader(http.CONTENT_MD5, body.ContentMD5)
-	if body.Size > 0 {
-		b.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", body.Size))
+	b.Request.SetBody(body.Stream())
+	b.SetLength(body.Size()) // set field of "net/http.Request.ContentLength"
+	if body.Size() > 0 {
+		b.SetHeader(http.CONTENT_MD5, body.ContentMD5())
+		b.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", body.Size()))
 	}
 }
 

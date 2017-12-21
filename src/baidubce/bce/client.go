@@ -120,7 +120,7 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 						retries, err)}
 			}
 			retries++
-			log.Warnf("send request failed, retry for %d time(s)", retries)
+			log.Warnf("send request failed: %v, retry for %d time(s)", err, retries)
 			continue
 		}
 		resp.SetHttpResponse(httpResp)

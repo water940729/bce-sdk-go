@@ -50,19 +50,19 @@ func init() {
 func ExpectEqual(alert func(format string, args ...interface{}),
 	expected interface{}, actual interface{}) bool {
 	expectedValue, actualValue := reflect.ValueOf(expected), reflect.ValueOf(actual)
+	equal := false
 	switch {
 	case expected == nil && actual == nil:
 		return true
 	case expected != nil && actual == nil:
-		return expectedValue.IsNil()
+		equal = expectedValue.IsNil()
 	case expected == nil && actual != nil:
-		return actualValue.IsNil()
-	}
-
-	equal := false
-	if actualType := reflect.TypeOf(actual); actualType != nil {
-		if expectedValue.IsValid() && expectedValue.Type().ConvertibleTo(actualType) {
-			equal = reflect.DeepEqual(expectedValue.Convert(actualType).Interface(), actual)
+		equal = actualValue.IsNil()
+	default:
+		if actualType := reflect.TypeOf(actual); actualType != nil {
+			if expectedValue.IsValid() && expectedValue.Type().ConvertibleTo(actualType) {
+				equal = reflect.DeepEqual(expectedValue.Convert(actualType).Interface(), actual)
+			}
 		}
 	}
 	if !equal {
@@ -384,6 +384,16 @@ func TestPutObjectFromFile(t *testing.T) {
 	res, err := BOS_CLIENT.PutObjectFromFile(EXISTS_BUCKET, "test-put-object", fname, nil)
 	ExpectEqual(t.Errorf, err, nil)
 	t.Logf("etag: %v", res)
+
+	args := &api.PutObjectArgs{ContentLength: 6}
+	res, err = BOS_CLIENT.PutObjectFromFile(EXISTS_BUCKET, "test-put-object", fname, args)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("error: %v", err)
+
+	args.ContentLength = -1
+	res, err = BOS_CLIENT.PutObjectFromFile(EXISTS_BUCKET, "test-put-object", fname, args)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("error: %v", err)
 	os.Remove(fname)
 }
 
@@ -492,7 +502,7 @@ func TestSimpleFetchObject(t *testing.T) {
 		"https://cloud.baidu.com/doc/BOS/API.html",
 		api.FETCH_MODE_ASYNC, api.STORAGE_CLASS_COLD)
 	ExpectEqual(t.Errorf, err, nil)
-	ExpectEqual(t.Errorf, res.Code, "success")
+	t.Logf("result: %+v", res)
 }
 
 func TestAppendObject(t *testing.T) {
@@ -618,7 +628,8 @@ func TestUploadSuperFile(t *testing.T) {
 	ExpectEqual(t.Errorf, err, nil)
 
 	err = BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "not-exist", "not-exist", "")
-	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%+v", err)
 }
 
 func TestDownloadSuperFile(t *testing.T) {
@@ -626,7 +637,8 @@ func TestDownloadSuperFile(t *testing.T) {
 	ExpectEqual(t.Errorf, err, nil)
 
 	err = BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "not-exist", "/tmp/not-exist")
-	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%+v", err)
 }
 
 func TestGeneratePresignedUrl(t *testing.T) {

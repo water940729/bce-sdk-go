@@ -43,19 +43,19 @@ func init() {
 func ExpectEqual(alert func(format string, args ...interface{}),
 	expected interface{}, actual interface{}) bool {
 	expectedValue, actualValue := reflect.ValueOf(expected), reflect.ValueOf(actual)
+	equal := false
 	switch {
 	case expected == nil && actual == nil:
 		return true
 	case expected != nil && actual == nil:
-		return expectedValue.IsNil()
+		equal = expectedValue.IsNil()
 	case expected == nil && actual != nil:
-		return actualValue.IsNil()
-	}
-
-	equal := false
-	if actualType := reflect.TypeOf(actual); actualType != nil {
-		if expectedValue.IsValid() && expectedValue.Type().ConvertibleTo(actualType) {
-			equal = reflect.DeepEqual(expectedValue.Convert(actualType).Interface(), actual)
+		equal = actualValue.IsNil()
+	default:
+		if actualType := reflect.TypeOf(actual); actualType != nil {
+			if expectedValue.IsValid() && expectedValue.Type().ConvertibleTo(actualType) {
+				equal = reflect.DeepEqual(expectedValue.Convert(actualType).Interface(), actual)
+			}
 		}
 	}
 	if !equal {
