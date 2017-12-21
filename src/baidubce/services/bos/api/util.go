@@ -17,115 +17,124 @@
 package api
 
 import (
-    "bytes"
+	"bytes"
 
-    "baidubce/bce"
-    "baidubce/http"
+	"baidubce/bce"
+	"baidubce/http"
 )
 
 const (
-    METADATA_DIRECTIVE_COPY    = "copy"
-    METADATA_DIRECTIVE_REPLACE = "replace"
+	METADATA_DIRECTIVE_COPY    = "copy"
+	METADATA_DIRECTIVE_REPLACE = "replace"
 
-    STORAGE_CLASS_STANDARD    = "STANDARD"
-    STORAGE_CLASS_STANDARD_IA = "STANDARD_IA"
-    STORAGE_CLASS_COLD        = "COLD"
+	STORAGE_CLASS_STANDARD    = "STANDARD"
+	STORAGE_CLASS_STANDARD_IA = "STANDARD_IA"
+	STORAGE_CLASS_COLD        = "COLD"
 
-    FETCH_MODE_SYNC  = "sync"
-    FETCH_MODE_ASYNC = "async"
+	FETCH_MODE_SYNC  = "sync"
+	FETCH_MODE_ASYNC = "async"
 
-    CANNED_ACL_PRIVATE           = "private"
-    CANNED_ACL_PUBLIC_READ       = "public-read"
-    CANNED_ACL_PUBLIC_READ_WRITE = "public-read-write"
+	CANNED_ACL_PRIVATE           = "private"
+	CANNED_ACL_PUBLIC_READ       = "public-read"
+	CANNED_ACL_PUBLIC_READ_WRITE = "public-read-write"
 
-    RAW_CONTENT_TYPE = "application/octet-stream"
+	RAW_CONTENT_TYPE = "application/octet-stream"
 )
 
 var (
-    GET_OBJECT_ALLOWED_RESPONSE_HEADERS = map[string]struct{}{
-        "ContentDisposition": {},
-        "ContentType": {},
-        "ContentLanguage": {},
-        "Expires": {},
-        "CacheControl": {},
-        "ContentEncoding": {},
-    }
+	GET_OBJECT_ALLOWED_RESPONSE_HEADERS = map[string]struct{}{
+		"ContentDisposition": {},
+		"ContentType":        {},
+		"ContentLanguage":    {},
+		"Expires":            {},
+		"CacheControl":       {},
+		"ContentEncoding":    {},
+	}
 )
 
 func getBucketUri(bucketName string) string {
-    return bce.URI_PREFIX  + bucketName
+	return bce.URI_PREFIX + bucketName
 }
 
 func getObjectUri(bucketName, objectName string) string {
-    return bce.URI_PREFIX  + bucketName + "/" + objectName
+	return bce.URI_PREFIX + bucketName + "/" + objectName
 }
 
 func validMetadataDirective(val string) bool {
-    if val == METADATA_DIRECTIVE_COPY || val == METADATA_DIRECTIVE_REPLACE {
-        return true
-    }
-    return false
+	if val == METADATA_DIRECTIVE_COPY || val == METADATA_DIRECTIVE_REPLACE {
+		return true
+	}
+	return false
 }
 
 func validStorageClass(val string) bool {
-    if val == STORAGE_CLASS_STANDARD_IA ||
-        val == STORAGE_CLASS_STANDARD ||
-        val == STORAGE_CLASS_COLD {
-        return true
-    }
-    return false
+	if val == STORAGE_CLASS_STANDARD_IA ||
+		val == STORAGE_CLASS_STANDARD ||
+		val == STORAGE_CLASS_COLD {
+		return true
+	}
+	return false
 }
 
 func validFetchMode(val string) bool {
-    if val == FETCH_MODE_SYNC || val == FETCH_MODE_ASYNC {
-        return true
-    }
-    return false
+	if val == FETCH_MODE_SYNC || val == FETCH_MODE_ASYNC {
+		return true
+	}
+	return false
 }
 
 func validCannedAcl(val string) bool {
-    if val == CANNED_ACL_PRIVATE ||
-        val == CANNED_ACL_PUBLIC_READ ||
-        val == CANNED_ACL_PUBLIC_READ_WRITE {
-        return true
-    }
-    return false
+	if val == CANNED_ACL_PRIVATE ||
+		val == CANNED_ACL_PUBLIC_READ ||
+		val == CANNED_ACL_PUBLIC_READ_WRITE {
+		return true
+	}
+	return false
 }
 
 func toHttpHeaderKey(key string) string {
-    var result bytes.Buffer
-    needToUpper := true
-    for _, c := range []byte(key) {
-        if needToUpper && (c >= 'a' && c <= 'z') {
-            result.WriteByte(c - 32)
-            needToUpper = false
-        } else if c == '-' {
-            result.WriteByte(c)
-            needToUpper = true
-        } else {
-            result.WriteByte(c)
-        }
-    }
-    return result.String()
+	var result bytes.Buffer
+	needToUpper := true
+	for _, c := range []byte(key) {
+		if needToUpper && (c >= 'a' && c <= 'z') {
+			result.WriteByte(c - 32)
+			needToUpper = false
+		} else if c == '-' {
+			result.WriteByte(c)
+			needToUpper = true
+		} else {
+			result.WriteByte(c)
+		}
+	}
+	return result.String()
 }
 
 func setOptionalNullHeaders(req *bce.BceRequest, args map[string]string) {
-    for k, v := range args {
-        if len(v) == 0 {
-            continue
-        }
-        switch k {
-        case http.CACHE_CONTROL: fallthrough
-        case http.CONTENT_DISPOSITION: fallthrough
-        case http.CONTENT_MD5: fallthrough
-        case http.EXPIRES: fallthrough
-        case http.BCE_CONTENT_SHA256: fallthrough
-        case http.BCE_COPY_SOURCE_RANGE: fallthrough
-        case http.BCE_COPY_SOURCE_IF_MATCH: fallthrough
-        case http.BCE_COPY_SOURCE_IF_NONE_MATCH: fallthrough
-        case http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: fallthrough
-        case http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: req.SetHeader(k, v)
-        }
-    }
+	for k, v := range args {
+		if len(v) == 0 {
+			continue
+		}
+		switch k {
+		case http.CACHE_CONTROL:
+			fallthrough
+		case http.CONTENT_DISPOSITION:
+			fallthrough
+		case http.CONTENT_MD5:
+			fallthrough
+		case http.EXPIRES:
+			fallthrough
+		case http.BCE_CONTENT_SHA256:
+			fallthrough
+		case http.BCE_COPY_SOURCE_RANGE:
+			fallthrough
+		case http.BCE_COPY_SOURCE_IF_MATCH:
+			fallthrough
+		case http.BCE_COPY_SOURCE_IF_NONE_MATCH:
+			fallthrough
+		case http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE:
+			fallthrough
+		case http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE:
+			req.SetHeader(k, v)
+		}
+	}
 }
-

@@ -17,13 +17,13 @@
 package api
 
 import (
-    "fmt"
-    "strconv"
-    "strings"
+	"fmt"
+	"strconv"
+	"strings"
 
-    "baidubce/auth"
-    "baidubce/bce"
-    "baidubce/http"
+	"baidubce/auth"
+	"baidubce/bce"
+	"baidubce/http"
 )
 
 // PutObject - put the object from the string or the stream
@@ -38,49 +38,49 @@ import (
 //     - string: the etag of the object
 //     - error: nil if ok otherwise the specific error
 func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
-        args *PutObjectArgs) (string, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.PUT)
-    req.SetBody(body)
+	args *PutObjectArgs) (string, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.PUT)
+	req.SetBody(body)
 
-    // Optional arguments settings
-    if args != nil {
-        setOptionalNullHeaders(req, map[string]string{
-            http.CACHE_CONTROL: args.CacheControl,
-            http.CONTENT_DISPOSITION: args.ContentDisposition,
-            http.CONTENT_MD5: args.ContentMD5,
-            http.CONTENT_TYPE: args.ContentType,
-            http.EXPIRES: args.Expires,
-            http.BCE_CONTENT_SHA256: args.ContentSha256,
-        })
-        if args.ContentLength != 0 {
-            req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
-        }
+	// Optional arguments settings
+	if args != nil {
+		setOptionalNullHeaders(req, map[string]string{
+			http.CACHE_CONTROL:       args.CacheControl,
+			http.CONTENT_DISPOSITION: args.ContentDisposition,
+			http.CONTENT_MD5:         args.ContentMD5,
+			http.CONTENT_TYPE:        args.ContentType,
+			http.EXPIRES:             args.Expires,
+			http.BCE_CONTENT_SHA256:  args.ContentSha256,
+		})
+		if args.ContentLength != 0 {
+			req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
+		}
 
-        if validStorageClass(args.StorageClass) {
-            req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
-        } else {
-            if len(args.StorageClass) != 0 {
-                return "", bce.NewBceClientError("invalid storage class value: " +
-                    args.StorageClass)
-            }
-        }
-        if args.UserMeta != nil {
-            for k, v := range args.UserMeta {
-                req.SetHeader(k, v)
-            }
-        }
-    }
+		if validStorageClass(args.StorageClass) {
+			req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
+		} else {
+			if len(args.StorageClass) != 0 {
+				return "", bce.NewBceClientError("invalid storage class value: " +
+					args.StorageClass)
+			}
+		}
+		if args.UserMeta != nil {
+			for k, v := range args.UserMeta {
+				req.SetHeader(k, v)
+			}
+		}
+	}
 
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return "", err
-    }
-    if resp.IsFail() {
-        return "", resp.ServiceError()
-    }
-    return strings.Trim(resp.Header(http.ETAG), "\""), nil
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return "", err
+	}
+	if resp.IsFail() {
+		return "", resp.ServiceError()
+	}
+	return strings.Trim(resp.Header(http.ETAG), "\""), nil
 }
 
 // CopyObject - copy one object to a new object with new bucket and/or name. It can alse set the
@@ -96,74 +96,74 @@ func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
 //     - *CopyObjectResult: the result object which contains etag and lastmodified
 //     - error: nil if ok otherwise the specific error
 func CopyObject(cli bce.Client, bucket, object, source string,
-        args *CopyObjectArgs) (*CopyObjectResult, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.PUT)
-    if len(source) == 0 {
-        return nil, bce.NewBceClientError("copy source should not be null")
-    }
-    req.SetHeader(http.BCE_COPY_SOURCE, source)
+	args *CopyObjectArgs) (*CopyObjectResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.PUT)
+	if len(source) == 0 {
+		return nil, bce.NewBceClientError("copy source should not be null")
+	}
+	req.SetHeader(http.BCE_COPY_SOURCE, source)
 
-    // Optional arguments settings
-    if args != nil {
-        setOptionalNullHeaders(req, map[string]string{
-            http.CACHE_CONTROL: args.CacheControl,
-            http.CONTENT_DISPOSITION: args.ContentDisposition,
-            http.CONTENT_ENCODING: args.ContentEncoding,
-            http.CONTENT_RANGE: args.ContentRange,
-            http.CONTENT_TYPE: args.ContentType,
-            http.EXPIRES: args.Expires,
-            http.LAST_MODIFIED: args.LastModified,
-            http.ETAG: args.ETag,
-            http.CONTENT_MD5: args.ContentMD5,
-            http.BCE_CONTENT_SHA256: args.ContentSha256,
-            http.BCE_OBJECT_TYPE: args.ObjectType,
-            http.BCE_NEXT_APPEND_OFFSET: args.NextAppendOffset,
-            http.BCE_COPY_SOURCE_IF_MATCH: args.IfMatch,
-            http.BCE_COPY_SOURCE_IF_NONE_MATCH: args.IfNoneMatch,
-            http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE: args.IfModifiedSince,
-            http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: args.IfUnmodifiedSince,
-        })
-        if args.ContentLength != 0 {
-            req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
-        }
-        if validMetadataDirective(args.MetadataDirective) {
-            req.SetHeader(http.BCE_COPY_METADATA_DIRECTIVE, args.MetadataDirective)
-        } else {
-            if len(args.MetadataDirective) != 0 {
-                return nil, bce.NewBceClientError(
-                    "invalid metadata directive value: " + args.MetadataDirective)
-            }
-        }
-        if validStorageClass(args.StorageClass) {
-            req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
-        } else {
-            if len(args.StorageClass) != 0 {
-                return nil, bce.NewBceClientError("invalid storage class value: " +
-                    args.StorageClass)
-            }
-        }
-        if args.UserMeta != nil {
-            for k, v := range args.UserMeta {
-                req.SetHeader(k, v)
-            }
-        }
-    }
+	// Optional arguments settings
+	if args != nil {
+		setOptionalNullHeaders(req, map[string]string{
+			http.CACHE_CONTROL:                       args.CacheControl,
+			http.CONTENT_DISPOSITION:                 args.ContentDisposition,
+			http.CONTENT_ENCODING:                    args.ContentEncoding,
+			http.CONTENT_RANGE:                       args.ContentRange,
+			http.CONTENT_TYPE:                        args.ContentType,
+			http.EXPIRES:                             args.Expires,
+			http.LAST_MODIFIED:                       args.LastModified,
+			http.ETAG:                                args.ETag,
+			http.CONTENT_MD5:                         args.ContentMD5,
+			http.BCE_CONTENT_SHA256:                  args.ContentSha256,
+			http.BCE_OBJECT_TYPE:                     args.ObjectType,
+			http.BCE_NEXT_APPEND_OFFSET:              args.NextAppendOffset,
+			http.BCE_COPY_SOURCE_IF_MATCH:            args.IfMatch,
+			http.BCE_COPY_SOURCE_IF_NONE_MATCH:       args.IfNoneMatch,
+			http.BCE_COPY_SOURCE_IF_MODIFIED_SINCE:   args.IfModifiedSince,
+			http.BCE_COPY_SOURCE_IF_UNMODIFIED_SINCE: args.IfUnmodifiedSince,
+		})
+		if args.ContentLength != 0 {
+			req.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", args.ContentLength))
+		}
+		if validMetadataDirective(args.MetadataDirective) {
+			req.SetHeader(http.BCE_COPY_METADATA_DIRECTIVE, args.MetadataDirective)
+		} else {
+			if len(args.MetadataDirective) != 0 {
+				return nil, bce.NewBceClientError(
+					"invalid metadata directive value: " + args.MetadataDirective)
+			}
+		}
+		if validStorageClass(args.StorageClass) {
+			req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
+		} else {
+			if len(args.StorageClass) != 0 {
+				return nil, bce.NewBceClientError("invalid storage class value: " +
+					args.StorageClass)
+			}
+		}
+		if args.UserMeta != nil {
+			for k, v := range args.UserMeta {
+				req.SetHeader(k, v)
+			}
+		}
+	}
 
-    // Send request and get the result
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    jsonBody := &CopyObjectResult{}
-    if err := resp.ParseJsonBody(jsonBody); err != nil {
-        return nil, err
-    }
-    return jsonBody, nil
+	// Send request and get the result
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	jsonBody := &CopyObjectResult{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+	return jsonBody, nil
 }
 
 // GetObject - get the object content with range and response-headers-specified support
@@ -178,97 +178,97 @@ func CopyObject(cli bce.Client, bucket, object, source string,
 //     - *GetObjectResult: the output content result of the object
 //     - error: nil if ok otherwise the specific error
 func GetObject(cli bce.Client, bucket, object string, responseHeaders map[string]string,
-        ranges...int64) (*GetObjectResult, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.GET)
+	ranges ...int64) (*GetObjectResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.GET)
 
-    // Optional arguments settings
-    if responseHeaders != nil {
-        for k, v := range responseHeaders {
-            if _, ok := GET_OBJECT_ALLOWED_RESPONSE_HEADERS[k]; ok {
-                req.SetParam("response" + k, v)
-            }
-        }
-    }
-    if len(ranges) != 0 {
-        rangeStr := "bytes="
-        if len(ranges) == 1 {
-            rangeStr += fmt.Sprintf("%d", ranges[0]) + "-"
-        } else {
-            rangeStr += fmt.Sprintf("%d", ranges[0]) + "-" + fmt.Sprintf("%d", ranges[1])
-        }
-        req.SetHeader("Range", rangeStr)
-    }
+	// Optional arguments settings
+	if responseHeaders != nil {
+		for k, v := range responseHeaders {
+			if _, ok := GET_OBJECT_ALLOWED_RESPONSE_HEADERS[k]; ok {
+				req.SetParam("response"+k, v)
+			}
+		}
+	}
+	if len(ranges) != 0 {
+		rangeStr := "bytes="
+		if len(ranges) == 1 {
+			rangeStr += fmt.Sprintf("%d", ranges[0]) + "-"
+		} else {
+			rangeStr += fmt.Sprintf("%d", ranges[0]) + "-" + fmt.Sprintf("%d", ranges[1])
+		}
+		req.SetHeader("Range", rangeStr)
+	}
 
-    // Send request and get the result
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    headers := resp.Headers()
-    result := &GetObjectResult{}
-    if val, ok := headers[http.CACHE_CONTROL]; ok {
-        result.CacheControl = val
-    }
-    if val, ok := headers[http.CONTENT_DISPOSITION]; ok {
-        result.ContentDisposition = val
-    }
-    if val, ok := headers[http.CONTENT_LENGTH]; ok {
-        if length, err := strconv.ParseInt(val, 10, 64); err == nil {
-            result.ContentLength = length
-        }
-    }
-    if val, ok := headers[http.CONTENT_RANGE]; ok {
-        result.ContentRange = val
-    }
-    if val, ok := headers[http.CONTENT_TYPE]; ok {
-        result.ContentType = val
-    }
-    if val, ok := headers[http.CONTENT_MD5]; ok {
-        result.ContentMD5 = val
-    }
-    if val, ok := headers[http.EXPIRES]; ok {
-        result.Expires = val
-    }
-    if val, ok := headers[http.LAST_MODIFIED]; ok {
-        result.LastModified = val
-    }
-    if val, ok := headers[http.ETAG]; ok {
-        result.ETag = strings.Trim(val, "\"")
-    }
-    if val, ok := headers[http.CONTENT_LANGUAGE]; ok {
-        result.ContentLanguage = val
-    }
-    if val, ok := headers[http.CONTENT_ENCODING]; ok {
-        result.ContentEncoding = val
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_CONTENT_SHA256)]; ok {
-        result.ContentSha256 = val
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_STORAGE_CLASS)]; ok {
-        result.StorageClass = val
-    }
-    bcePrefix := toHttpHeaderKey(http.BCE_USER_METADATA_PREFIX)
-    for k, v := range headers {
-        if strings.Index(k, bcePrefix) == 0 {
-            if result.UserMeta == nil {
-                result.UserMeta = make(map[string]string)
-            }
-            result.UserMeta[k] = v
-        }
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
-        result.ObjectType = val
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_NEXT_APPEND_OFFSET)]; ok {
-        result.NextAppendOffset = val
-    }
-    result.Body = resp.Body()
-    return result, nil
+	// Send request and get the result
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	headers := resp.Headers()
+	result := &GetObjectResult{}
+	if val, ok := headers[http.CACHE_CONTROL]; ok {
+		result.CacheControl = val
+	}
+	if val, ok := headers[http.CONTENT_DISPOSITION]; ok {
+		result.ContentDisposition = val
+	}
+	if val, ok := headers[http.CONTENT_LENGTH]; ok {
+		if length, err := strconv.ParseInt(val, 10, 64); err == nil {
+			result.ContentLength = length
+		}
+	}
+	if val, ok := headers[http.CONTENT_RANGE]; ok {
+		result.ContentRange = val
+	}
+	if val, ok := headers[http.CONTENT_TYPE]; ok {
+		result.ContentType = val
+	}
+	if val, ok := headers[http.CONTENT_MD5]; ok {
+		result.ContentMD5 = val
+	}
+	if val, ok := headers[http.EXPIRES]; ok {
+		result.Expires = val
+	}
+	if val, ok := headers[http.LAST_MODIFIED]; ok {
+		result.LastModified = val
+	}
+	if val, ok := headers[http.ETAG]; ok {
+		result.ETag = strings.Trim(val, "\"")
+	}
+	if val, ok := headers[http.CONTENT_LANGUAGE]; ok {
+		result.ContentLanguage = val
+	}
+	if val, ok := headers[http.CONTENT_ENCODING]; ok {
+		result.ContentEncoding = val
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_CONTENT_SHA256)]; ok {
+		result.ContentSha256 = val
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_STORAGE_CLASS)]; ok {
+		result.StorageClass = val
+	}
+	bcePrefix := toHttpHeaderKey(http.BCE_USER_METADATA_PREFIX)
+	for k, v := range headers {
+		if strings.Index(k, bcePrefix) == 0 {
+			if result.UserMeta == nil {
+				result.UserMeta = make(map[string]string)
+			}
+			result.UserMeta[k] = v
+		}
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
+		result.ObjectType = val
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_NEXT_APPEND_OFFSET)]; ok {
+		result.NextAppendOffset = val
+	}
+	result.Body = resp.Body()
+	return result, nil
 }
 
 // GetObjectMeta - get the meta data of the given object
@@ -281,74 +281,74 @@ func GetObject(cli bce.Client, bucket, object string, responseHeaders map[string
 //     - *GetObjectMetaResult: the result of this api
 //     - error: nil if ok otherwise the specific error
 func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.HEAD)
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.HEAD)
 
-    // Send request and get the result
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    headers := resp.Headers()
-    result := &GetObjectMetaResult{}
-    if val, ok := headers[http.CACHE_CONTROL]; ok {
-        result.CacheControl = val
-    }
-    if val, ok := headers[http.CONTENT_DISPOSITION]; ok {
-        result.ContentDisposition = val
-    }
-    if val, ok := headers[http.CONTENT_LENGTH]; ok {
-        if length, err := strconv.ParseInt(val, 10, 64); err == nil {
-            result.ContentLength = length
-        }
-    }
-    if val, ok := headers[http.CONTENT_RANGE]; ok {
-        result.ContentRange = val
-    }
-    if val, ok := headers[http.CONTENT_TYPE]; ok {
-        result.ContentType = val
-    }
-    if val, ok := headers[http.CONTENT_MD5]; ok {
-        result.ContentMD5 = val
-    }
-    if val, ok := headers[http.EXPIRES]; ok {
-        result.Expires = val
-    }
-    if val, ok := headers[http.LAST_MODIFIED]; ok {
-        result.LastModified = val
-    }
-    if val, ok := headers[http.ETAG]; ok {
-        result.ETag = strings.Trim(val, "\"")
-    }
-    if val, ok := headers[http.CONTENT_ENCODING]; ok {
-        result.ContentEncoding = val
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_CONTENT_SHA256)]; ok {
-        result.ContentSha256 = val
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_STORAGE_CLASS)]; ok {
-        result.StorageClass = val
-    }
-    bcePrefix := toHttpHeaderKey(http.BCE_USER_METADATA_PREFIX)
-    for k, v := range headers {
-        if strings.Index(k, bcePrefix) == 0 {
-            if result.UserMeta == nil {
-                result.UserMeta = make(map[string]string)
-            }
-            result.UserMeta[k] = v
-        }
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
-        result.ObjectType = val
-    }
-    if val, ok := headers[toHttpHeaderKey(http.BCE_NEXT_APPEND_OFFSET)]; ok {
-        result.NextAppendOffset = val
-    }
-    return result, nil
+	// Send request and get the result
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	headers := resp.Headers()
+	result := &GetObjectMetaResult{}
+	if val, ok := headers[http.CACHE_CONTROL]; ok {
+		result.CacheControl = val
+	}
+	if val, ok := headers[http.CONTENT_DISPOSITION]; ok {
+		result.ContentDisposition = val
+	}
+	if val, ok := headers[http.CONTENT_LENGTH]; ok {
+		if length, err := strconv.ParseInt(val, 10, 64); err == nil {
+			result.ContentLength = length
+		}
+	}
+	if val, ok := headers[http.CONTENT_RANGE]; ok {
+		result.ContentRange = val
+	}
+	if val, ok := headers[http.CONTENT_TYPE]; ok {
+		result.ContentType = val
+	}
+	if val, ok := headers[http.CONTENT_MD5]; ok {
+		result.ContentMD5 = val
+	}
+	if val, ok := headers[http.EXPIRES]; ok {
+		result.Expires = val
+	}
+	if val, ok := headers[http.LAST_MODIFIED]; ok {
+		result.LastModified = val
+	}
+	if val, ok := headers[http.ETAG]; ok {
+		result.ETag = strings.Trim(val, "\"")
+	}
+	if val, ok := headers[http.CONTENT_ENCODING]; ok {
+		result.ContentEncoding = val
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_CONTENT_SHA256)]; ok {
+		result.ContentSha256 = val
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_STORAGE_CLASS)]; ok {
+		result.StorageClass = val
+	}
+	bcePrefix := toHttpHeaderKey(http.BCE_USER_METADATA_PREFIX)
+	for k, v := range headers {
+		if strings.Index(k, bcePrefix) == 0 {
+			if result.UserMeta == nil {
+				result.UserMeta = make(map[string]string)
+			}
+			result.UserMeta[k] = v
+		}
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
+		result.ObjectType = val
+	}
+	if val, ok := headers[toHttpHeaderKey(http.BCE_NEXT_APPEND_OFFSET)]; ok {
+		result.NextAppendOffset = val
+	}
+	return result, nil
 }
 
 // FetchObject - fetch the object by the given url and store it to a bucket
@@ -363,48 +363,48 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
 //     - *FetchObjectArgs: the result of this api
 //     - error: nil if ok otherwise the specific error
 func FetchObject(cli bce.Client, bucket, object, source string,
-        args *FetchObjectArgs) (*FetchObjectResult, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.POST)
-    req.SetParam("fetch", "")
-    if len(source) == 0 {
-        return nil, bce.NewBceClientError("invalid fetch source value: " + source)
-    }
-    req.SetHeader(http.BCE_PREFIX + "fetch-source", source)
+	args *FetchObjectArgs) (*FetchObjectResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.POST)
+	req.SetParam("fetch", "")
+	if len(source) == 0 {
+		return nil, bce.NewBceClientError("invalid fetch source value: " + source)
+	}
+	req.SetHeader(http.BCE_PREFIX+"fetch-source", source)
 
-    // Optional arguments settings
-    if args != nil {
-        if validFetchMode(args.FetchMode) {
-            req.SetHeader(http.BCE_PREFIX + "fetch-mode", args.FetchMode)
-        } else {
-            if len(args.FetchMode) != 0 {
-                return nil, bce.NewBceClientError("invalid fetch mode value: " + args.FetchMode)
-            }
-        }
-        if validStorageClass(args.StorageClass) {
-            req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
-        } else {
-            if len(args.StorageClass) != 0 {
-                return nil, bce.NewBceClientError("invalid storage class value: " +
-                    args.StorageClass)
-            }
-        }
-    }
+	// Optional arguments settings
+	if args != nil {
+		if validFetchMode(args.FetchMode) {
+			req.SetHeader(http.BCE_PREFIX+"fetch-mode", args.FetchMode)
+		} else {
+			if len(args.FetchMode) != 0 {
+				return nil, bce.NewBceClientError("invalid fetch mode value: " + args.FetchMode)
+			}
+		}
+		if validStorageClass(args.StorageClass) {
+			req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
+		} else {
+			if len(args.StorageClass) != 0 {
+				return nil, bce.NewBceClientError("invalid storage class value: " +
+					args.StorageClass)
+			}
+		}
+	}
 
-    // Send request and get the result
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    jsonBody := &FetchObjectResult{}
-    if err := resp.ParseJsonBody(jsonBody); err != nil {
-        return nil, err
-    }
-    return jsonBody, nil
+	// Send request and get the result
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	jsonBody := &FetchObjectResult{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+	return jsonBody, nil
 }
 
 // AppendObject - append the gievn content to a new or existed object which is appendable
@@ -419,63 +419,63 @@ func FetchObject(cli bce.Client, bucket, object, source string,
 //     - *AppendObjectResult: the result status for this api
 //     - error: nil if ok otherwise the specific error
 func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
-        args *AppendObjectArgs) (*AppendObjectResult, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.POST)
-    req.SetParam("append", "")
-    req.SetBody(content)
+	args *AppendObjectArgs) (*AppendObjectResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.POST)
+	req.SetParam("append", "")
+	req.SetBody(content)
 
-    // Optional arguments settings
-    if args != nil {
-        if args.Offset < 0 {
-            return nil, bce.NewBceClientError(
-                fmt.Sprintf("invalid append offset value: %d", args.Offset))
-        }
-        if args.Offset > 0 {
-            req.SetParam("offset", fmt.Sprintf("%d", args.Offset))
-        }
-        setOptionalNullHeaders(req, map[string]string{
-            http.CACHE_CONTROL: args.CacheControl,
-            http.CONTENT_DISPOSITION: args.ContentDisposition,
-            http.CONTENT_MD5: args.ContentMD5,
-            http.EXPIRES: args.Expires,
-            http.BCE_CONTENT_SHA256: args.ContentSha256,
-        })
+	// Optional arguments settings
+	if args != nil {
+		if args.Offset < 0 {
+			return nil, bce.NewBceClientError(
+				fmt.Sprintf("invalid append offset value: %d", args.Offset))
+		}
+		if args.Offset > 0 {
+			req.SetParam("offset", fmt.Sprintf("%d", args.Offset))
+		}
+		setOptionalNullHeaders(req, map[string]string{
+			http.CACHE_CONTROL:       args.CacheControl,
+			http.CONTENT_DISPOSITION: args.ContentDisposition,
+			http.CONTENT_MD5:         args.ContentMD5,
+			http.EXPIRES:             args.Expires,
+			http.BCE_CONTENT_SHA256:  args.ContentSha256,
+		})
 
-        if validStorageClass(args.StorageClass) {
-            req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
-        } else {
-            if len(args.StorageClass) != 0 {
-                return nil, bce.NewBceClientError("invalid storage class value: " +
-                    args.StorageClass)
-            }
-        }
-        if args.UserMeta != nil {
-            for k, v := range args.UserMeta {
-                req.SetHeader(k, v)
-            }
-        }
-    }
+		if validStorageClass(args.StorageClass) {
+			req.SetHeader(http.BCE_STORAGE_CLASS, args.StorageClass)
+		} else {
+			if len(args.StorageClass) != 0 {
+				return nil, bce.NewBceClientError("invalid storage class value: " +
+					args.StorageClass)
+			}
+		}
+		if args.UserMeta != nil {
+			for k, v := range args.UserMeta {
+				req.SetHeader(k, v)
+			}
+		}
+	}
 
-    // Send request and get the result
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    nextOffset, offsetErr := strconv.ParseInt(
-        resp.Header(http.BCE_PREFIX + "next-append-offset"), 10, 64)
-    if offsetErr != nil {
-        nextOffset = content.Size
-    }
-    result := &AppendObjectResult{
-        resp.Header(http.CONTENT_MD5),
-        nextOffset,
-        strings.Trim(resp.Header(http.ETAG), "\"")}
-    return result, nil
+	// Send request and get the result
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	nextOffset, offsetErr := strconv.ParseInt(
+		resp.Header(http.BCE_PREFIX+"next-append-offset"), 10, 64)
+	if offsetErr != nil {
+		nextOffset = content.Size
+	}
+	result := &AppendObjectResult{
+		resp.Header(http.CONTENT_MD5),
+		nextOffset,
+		strings.Trim(resp.Header(http.ETAG), "\"")}
+	return result, nil
 }
 
 // DeleteObject - delete the given object
@@ -487,18 +487,18 @@ func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
 // RETURNS:
 //     - error: nil if ok otherwise the specific error
 func DeleteObject(cli bce.Client, bucket, object string) error {
-    req := &bce.BceRequest{}
-    req.SetUri(getObjectUri(bucket, object))
-    req.SetMethod(http.DELETE)
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.DELETE)
 
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return err
-    }
-    if resp.IsFail() {
-        return resp.ServiceError()
-    }
-    return nil
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	return nil
 }
 
 // DeleteMultipleObjects - delete the given objects within a single http request
@@ -511,26 +511,26 @@ func DeleteObject(cli bce.Client, bucket, object string) error {
 //     - *DeleteMultipleObjectsResult: the objects failed to delete
 //     - error: nil if ok otherwise the specific error
 func DeleteMultipleObjects(cli bce.Client, bucket string,
-        objectListStream *bce.Body) (*DeleteMultipleObjectsResult, error) {
-    req := &bce.BceRequest{}
-    req.SetUri(getBucketUri(bucket))
-    req.SetMethod(http.POST)
-    req.SetParam("delete", "")
-    req.SetHeader(http.CONTENT_TYPE, "application/json; charset=utf-8")
-    req.SetBody(objectListStream)
+	objectListStream *bce.Body) (*DeleteMultipleObjectsResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.POST)
+	req.SetParam("delete", "")
+	req.SetHeader(http.CONTENT_TYPE, "application/json; charset=utf-8")
+	req.SetBody(objectListStream)
 
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    jsonBody := &DeleteMultipleObjectsResult{}
-    if err := resp.ParseJsonBody(jsonBody); err != nil {
-        return nil, err
-    }
-    return jsonBody, nil
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	jsonBody := &DeleteMultipleObjectsResult{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+	return jsonBody, nil
 }
 
 // GeneratePresignedUrl - generate an authorization url with expire time and optional arguments
@@ -547,42 +547,41 @@ func DeleteMultipleObjects(cli bce.Client, bucket string,
 // RETURNS:
 //     - string: the presigned url with authorization string
 func GeneratePresignedUrl(conf *bce.BceClientConfiguration, signer auth.Signer, bucket,
-        object string, expire int, method string, headers, params map[string]string) string {
-    req := &bce.BceRequest{}
+	object string, expire int, method string, headers, params map[string]string) string {
+	req := &bce.BceRequest{}
 
-    // Set basic arguments
-    req.SetUri(getObjectUri(bucket, object))
-    if len(method) == 0 {
-        method = http.GET
-    }
-    req.SetMethod(method)
-    req.SetEndpoint(conf.Endpoint)
-    if req.Protocol() == "" {
-        req.SetProtocol(bce.DEFAULT_PROTOCOL)
-    }
+	// Set basic arguments
+	req.SetUri(getObjectUri(bucket, object))
+	if len(method) == 0 {
+		method = http.GET
+	}
+	req.SetMethod(method)
+	req.SetEndpoint(conf.Endpoint)
+	if req.Protocol() == "" {
+		req.SetProtocol(bce.DEFAULT_PROTOCOL)
+	}
 
-    // Set headers and params if given.
-    req.SetHeader(http.HOST, req.Host())
-    if headers != nil {
-        for k, v := range headers {
-            req.SetHeader(k, v)
-        }
-    }
-    if params != nil {
-        for k, v := range params {
-            req.SetParam(k, v)
-        }
-    }
+	// Set headers and params if given.
+	req.SetHeader(http.HOST, req.Host())
+	if headers != nil {
+		for k, v := range headers {
+			req.SetHeader(k, v)
+		}
+	}
+	if params != nil {
+		for k, v := range params {
+			req.SetParam(k, v)
+		}
+	}
 
-    // Copy one SignOptions object to rewrite it.
-    option := *conf.SignOption
-    if expire != 0 {
-        option.ExpireSeconds = expire
-    }
+	// Copy one SignOptions object to rewrite it.
+	option := *conf.SignOption
+	if expire != 0 {
+		option.ExpireSeconds = expire
+	}
 
-    // Generate the authorization string and return the signed url.
-    signer.Sign(&req.Request, conf.Credentials, &option)
-    req.SetParam("authorization", req.Header(http.AUTHORIZATION))
-    return fmt.Sprintf("%s://%s%s?%s", req.Protocol(), req.Host(), req.Uri(), req.QueryString())
+	// Generate the authorization string and return the signed url.
+	signer.Sign(&req.Request, conf.Credentials, &option)
+	req.SetParam("authorization", req.Header(http.AUTHORIZATION))
+	return fmt.Sprintf("%s://%s%s?%s", req.Protocol(), req.Host(), req.Uri(), req.QueryString())
 }
-

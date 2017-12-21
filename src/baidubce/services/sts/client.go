@@ -20,10 +20,10 @@
 package sts
 
 import (
-    "baidubce/auth"
-    "baidubce/bce"
-    "baidubce/services/sts/api"
-    "baidubce/util"
+	"baidubce/auth"
+	"baidubce/bce"
+	"baidubce/services/sts/api"
+	"baidubce/util"
 )
 
 const DEFAULT_SERVICE_DOMAIN = "sts." + bce.DEFAULT_REGION + "." + bce.DEFAULT_DOMAIN
@@ -31,35 +31,34 @@ const DEFAULT_SERVICE_DOMAIN = "sts." + bce.DEFAULT_REGION + "." + bce.DEFAULT_D
 // Client of STS service is a kind of BceClient, so it derived from the BceClient and it only
 // supports the GetSessionToken API. There is no other fields needed.
 type Client struct {
-    *bce.BceClient
+	*bce.BceClient
 }
 
 func (c *Client) GetSessionToken(duration int, acl string) (*api.GetSessionTokenResult, error) {
-    return api.GetSessionToken(c, duration, acl)
+	return api.GetSessionToken(c, duration, acl)
 }
 
 // NewClient make the STS service client with default configuration.
 // Use `cli.Config.xxx` to access the config or change it to non-default value.
 func NewClient(ak, sk string) (*Client, error) {
-    credentials, err := auth.NewBceCredentials(ak, sk)
-    if err != nil {
-        return nil, err
-    }
-    defaultSignOptions := &auth.SignOptions{
-        auth.DEFAULT_HEADERS_TO_SIGN,
-        util.NowUTCSeconds(),
-        auth.DEFAULT_EXPIRE_SECONDS}
-    defaultConf := &bce.BceClientConfiguration{
-        Endpoint: DEFAULT_SERVICE_DOMAIN,
-        Region: bce.DEFAULT_REGION,
-        UserAgent: bce.DEFAULT_USER_AGENT,
-        Credentials: credentials,
-        SignOption: defaultSignOptions,
-        Retry: bce.DEFAULT_RETRY_POLICY,
-        ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
-    v1Signer := &auth.BceV1Signer{}
+	credentials, err := auth.NewBceCredentials(ak, sk)
+	if err != nil {
+		return nil, err
+	}
+	defaultSignOptions := &auth.SignOptions{
+		auth.DEFAULT_HEADERS_TO_SIGN,
+		util.NowUTCSeconds(),
+		auth.DEFAULT_EXPIRE_SECONDS}
+	defaultConf := &bce.BceClientConfiguration{
+		Endpoint:    DEFAULT_SERVICE_DOMAIN,
+		Region:      bce.DEFAULT_REGION,
+		UserAgent:   bce.DEFAULT_USER_AGENT,
+		Credentials: credentials,
+		SignOption:  defaultSignOptions,
+		Retry:       bce.DEFAULT_RETRY_POLICY,
+		ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
+	v1Signer := &auth.BceV1Signer{}
 
-    client := &Client{bce.NewBceClient(defaultConf, v1Signer)}
-    return client, nil
+	client := &Client{bce.NewBceClient(defaultConf, v1Signer)}
+	return client, nil
 }
-

@@ -17,26 +17,28 @@
 package bce
 
 const (
-    EACCESS_DENIED            = "AccessDenied"
-    EINAPPROPRIATE_JSON       = "InappropriateJSON"
-    EINTERNAL_ERROR           = "InternalError"
-    EINVALID_ACCESS_KEY_ID    = "InvalidAccessKeyId"
-    EINVALID_HTTP_AUTH_HEADER = "InvalidHTTPAuthHeader"
-    EINVALID_HTTP_REQUEST     = "InvalidHTTPRequest"
-    EINVALID_URI              = "InvalidURI"
-    EMALFORMED_JSON           = "MalformedJSON"
-    EINVALID_VERSION          = "InvalidVersion"
-    EOPT_IN_REQUIRED          = "OptInRequired"
-    EPRECONDITION_FAILED      = "PreconditionFailed"
-    EREQUEST_EXPIRED          = "RequestExpired"
-    ESIGNATURE_DOES_NOT_MATCH = "SignatureDoesNotMatch"
+	EACCESS_DENIED            = "AccessDenied"
+	EINAPPROPRIATE_JSON       = "InappropriateJSON"
+	EINTERNAL_ERROR           = "InternalError"
+	EINVALID_ACCESS_KEY_ID    = "InvalidAccessKeyId"
+	EINVALID_HTTP_AUTH_HEADER = "InvalidHTTPAuthHeader"
+	EINVALID_HTTP_REQUEST     = "InvalidHTTPRequest"
+	EINVALID_URI              = "InvalidURI"
+	EMALFORMED_JSON           = "MalformedJSON"
+	EINVALID_VERSION          = "InvalidVersion"
+	EOPT_IN_REQUIRED          = "OptInRequired"
+	EPRECONDITION_FAILED      = "PreconditionFailed"
+	EREQUEST_EXPIRED          = "RequestExpired"
+	ESIGNATURE_DOES_NOT_MATCH = "SignatureDoesNotMatch"
 )
 
 // BceError abstracts the error for BCE
-type BceError interface { error }
+type BceError interface {
+	error
+}
 
 // BceClientError defines the error struct for the client when making request
-type BceClientError struct { Message string }
+type BceClientError struct{ Message string }
 
 func (b *BceClientError) Error() string { return b.Message }
 
@@ -44,20 +46,19 @@ func NewBceClientError(msg string) *BceClientError { return &BceClientError{msg}
 
 // BceServiceError defines the error struct for the BCE service when receiving response
 type BceServiceError struct {
-    Code       string
-    Message    string
-    RequestId  string
-    StatusCode int
+	Code       string
+	Message    string
+	RequestId  string
+	StatusCode int
 }
 
 func (b *BceServiceError) Error() string {
-    ret := "[Code: " + b.Code
-    ret += "; Message: " + b.Message
-    ret += "; RequestId: " + b.RequestId + "]"
-    return ret
+	ret := "[Code: " + b.Code
+	ret += "; Message: " + b.Message
+	ret += "; RequestId: " + b.RequestId + "]"
+	return ret
 }
 
 func NewBceServiceError(code, msg, reqId string, status int) *BceServiceError {
-    return &BceServiceError{code, msg, reqId, status}
+	return &BceServiceError{code, msg, reqId, status}
 }
-

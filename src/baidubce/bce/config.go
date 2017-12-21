@@ -17,51 +17,51 @@
 package bce
 
 import (
-    "fmt"
-    "runtime"
-    "reflect"
+	"fmt"
+	"reflect"
+	"runtime"
 
-    "baidubce/auth"
+	"baidubce/auth"
 )
 
 // Constants and default values for the package bce
 const (
-    SDK_VERSION           = "0.1.0"
-    URI_PREFIX            = "/" // now support uri without prefix "v1" so just set root path
-    DEFAULT_DOMAIN        = "baidubce.com"
-    DEFAULT_PROTOCOL      = "http"
-    DEFAULT_REGION        = "bj"
-    DEFAULT_CONTENT_TYPE  = "application/json;charset=utf-8"
-    DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 1200 * 1000
+	SDK_VERSION                          = "0.1.0"
+	URI_PREFIX                           = "/" // now support uri without prefix "v1" so just set root path
+	DEFAULT_DOMAIN                       = "baidubce.com"
+	DEFAULT_PROTOCOL                     = "http"
+	DEFAULT_REGION                       = "bj"
+	DEFAULT_CONTENT_TYPE                 = "application/json;charset=utf-8"
+	DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS = 1200 * 1000
 )
 
-var(
-    DEFAULT_USER_AGENT    string
-    DEFAULT_RETRY_POLICY  = NewBackOffRetryPolicy(3, 20000, 300)
+var (
+	DEFAULT_USER_AGENT   string
+	DEFAULT_RETRY_POLICY = NewBackOffRetryPolicy(3, 20000, 300)
 )
 
 func init() {
-    DEFAULT_USER_AGENT = "bce-sdk-go"
-    DEFAULT_USER_AGENT += "/" + SDK_VERSION
-    DEFAULT_USER_AGENT += "/" + runtime.Version()
-    DEFAULT_USER_AGENT += "/" + runtime.GOOS
-    DEFAULT_USER_AGENT += "/" + runtime.GOARCH
+	DEFAULT_USER_AGENT = "bce-sdk-go"
+	DEFAULT_USER_AGENT += "/" + SDK_VERSION
+	DEFAULT_USER_AGENT += "/" + runtime.Version()
+	DEFAULT_USER_AGENT += "/" + runtime.GOOS
+	DEFAULT_USER_AGENT += "/" + runtime.GOARCH
 }
 
 // BceClientConfiguration defines the config components structure.
 type BceClientConfiguration struct {
-    Endpoint     string
-    ProxyUrl     string
-    Region       string
-    UserAgent    string
-    Credentials  *auth.BceCredentials
-    SignOption   *auth.SignOptions
-    Retry        RetryPolicy
-    ConnectionTimeoutInMillis int
+	Endpoint                  string
+	ProxyUrl                  string
+	Region                    string
+	UserAgent                 string
+	Credentials               *auth.BceCredentials
+	SignOption                *auth.SignOptions
+	Retry                     RetryPolicy
+	ConnectionTimeoutInMillis int
 }
 
 func (c *BceClientConfiguration) String() string {
-    return fmt.Sprintf(`BceClientConfiguration [
+	return fmt.Sprintf(`BceClientConfiguration [
         Endpoint=%s;
         ProxyUrl=%s;
         Region=%s;
@@ -71,6 +71,5 @@ func (c *BceClientConfiguration) String() string {
         RetryPolicy=%v;
         ConnectionTimeoutInMillis=%v
     ]`, c.Endpoint, c.ProxyUrl, c.Region, c.UserAgent, c.Credentials,
-    c.SignOption, reflect.TypeOf(c.Retry).Name(), c.ConnectionTimeoutInMillis)
+		c.SignOption, reflect.TypeOf(c.Retry).Name(), c.ConnectionTimeoutInMillis)
 }
-

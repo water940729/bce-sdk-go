@@ -17,14 +17,14 @@
 package bce
 
 import (
-    "bytes"
-    "fmt"
-    "io"
-    "io/ioutil"
-    "os"
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
 
-    "baidubce/http"
-    "baidubce/util"
+	"baidubce/http"
+	"baidubce/util"
 )
 
 // Body defines the data structure used in BCE request.
@@ -32,9 +32,9 @@ import (
 // to ensure the correctness of the body content forcely, and users can also set the content-sha256
 // header to strengthen the correctness with the "SetHeader" method.
 type Body struct {
-    Stream     io.ReadCloser
-    Size       int64
-    ContentMD5 string
+	Stream     io.ReadCloser
+	Size       int64
+	ContentMD5 string
 }
 
 // NewBodyFromBytes - build a Body object from the byte stream to be used in the http request, it
@@ -46,14 +46,14 @@ type Body struct {
 //     - *Body: the return Body object
 //     - error: error if any specific error occurs
 func NewBodyFromBytes(stream []byte) (*Body, error) {
-    buf := bytes.NewBuffer(stream)
-    size := int64(buf.Len())
-    contentMD5, err := util.CalculateContentMD5(buf, size)
-    if err != nil {
-        return nil, err
-    }
-    buf = bytes.NewBuffer(stream)
-    return &Body{ioutil.NopCloser(buf), size, contentMD5}, nil
+	buf := bytes.NewBuffer(stream)
+	size := int64(buf.Len())
+	contentMD5, err := util.CalculateContentMD5(buf, size)
+	if err != nil {
+		return nil, err
+	}
+	buf = bytes.NewBuffer(stream)
+	return &Body{ioutil.NopCloser(buf), size, contentMD5}, nil
 }
 
 // NewBodyFromString - build a Body object from the string to be used in the http request, it
@@ -65,14 +65,14 @@ func NewBodyFromBytes(stream []byte) (*Body, error) {
 //     - *Body: the return Body object
 //     - error: error if any specific error occurs
 func NewBodyFromString(str string) (*Body, error) {
-    buf := bytes.NewBufferString(str)
-    size := int64(len(str))
-    contentMD5, err := util.CalculateContentMD5(buf, size)
-    if err != nil {
-        return nil, err
-    }
-    buf = bytes.NewBufferString(str)
-    return &Body{ioutil.NopCloser(buf), size, contentMD5}, nil
+	buf := bytes.NewBufferString(str)
+	size := int64(len(str))
+	contentMD5, err := util.CalculateContentMD5(buf, size)
+	if err != nil {
+		return nil, err
+	}
+	buf = bytes.NewBufferString(str)
+	return &Body{ioutil.NopCloser(buf), size, contentMD5}, nil
 }
 
 // NewBodyFromFile - build a Body object from the given file name to be used in the http request,
@@ -84,22 +84,22 @@ func NewBodyFromString(str string) (*Body, error) {
 //     - *Body: the return Body object
 //     - error: error if any specific error occurs
 func NewBodyFromFile(fname string) (*Body, error) {
-    file, err := os.Open(fname)
-    if err != nil {
-        return nil, err
-    }
-    fileInfo, infoErr := file.Stat()
-    if infoErr != nil {
-        return nil, infoErr
-    }
-    contentMD5, md5Err := util.CalculateContentMD5(file, fileInfo.Size())
-    if md5Err != nil {
-        return nil, md5Err
-    }
-    if _, err = file.Seek(0, 0); err != nil {
-        return nil, err
-    }
-    return &Body{file, fileInfo.Size(), contentMD5}, nil
+	file, err := os.Open(fname)
+	if err != nil {
+		return nil, err
+	}
+	fileInfo, infoErr := file.Stat()
+	if infoErr != nil {
+		return nil, infoErr
+	}
+	contentMD5, md5Err := util.CalculateContentMD5(file, fileInfo.Size())
+	if md5Err != nil {
+		return nil, md5Err
+	}
+	if _, err = file.Seek(0, 0); err != nil {
+		return nil, err
+	}
+	return &Body{file, fileInfo.Size(), contentMD5}, nil
 }
 
 // NewBodyFromSectionFile - build a Body object from the given file pointer with offset and size.
@@ -113,25 +113,25 @@ func NewBodyFromFile(fname string) (*Body, error) {
 //     - *Body: the return Body object
 //     - error: error if any specific error occurs
 func NewBodyFromSectionFile(file *os.File, off, size int64) (*Body, error) {
-    if _, err := file.Seek(off, 0); err != nil {
-        return nil, err
-    }
-    contentMD5, md5Err := util.CalculateContentMD5(file, size)
-    if md5Err != nil {
-        return nil, md5Err
-    }
-    if _, err := file.Seek(0, 0); err != nil {
-        return nil, err
-    }
-    section := io.NewSectionReader(file, off, size)
-    return &Body{ioutil.NopCloser(section), size, contentMD5}, nil
+	if _, err := file.Seek(off, 0); err != nil {
+		return nil, err
+	}
+	contentMD5, md5Err := util.CalculateContentMD5(file, size)
+	if md5Err != nil {
+		return nil, md5Err
+	}
+	if _, err := file.Seek(0, 0); err != nil {
+		return nil, err
+	}
+	section := io.NewSectionReader(file, off, size)
+	return &Body{ioutil.NopCloser(section), size, contentMD5}, nil
 }
 
 // BceRequest defines the request structure for accessing BCE services
 type BceRequest struct {
-    http.Request
-    requestId   string
-    clientError *BceClientError
+	http.Request
+	requestId   string
+	clientError *BceClientError
 }
 
 func (b *BceRequest) RequestId() string { return b.requestId }
@@ -143,29 +143,28 @@ func (b *BceRequest) ClientError() *BceClientError { return b.clientError }
 func (b *BceRequest) SetClientError(err *BceClientError) { b.clientError = err }
 
 func (b *BceRequest) SetBody(body *Body) { // override SetBody derived from http.Request
-    b.Request.SetBody(body.Stream)
-    b.SetLength(body.Size) // set field of "net/http.Request.ContentLength"
-    b.SetHeader(http.CONTENT_MD5, body.ContentMD5)
-    if body.Size > 0 {
-        b.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", body.Size))
-    }
+	b.Request.SetBody(body.Stream)
+	b.SetLength(body.Size) // set field of "net/http.Request.ContentLength"
+	b.SetHeader(http.CONTENT_MD5, body.ContentMD5)
+	if body.Size > 0 {
+		b.SetHeader(http.CONTENT_LENGTH, fmt.Sprintf("%d", body.Size))
+	}
 }
 
 func (b *BceRequest) BuildHttpRequest() {
-    // Only need to build the specific `requestId` field for BCE, other fields are same as the
-    // `http.Request` as well as its methods.
-    if len(b.requestId) == 0 {
-        // Construct the request ID with UUID
-        b.requestId = util.NewRequestId()
-    }
-    b.SetHeader(http.BCE_REQUEST_ID, b.requestId)
+	// Only need to build the specific `requestId` field for BCE, other fields are same as the
+	// `http.Request` as well as its methods.
+	if len(b.requestId) == 0 {
+		// Construct the request ID with UUID
+		b.requestId = util.NewRequestId()
+	}
+	b.SetHeader(http.BCE_REQUEST_ID, b.requestId)
 }
 
 func (b *BceRequest) String() string {
-    requestIdStr := "requestId=" + b.requestId
-    if b.clientError != nil {
-        return requestIdStr + ", client error: "+ b.ClientError().Error()
-    }
-    return requestIdStr + "\n" + b.Request.String()
+	requestIdStr := "requestId=" + b.requestId
+	if b.clientError != nil {
+		return requestIdStr + ", client error: " + b.ClientError().Error()
+	}
+	return requestIdStr + "\n" + b.Request.String()
 }
-

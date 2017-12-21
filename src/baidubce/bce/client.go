@@ -38,25 +38,25 @@
 package bce
 
 import (
-    "fmt"
-    "time"
+	"fmt"
+	"time"
 
-    "baidubce/auth"
-    "baidubce/http"
-    "baidubce/util"
-    "baidubce/util/log"
+	"baidubce/auth"
+	"baidubce/http"
+	"baidubce/util"
+	"baidubce/util/log"
 )
 
 // Client is the general interface which can perform sending request. Different service
 // will define its own client in case of specific extension.
 type Client interface {
-    SendRequest(*BceRequest, *BceResponse) error
+	SendRequest(*BceRequest, *BceResponse) error
 }
 
 // BceClient defines the general client to access the BCE services.
 type BceClient struct {
-    Config    *BceClientConfiguration
-    Signer    auth.Signer // the sign algorithm
+	Config *BceClientConfiguration
+	Signer auth.Signer // the sign algorithm
 }
 
 // BuildHttpRequest - the helper method for the client to build http request
@@ -64,28 +64,28 @@ type BceClient struct {
 // PARAMS:
 //     - request: the input request object to be built
 func (c *BceClient) buildHttpRequest(request *BceRequest) {
-    // Construct the http request instance for the special fields
-    request.BuildHttpRequest()
+	// Construct the http request instance for the special fields
+	request.BuildHttpRequest()
 
-    // Set the client specific configurations
-    request.SetEndpoint(c.Config.Endpoint)
-    if request.Protocol() == "" {
-        request.SetProtocol(DEFAULT_PROTOCOL)
-    }
-    if len(c.Config.ProxyUrl) != 0 {
-        request.SetProxyUrl(c.Config.ProxyUrl)
-    }
-    request.SetTimeout(c.Config.ConnectionTimeoutInMillis / 1000)
+	// Set the client specific configurations
+	request.SetEndpoint(c.Config.Endpoint)
+	if request.Protocol() == "" {
+		request.SetProtocol(DEFAULT_PROTOCOL)
+	}
+	if len(c.Config.ProxyUrl) != 0 {
+		request.SetProxyUrl(c.Config.ProxyUrl)
+	}
+	request.SetTimeout(c.Config.ConnectionTimeoutInMillis / 1000)
 
-    // Set the BCE request headers
-    request.SetHeader(http.HOST, request.Host())
-    request.SetHeader(http.USER_AGENT, c.Config.UserAgent)
-    request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(util.NowUTCSeconds()))
+	// Set the BCE request headers
+	request.SetHeader(http.HOST, request.Host())
+	request.SetHeader(http.USER_AGENT, c.Config.UserAgent)
+	request.SetHeader(http.BCE_DATE, util.FormatISO8601Date(util.NowUTCSeconds()))
 
-    // Generate the auth string if needed
-    if c.Config.Credentials != nil {
-        c.Signer.Sign(&request.Request, c.Config.Credentials, c.Config.SignOption)
-    }
+	// Generate the auth string if needed
+	if c.Config.Credentials != nil {
+		c.Signer.Sign(&request.Request, c.Config.Credentials, c.Config.SignOption)
+	}
 }
 
 // SendRequest - the client performs sending the http request with retry policy and receive the
@@ -97,57 +97,56 @@ func (c *BceClient) buildHttpRequest(request *BceRequest) {
 // RETURNS:
 //     - error: nil if ok otherwise the specific error
 func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
-    // Return client error if it is not nil
-    if req.ClientError() != nil {
-        return req.ClientError()
-    }
+	// Return client error if it is not nil
+	if req.ClientError() != nil {
+		return req.ClientError()
+	}
 
-    // Build the http request and prepare to send
-    c.buildHttpRequest(req)
-    log.Infof("send http request: %v", req)
+	// Build the http request and prepare to send
+	c.buildHttpRequest(req)
+	log.Infof("send http request: %v", req)
 
-    // Send request with the given retry policy
-    retries := 0
-    for {
-        httpResp, err := http.Execute(&req.Request)
-        if err != nil {
-            if c.Config.Retry.ShouldRetry(err, retries) {
-                delay_in_mills := c.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
-                time.Sleep(delay_in_mills)
-            } else {
-                return &BceClientError{
-                        fmt.Sprintf("execute http request failed! Retried %d times, error: %v",
-                                    retries, err)}
-            }
-            retries++
-            log.Warnf("send request failed, retry for %d time(s)", retries)
-            continue
-        }
-        resp.SetHttpResponse(httpResp)
-        resp.ParseResponse()
+	// Send request with the given retry policy
+	retries := 0
+	for {
+		httpResp, err := http.Execute(&req.Request)
+		if err != nil {
+			if c.Config.Retry.ShouldRetry(err, retries) {
+				delay_in_mills := c.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
+				time.Sleep(delay_in_mills)
+			} else {
+				return &BceClientError{
+					fmt.Sprintf("execute http request failed! Retried %d times, error: %v",
+						retries, err)}
+			}
+			retries++
+			log.Warnf("send request failed, retry for %d time(s)", retries)
+			continue
+		}
+		resp.SetHttpResponse(httpResp)
+		resp.ParseResponse()
 
-        log.Infof("receive http response: status: %s, debugId: %s, requestId: %s, elapsed: %v",
-            resp.StatusText(), resp.DebugId(), resp.RequestId(), resp.ElapsedTime())
-        for k, v := range resp.Headers() {
-            log.Debugf("%s=%s", k, v)
-        }
-        if resp.IsFail() {
-            err := resp.ServiceError()
-            if c.Config.Retry.ShouldRetry(err, retries) {
-                delay_in_mills := c.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
-                time.Sleep(delay_in_mills)
-            } else {
-                return err
-            }
-            retries++
-            log.Warnf("send request failed, retry for %d time(s)", retries)
-            continue
-        }
-        return nil
-    }
+		log.Infof("receive http response: status: %s, debugId: %s, requestId: %s, elapsed: %v",
+			resp.StatusText(), resp.DebugId(), resp.RequestId(), resp.ElapsedTime())
+		for k, v := range resp.Headers() {
+			log.Debugf("%s=%s", k, v)
+		}
+		if resp.IsFail() {
+			err := resp.ServiceError()
+			if c.Config.Retry.ShouldRetry(err, retries) {
+				delay_in_mills := c.Config.Retry.GetDelayBeforeNextRetryInMillis(err, retries)
+				time.Sleep(delay_in_mills)
+			} else {
+				return err
+			}
+			retries++
+			log.Warnf("send request failed, retry for %d time(s)", retries)
+			continue
+		}
+		return nil
+	}
 }
 
 func NewBceClient(conf *BceClientConfiguration, sign auth.Signer) *BceClient {
-    return &BceClient{conf, sign}
+	return &BceClient{conf, sign}
 }
-

@@ -17,59 +17,58 @@
 package http
 
 import (
-    "io"
-    "net/http"
-    "time"
+	"io"
+	"net/http"
+	"time"
 )
 
 // Response defines the general http response structure for accessing the BCE services.
 type Response struct {
-    httpResponse *http.Response // the standard libaray http.Response object
-    elapsedTime  time.Duration  // elapsed time just from sending request to receiving response
+	httpResponse *http.Response // the standard libaray http.Response object
+	elapsedTime  time.Duration  // elapsed time just from sending request to receiving response
 }
 
 func (r *Response) StatusText() string {
-    return r.httpResponse.Status
+	return r.httpResponse.Status
 }
 
 func (r *Response) StatusCode() int {
-    return r.httpResponse.StatusCode
+	return r.httpResponse.StatusCode
 }
 
 func (r *Response) Protocol() string {
-    return r.httpResponse.Proto
+	return r.httpResponse.Proto
 }
 
 func (r *Response) HttpResponse() *http.Response {
-    return r.httpResponse
+	return r.httpResponse
 }
 
 func (r *Response) SetHttpResponse(response *http.Response) {
-    r.httpResponse = response
+	r.httpResponse = response
 }
 
 func (r *Response) ElapsedTime() time.Duration {
-    return r.elapsedTime
+	return r.elapsedTime
 }
 
 func (r *Response) GetHeader(name string) string {
-    return r.httpResponse.Header.Get(name)
+	return r.httpResponse.Header.Get(name)
 }
 
 func (r *Response) GetHeaders() map[string]string {
-    header := r.httpResponse.Header
-    ret := make(map[string]string, len(header))
-    for k, v := range header {
-        ret[k] = v[0]
-    }
-    return ret
+	header := r.httpResponse.Header
+	ret := make(map[string]string, len(header))
+	for k, v := range header {
+		ret[k] = v[0]
+	}
+	return ret
 }
 
 func (r *Response) ContentLength() int64 {
-    return r.httpResponse.ContentLength
+	return r.httpResponse.ContentLength
 }
 
 func (r *Response) Body() io.ReadCloser {
-    return r.httpResponse.Body
+	return r.httpResponse.Body
 }
-

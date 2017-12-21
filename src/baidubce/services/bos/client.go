@@ -19,71 +19,71 @@
 package bos
 
 import (
-    "encoding/json"
-    "fmt"
-    "io"
-    "net/http"
-    "os"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
 
-    "baidubce/auth"
-    "baidubce/bce"
-    "baidubce/util/log"
-    "baidubce/services/bos/api"
+	"baidubce/auth"
+	"baidubce/bce"
+	"baidubce/services/bos/api"
+	"baidubce/util/log"
 )
 
 const (
-    DEFAULT_SERVICE_DOMAIN = bce.DEFAULT_REGION + ".bcebos.com"
-    DEFAULT_MAX_PARALLEL   = 10
-    MULTIPART_ALIGN        = 1 << 20        // 1MB
-    MIN_MULTIPART_SIZE     = 5 * (1 << 20)  // 5MB
-    DEFAULT_MULTIPART_SIZE = 10 * (1 << 20) // 10MB
+	DEFAULT_SERVICE_DOMAIN = bce.DEFAULT_REGION + ".bcebos.com"
+	DEFAULT_MAX_PARALLEL   = 10
+	MULTIPART_ALIGN        = 1 << 20        // 1MB
+	MIN_MULTIPART_SIZE     = 5 * (1 << 20)  // 5MB
+	DEFAULT_MULTIPART_SIZE = 10 * (1 << 20) // 10MB
 
-    MAX_PART_NUMBER        = 10000
-    MAX_SINGLE_PART_SIZE   = 5 * (1 << 30) // 5GB
-    MAX_SINGLE_OBJECT_SIZE = 5 * (1 << 40) // 5TB
+	MAX_PART_NUMBER        = 10000
+	MAX_SINGLE_PART_SIZE   = 5 * (1 << 30) // 5GB
+	MAX_SINGLE_OBJECT_SIZE = 5 * (1 << 40) // 5TB
 )
 
 // Client of BOS service is a kind of BceClient, so derived from BceClient
 type Client struct {
-    *bce.BceClient
+	*bce.BceClient
 
-    // Fileds that used in parallel operation for BOS service
-    MaxParallel   int64
-    MultipartSize int64
+	// Fileds that used in parallel operation for BOS service
+	MaxParallel   int64
+	MultipartSize int64
 }
 
 // NewClient make the BOS service client with default configuration.
 // Use `cli.Config.xxx` to access the config or change it to non-default value.
 func NewClient(ak, sk, endpoint string) (*Client, error) {
-    var credentials *auth.BceCredentials
-    var err error
-    if len(ak) == 0 && len(sk) == 0 { // to support public-read-write request
-        credentials, err = nil, nil
-    } else {
-        credentials, err = auth.NewBceCredentials(ak, sk)
-        if err != nil {
-            return nil, err
-        }
-    }
-    if len(endpoint) == 0 {
-        endpoint = DEFAULT_SERVICE_DOMAIN
-    }
-    defaultSignOptions := &auth.SignOptions{
-        HeadersToSign: auth.DEFAULT_HEADERS_TO_SIGN,
-        ExpireSeconds: auth.DEFAULT_EXPIRE_SECONDS}
-    defaultConf := &bce.BceClientConfiguration{
-        Endpoint: endpoint,
-        Region: bce.DEFAULT_REGION,
-        UserAgent: bce.DEFAULT_USER_AGENT,
-        Credentials: credentials,
-        SignOption: defaultSignOptions,
-        Retry: bce.DEFAULT_RETRY_POLICY,
-        ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
-    v1Signer := &auth.BceV1Signer{}
+	var credentials *auth.BceCredentials
+	var err error
+	if len(ak) == 0 && len(sk) == 0 { // to support public-read-write request
+		credentials, err = nil, nil
+	} else {
+		credentials, err = auth.NewBceCredentials(ak, sk)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(endpoint) == 0 {
+		endpoint = DEFAULT_SERVICE_DOMAIN
+	}
+	defaultSignOptions := &auth.SignOptions{
+		HeadersToSign: auth.DEFAULT_HEADERS_TO_SIGN,
+		ExpireSeconds: auth.DEFAULT_EXPIRE_SECONDS}
+	defaultConf := &bce.BceClientConfiguration{
+		Endpoint:    endpoint,
+		Region:      bce.DEFAULT_REGION,
+		UserAgent:   bce.DEFAULT_USER_AGENT,
+		Credentials: credentials,
+		SignOption:  defaultSignOptions,
+		Retry:       bce.DEFAULT_RETRY_POLICY,
+		ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
+	v1Signer := &auth.BceV1Signer{}
 
-    client := &Client{bce.NewBceClient(defaultConf, v1Signer),
-        DEFAULT_MAX_PARALLEL, DEFAULT_MULTIPART_SIZE}
-    return client, nil
+	client := &Client{bce.NewBceClient(defaultConf, v1Signer),
+		DEFAULT_MAX_PARALLEL, DEFAULT_MULTIPART_SIZE}
+	return client, nil
 }
 
 // ListBuckets - list all buckets
@@ -92,7 +92,7 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 //     - *api.ListBucketsResult: the all buckets
 //     - error: the return error if any occurs
 func (c *Client) ListBuckets() (*api.ListBucketsResult, error) {
-    return api.ListBuckets(c)
+	return api.ListBuckets(c)
 }
 
 // ListObjects - list all objects of the given bucket
@@ -104,8 +104,8 @@ func (c *Client) ListBuckets() (*api.ListBucketsResult, error) {
 //     - *api.ListObjectsResult: the all objects of the bucket
 //     - error: the return error if any occurs
 func (c *Client) ListObjects(bucket string,
-        args *api.ListObjectsArgs) (*api.ListObjectsResult, error) {
-    return api.ListObjects(c, bucket, args)
+	args *api.ListObjectsArgs) (*api.ListObjectsResult, error) {
+	return api.ListObjects(c, bucket, args)
 }
 
 // SimpleListObjects - list all objects of the given bucket with simple arguments
@@ -120,9 +120,9 @@ func (c *Client) ListObjects(bucket string,
 //     - *api.ListObjectsResult: the all objects of the bucket
 //     - error: the return error if any occurs
 func (c *Client) SimpleListObjects(bucket, prefix string, maxKeys int, marker,
-        delimiter string) (*api.ListObjectsResult, error) {
-    args := &api.ListObjectsArgs{delimiter, marker, maxKeys, prefix}
-    return api.ListObjects(c, bucket, args)
+	delimiter string) (*api.ListObjectsResult, error) {
+	args := &api.ListObjectsArgs{delimiter, marker, maxKeys, prefix}
+	return api.ListObjects(c, bucket, args)
 }
 
 // HeadBucket - test the given bucket existed and access authority
@@ -132,7 +132,7 @@ func (c *Client) SimpleListObjects(bucket, prefix string, maxKeys int, marker,
 // RETURNS:
 //     - error: nil if exists and have authority otherwise the specific error
 func (c *Client) HeadBucket(bucket string) error {
-    return api.HeadBucket(c, bucket)
+	return api.HeadBucket(c, bucket)
 }
 
 // DoesBucketExist - test the given bucket existed or not
@@ -143,19 +143,19 @@ func (c *Client) HeadBucket(bucket string) error {
 //     - bool: true if exists and false if not exists or occrus error
 //     - error: nil if exists or not exist, otherwise the specific error
 func (c *Client) DoesBucketExist(bucket string) (bool, error) {
-    err := api.HeadBucket(c, bucket)
-    if err == nil {
-        return true, nil
-    }
-    if realErr, ok := err.(*bce.BceServiceError); ok {
-        if realErr.StatusCode == http.StatusForbidden {
-            return true, nil
-        }
-        if realErr.StatusCode == http.StatusNotFound {
-            return false, nil
-        }
-    }
-    return false, err
+	err := api.HeadBucket(c, bucket)
+	if err == nil {
+		return true, nil
+	}
+	if realErr, ok := err.(*bce.BceServiceError); ok {
+		if realErr.StatusCode == http.StatusForbidden {
+			return true, nil
+		}
+		if realErr.StatusCode == http.StatusNotFound {
+			return false, nil
+		}
+	}
+	return false, err
 }
 
 // PutBucket - create a new bucket
@@ -166,7 +166,7 @@ func (c *Client) DoesBucketExist(bucket string) (bool, error) {
 //     - string: the location of the new bucket if create success
 //     - error: nil if create success otherwise the specific error
 func (c *Client) PutBucket(bucket string) (string, error) {
-    return api.PutBucket(c, bucket)
+	return api.PutBucket(c, bucket)
 }
 
 // DeleteBucket - delete a empty bucket
@@ -176,7 +176,7 @@ func (c *Client) PutBucket(bucket string) (string, error) {
 // RETURNS:
 //     - error: nil if delete success otherwise the specific error
 func (c *Client) DeleteBucket(bucket string) error {
-    return api.DeleteBucket(c, bucket)
+	return api.DeleteBucket(c, bucket)
 }
 
 // GetBucketLocation - get the location fo the given bucket
@@ -187,7 +187,7 @@ func (c *Client) DeleteBucket(bucket string) error {
 //     - string: the location of the bucket
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketLocation(bucket string) (string, error) {
-    return api.GetBucketLocation(c, bucket)
+	return api.GetBucketLocation(c, bucket)
 }
 
 // PutBucketAcl - set the acl of the given bucket with acl json file stream
@@ -198,7 +198,7 @@ func (c *Client) GetBucketLocation(bucket string) (string, error) {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAcl(bucket string, aclBody *bce.Body) error {
-    return api.PutBucketAcl(c, bucket, "", aclBody)
+	return api.PutBucketAcl(c, bucket, "", aclBody)
 }
 
 // PutBucketAclFromCanned - set the canned acl of the given bucket
@@ -209,7 +209,7 @@ func (c *Client) PutBucketAcl(bucket string, aclBody *bce.Body) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAclFromCanned(bucket, cannedAcl string) error {
-    return api.PutBucketAcl(c, bucket, cannedAcl, nil)
+	return api.PutBucketAcl(c, bucket, cannedAcl, nil)
 }
 
 // PutBucketAclFromFile - set the acl of the given bucket with acl json file name
@@ -220,11 +220,11 @@ func (c *Client) PutBucketAclFromCanned(bucket, cannedAcl string) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAclFromFile(bucket, aclFile string) error {
-    body, err := bce.NewBodyFromFile(aclFile)
-    if err != nil {
-        return err
-    }
-    return api.PutBucketAcl(c, bucket, "", body)
+	body, err := bce.NewBodyFromFile(aclFile)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketAcl(c, bucket, "", body)
 }
 
 // PutBucketAclFromString - set the acl of the given bucket with acl json string
@@ -235,11 +235,11 @@ func (c *Client) PutBucketAclFromFile(bucket, aclFile string) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAclFromString(bucket, aclString string) error {
-    body, err := bce.NewBodyFromString(aclString)
-    if err != nil {
-        return err
-    }
-    return api.PutBucketAcl(c, bucket, "", body)
+	body, err := bce.NewBodyFromString(aclString)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketAcl(c, bucket, "", body)
 }
 
 // PutBucketAclFromStruct - set the acl of the given bucket with acl data structure
@@ -250,15 +250,15 @@ func (c *Client) PutBucketAclFromString(bucket, aclString string) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAclFromStruct(bucket string, aclObj *api.PutBucketAclArgs) error {
-    jsonBytes, jsonErr := json.Marshal(aclObj)
-    if jsonErr != nil {
-        return jsonErr
-    }
-    body, err := bce.NewBodyFromBytes(jsonBytes)
-    if err != nil {
-        return err
-    }
-    return api.PutBucketAcl(c, bucket, "", body)
+	jsonBytes, jsonErr := json.Marshal(aclObj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketAcl(c, bucket, "", body)
 }
 
 // GetBucketAcl - get the acl of the given bucket
@@ -269,7 +269,7 @@ func (c *Client) PutBucketAclFromStruct(bucket string, aclObj *api.PutBucketAclA
 //     - *api.GetBucketAclResult: the result of the bucket acl
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketAcl(bucket string) (*api.GetBucketAclResult, error) {
-    return api.GetBucketAcl(c, bucket)
+	return api.GetBucketAcl(c, bucket)
 }
 
 // PutBucketLogging - set the loging setting of the given bucket with json stream
@@ -280,7 +280,7 @@ func (c *Client) GetBucketAcl(bucket string) (*api.GetBucketAclResult, error) {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketLogging(bucket string, body *bce.Body) error {
-    return api.PutBucketLogging(c, bucket, body)
+	return api.PutBucketLogging(c, bucket, body)
 }
 
 // PutBucketLoggingFromString - set the loging setting of the given bucket with json string
@@ -291,11 +291,11 @@ func (c *Client) PutBucketLogging(bucket string, body *bce.Body) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketLoggingFromString(bucket, logging string) error {
-    body, err := bce.NewBodyFromString(logging)
-    if err != nil {
-        return err
-    }
-    return api.PutBucketLogging(c, bucket, body)
+	body, err := bce.NewBodyFromString(logging)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketLogging(c, bucket, body)
 }
 
 // PutBucketLoggingFromStruct - set the loging setting of the given bucket with args object
@@ -306,15 +306,15 @@ func (c *Client) PutBucketLoggingFromString(bucket, logging string) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketLoggingFromStruct(bucket string, obj *api.PutBucketLoggingArgs) error {
-    jsonBytes, jsonErr := json.Marshal(obj)
-    if jsonErr != nil {
-        return jsonErr
-    }
-    body, err := bce.NewBodyFromBytes(jsonBytes)
-    if err != nil {
-        return err
-    }
-    return api.PutBucketLogging(c, bucket, body)
+	jsonBytes, jsonErr := json.Marshal(obj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketLogging(c, bucket, body)
 }
 
 // GetBucketLogging - get the logging setting of the given bucket
@@ -325,7 +325,7 @@ func (c *Client) PutBucketLoggingFromStruct(bucket string, obj *api.PutBucketLog
 //     - *api.GetBucketLoggingResult: the logging setting of the bucket
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketLogging(bucket string) (*api.GetBucketLoggingResult, error) {
-    return api.GetBucketLogging(c, bucket)
+	return api.GetBucketLogging(c, bucket)
 }
 
 // DeleteBucketLogging - delete the logging setting of the given bucket
@@ -335,7 +335,7 @@ func (c *Client) GetBucketLogging(bucket string) (*api.GetBucketLoggingResult, e
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) DeleteBucketLogging(bucket string) error {
-    return api.DeleteBucketLogging(c, bucket)
+	return api.DeleteBucketLogging(c, bucket)
 }
 
 // PutBucketLifecycle - set the lifecycle rule of the given bucket with raw stream
@@ -346,7 +346,7 @@ func (c *Client) DeleteBucketLogging(bucket string) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketLifecycle(bucket string, lifecycle *bce.Body) error {
-    return api.PutBucketLifecycle(c, bucket, lifecycle)
+	return api.PutBucketLifecycle(c, bucket, lifecycle)
 }
 
 // PutBucketLifecycleFromString - set the lifecycle rule of the given bucket with string
@@ -357,11 +357,11 @@ func (c *Client) PutBucketLifecycle(bucket string, lifecycle *bce.Body) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketLifecycleFromString(bucket, lifecycle string) error {
-    body, err := bce.NewBodyFromString(lifecycle)
-    if err != nil {
-        return err
-    }
-    return api.PutBucketLifecycle(c, bucket, body)
+	body, err := bce.NewBodyFromString(lifecycle)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketLifecycle(c, bucket, body)
 }
 
 // GetBucketLifecycle - get the lifecycle rule of the given bucket
@@ -372,7 +372,7 @@ func (c *Client) PutBucketLifecycleFromString(bucket, lifecycle string) error {
 //     - *api.GetBucketLifecycleResult: the lifecycle rule of the bucket
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketLifecycle(bucket string) (*api.GetBucketLifecycleResult, error) {
-    return api.GetBucketLifecycle(c, bucket)
+	return api.GetBucketLifecycle(c, bucket)
 }
 
 // DeleteBucketLifecycle - delete the lifecycle rule of the given bucket
@@ -382,7 +382,7 @@ func (c *Client) GetBucketLifecycle(bucket string) (*api.GetBucketLifecycleResul
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) DeleteBucketLifecycle(bucket string) error {
-    return api.DeleteBucketLifecycle(c, bucket)
+	return api.DeleteBucketLifecycle(c, bucket)
 }
 
 // PutBucketStorageclass - set the storage class of the given bucket
@@ -393,7 +393,7 @@ func (c *Client) DeleteBucketLifecycle(bucket string) error {
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketStorageclass(bucket, storageClass string) error {
-    return api.PutBucketStorageclass(c, bucket, storageClass)
+	return api.PutBucketStorageclass(c, bucket, storageClass)
 }
 
 // GetBucketStorageclass - get the storage class of the given bucket
@@ -404,7 +404,7 @@ func (c *Client) PutBucketStorageclass(bucket, storageClass string) error {
 //     - string: the storage class string value
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketStorageclass(bucket string) (string, error) {
-    return api.GetBucketStorageclass(c, bucket)
+	return api.GetBucketStorageclass(c, bucket)
 }
 
 // PutObject - upload a new object or rewrite the existed object with raw stream
@@ -418,8 +418,8 @@ func (c *Client) GetBucketStorageclass(bucket string) (string, error) {
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
 func (c *Client) PutObject(bucket, object string, body *bce.Body,
-        args *api.PutObjectArgs) (string, error) {
-    return api.PutObject(c, bucket, object, body, args)
+	args *api.PutObjectArgs) (string, error) {
+	return api.PutObject(c, bucket, object, body, args)
 }
 
 // BasicPutObject - the basic interface of uploading an object
@@ -432,7 +432,7 @@ func (c *Client) PutObject(bucket, object string, body *bce.Body,
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
 func (c *Client) BasicPutObject(bucket, object string, body *bce.Body) (string, error) {
-    return api.PutObject(c, bucket, object, body, nil)
+	return api.PutObject(c, bucket, object, body, nil)
 }
 
 // PutObjectFromBytes - upload a new object or rewrite the existed object from a byte array
@@ -446,12 +446,12 @@ func (c *Client) BasicPutObject(bucket, object string, body *bce.Body) (string, 
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
 func (c *Client) PutObjectFromBytes(bucket, object string, bytesArr []byte,
-        args *api.PutObjectArgs) (string, error) {
-    body, err := bce.NewBodyFromBytes(bytesArr)
-    if err != nil {
-        return "", err
-    }
-    return api.PutObject(c, bucket, object, body, args)
+	args *api.PutObjectArgs) (string, error) {
+	body, err := bce.NewBodyFromBytes(bytesArr)
+	if err != nil {
+		return "", err
+	}
+	return api.PutObject(c, bucket, object, body, args)
 }
 
 // PutObjectFromString - upload a new object or rewrite the existed object from a string
@@ -465,12 +465,12 @@ func (c *Client) PutObjectFromBytes(bucket, object string, bytesArr []byte,
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
 func (c *Client) PutObjectFromString(bucket, object, content string,
-        args *api.PutObjectArgs) (string, error) {
-    body, err := bce.NewBodyFromString(content)
-    if err != nil {
-        return "", err
-    }
-    return api.PutObject(c, bucket, object, body, args)
+	args *api.PutObjectArgs) (string, error) {
+	body, err := bce.NewBodyFromString(content)
+	if err != nil {
+		return "", err
+	}
+	return api.PutObject(c, bucket, object, body, args)
 }
 
 // PutObjectFromFile - upload a new object or rewrite the existed object from a local file
@@ -484,12 +484,12 @@ func (c *Client) PutObjectFromString(bucket, object, content string,
 //     - string: etag of the uploaded object
 //     - error: the uploaded error if any occurs
 func (c *Client) PutObjectFromFile(bucket, object, fileName string,
-        args *api.PutObjectArgs) (string, error) {
-    body, err := bce.NewBodyFromFile(fileName)
-    if err != nil {
-        return "", err
-    }
-    return api.PutObject(c, bucket, object, body, args)
+	args *api.PutObjectArgs) (string, error) {
+	body, err := bce.NewBodyFromFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	return api.PutObject(c, bucket, object, body, args)
 }
 
 // CopyObject - copy a remote object to another one
@@ -505,9 +505,9 @@ func (c *Client) PutObjectFromFile(bucket, object, fileName string,
 //     - *api.CopyObjectResult: result struct which contains "ETag" and "LastModified" fields
 //     - error: any error if it occurs
 func (c *Client) CopyObject(bucket, object, srcBucket, srcObject string,
-        args *api.CopyObjectArgs) (*api.CopyObjectResult, error) {
-    source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.CopyObject(c, bucket, object, source, args)
+	args *api.CopyObjectArgs) (*api.CopyObjectResult, error) {
+	source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
+	return api.CopyObject(c, bucket, object, source, args)
 }
 
 // BasicCopyObject - the basic interface of copying a object to another one
@@ -521,9 +521,9 @@ func (c *Client) CopyObject(bucket, object, srcBucket, srcObject string,
 //     - *api.CopyObjectResult: result struct which contains "ETag" and "LastModified" fields
 //     - error: any error if it occurs
 func (c *Client) BasicCopyObject(bucket, object, srcBucket,
-        srcObject string) (*api.CopyObjectResult, error) {
-    source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.CopyObject(c, bucket, object, source, nil)
+	srcObject string) (*api.CopyObjectResult, error) {
+	source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
+	return api.CopyObject(c, bucket, object, source, nil)
 }
 
 // GetObject - get the given object with raw stream return
@@ -538,8 +538,8 @@ func (c *Client) BasicCopyObject(bucket, object, srcBucket,
 //       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
 func (c *Client) GetObject(bucket, object string, responseHeaders map[string]string,
-        ranges...int64) (*api.GetObjectResult, error) {
-    return api.GetObject(c, bucket, object, responseHeaders, ranges...)
+	ranges ...int64) (*api.GetObjectResult, error) {
+	return api.GetObject(c, bucket, object, responseHeaders, ranges...)
 }
 
 // BasicGetObject - the basic interface of geting the given object
@@ -552,7 +552,7 @@ func (c *Client) GetObject(bucket, object string, responseHeaders map[string]str
 //       for details reference https://cloud.baidu.com/doc/BOS/API.html#GetObject.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
 func (c *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, error) {
-    return api.GetObject(c, bucket, object, nil)
+	return api.GetObject(c, bucket, object, nil)
 }
 
 // BasicGetObjectToFile - use basic interface to get the given object to the given file path
@@ -564,26 +564,26 @@ func (c *Client) BasicGetObject(bucket, object string) (*api.GetObjectResult, er
 // RETURNS:
 //     - error: any error if it occurs
 func (c *Client) BasicGetObjectToFile(bucket, object, filePath string) error {
-    res, err := api.GetObject(c, bucket, object, nil)
-    if err != nil {
-        return err
-    }
-    defer res.Body.Close()
+	res, err := api.GetObject(c, bucket, object, nil)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
 
-    file, fileErr := os.OpenFile(filePath, os.O_TRUNC | os.O_CREATE | os.O_WRONLY, 0644)
-    if fileErr != nil {
-        return fileErr
-    }
-    defer file.Close()
+	file, fileErr := os.OpenFile(filePath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	if fileErr != nil {
+		return fileErr
+	}
+	defer file.Close()
 
-    written, writeErr := io.CopyN(file, res.Body, res.ContentLength)
-    if writeErr != nil {
-        return writeErr
-    }
-    if written != res.ContentLength {
-        return fmt.Errorf("written content size does not match the response content")
-    }
-    return nil
+	written, writeErr := io.CopyN(file, res.Body, res.ContentLength)
+	if writeErr != nil {
+		return writeErr
+	}
+	if written != res.ContentLength {
+		return fmt.Errorf("written content size does not match the response content")
+	}
+	return nil
 }
 
 // GetObjectMeta - get the given object metadata
@@ -596,7 +596,7 @@ func (c *Client) BasicGetObjectToFile(bucket, object, filePath string) error {
 //       https://cloud.baidu.com/doc/BOS/API.html#GetObjectMeta.E6.8E.A5.E5.8F.A3
 //     - error: any error if it occurs
 func (c *Client) GetObjectMeta(bucket, object string) (*api.GetObjectMetaResult, error) {
-    return api.GetObjectMeta(c, bucket, object)
+	return api.GetObjectMeta(c, bucket, object)
 }
 
 // FetchObject - fetch the object content from the given source and store
@@ -610,8 +610,8 @@ func (c *Client) GetObjectMeta(bucket, object string) (*api.GetObjectMetaResult,
 //     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
 //     - error: any error if it occurs
 func (c *Client) FetchObject(bucket, object, source string,
-        args *api.FetchObjectArgs) (*api.FetchObjectResult, error) {
-    return api.FetchObject(c, bucket, object, source, args)
+	args *api.FetchObjectArgs) (*api.FetchObjectResult, error) {
+	return api.FetchObject(c, bucket, object, source, args)
 }
 
 // BasicFetchObject - the basic interface of the fetch object api
@@ -624,7 +624,7 @@ func (c *Client) FetchObject(bucket, object, source string,
 //     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
 //     - error: any error if it occurs
 func (c *Client) BasicFetchObject(bucket, object, source string) (*api.FetchObjectResult, error) {
-    return api.FetchObject(c, bucket, object, source, nil)
+	return api.FetchObject(c, bucket, object, source, nil)
 }
 
 // SimpleFetchObject - fetch object with simple arguments interface
@@ -639,9 +639,9 @@ func (c *Client) BasicFetchObject(bucket, object, source string) (*api.FetchObje
 //     - *api.FetchObjectResult: result struct with Code, Message, RequestId and JobId fields
 //     - error: any error if it occurs
 func (c *Client) SimpleFetchObject(bucket, object, source, mode,
-        storageClass string) (*api.FetchObjectResult, error) {
-    args := &api.FetchObjectArgs{mode, storageClass}
-    return api.FetchObject(c, bucket, object, source, args)
+	storageClass string) (*api.FetchObjectResult, error) {
+	args := &api.FetchObjectArgs{mode, storageClass}
+	return api.FetchObject(c, bucket, object, source, args)
 }
 
 // AppendObject - append the gievn content to a new or existed object which is appendable
@@ -655,8 +655,8 @@ func (c *Client) SimpleFetchObject(bucket, object, source, mode,
 //     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
 func (c *Client) AppendObject(bucket, object string, content *bce.Body,
-        args *api.AppendObjectArgs) (*api.AppendObjectResult, error) {
-    return api.AppendObject(c, bucket, object, content, args)
+	args *api.AppendObjectArgs) (*api.AppendObjectResult, error) {
+	return api.AppendObject(c, bucket, object, content, args)
 }
 
 // SimpleAppendObject - the interface to append object with simple offset argument
@@ -670,8 +670,8 @@ func (c *Client) AppendObject(bucket, object string, content *bce.Body,
 //     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
 func (c *Client) SimpleAppendObject(bucket, object string, content *bce.Body,
-        offset int64) (*api.AppendObjectResult, error) {
-    return api.AppendObject(c, bucket, object, content, &api.AppendObjectArgs{Offset: offset})
+	offset int64) (*api.AppendObjectResult, error) {
+	return api.AppendObject(c, bucket, object, content, &api.AppendObjectArgs{Offset: offset})
 }
 
 // SimpleAppendObjectFromString - the simple interface of appending an object from a string
@@ -685,12 +685,12 @@ func (c *Client) SimpleAppendObject(bucket, object string, content *bce.Body,
 //     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
 func (c *Client) SimpleAppendObjectFromString(bucket, object, content string,
-        offset int64) (*api.AppendObjectResult, error) {
-    body, err := bce.NewBodyFromString(content)
-    if err != nil {
-        return nil, err
-    }
-    return api.AppendObject(c, bucket, object, body, &api.AppendObjectArgs{Offset: offset})
+	offset int64) (*api.AppendObjectResult, error) {
+	body, err := bce.NewBodyFromString(content)
+	if err != nil {
+		return nil, err
+	}
+	return api.AppendObject(c, bucket, object, body, &api.AppendObjectArgs{Offset: offset})
 }
 
 // SimpleAppendObjectFromFile - the simple interface of appending an object from a file
@@ -704,12 +704,12 @@ func (c *Client) SimpleAppendObjectFromString(bucket, object, content string,
 //     - *api.AppendObjectResult: the result of the appended object
 //     - error: any error if it occurs
 func (c *Client) SimpleAppendObjectFromFile(bucket, object, filePath string,
-        offset int64) (*api.AppendObjectResult, error) {
-    body, err := bce.NewBodyFromFile(filePath)
-    if err != nil {
-        return nil, err
-    }
-    return api.AppendObject(c, bucket, object, body, &api.AppendObjectArgs{Offset: offset})
+	offset int64) (*api.AppendObjectResult, error) {
+	body, err := bce.NewBodyFromFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return api.AppendObject(c, bucket, object, body, &api.AppendObjectArgs{Offset: offset})
 }
 
 // DeleteObject - delete the given object
@@ -720,7 +720,7 @@ func (c *Client) SimpleAppendObjectFromFile(bucket, object, filePath string,
 // RETURNS:
 //     - error: any error if it occurs
 func (c *Client) DeleteObject(bucket, object string) error {
-    return api.DeleteObject(c, bucket, object)
+	return api.DeleteObject(c, bucket, object)
 }
 
 // DeleteMultipleObjects - delete a list of objects
@@ -732,8 +732,8 @@ func (c *Client) DeleteObject(bucket, object string) error {
 //     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjects(bucket string,
-        objectListStream *bce.Body) (*api.DeleteMultipleObjectsResult, error) {
-    return api.DeleteMultipleObjects(c, bucket, objectListStream)
+	objectListStream *bce.Body) (*api.DeleteMultipleObjectsResult, error) {
+	return api.DeleteMultipleObjects(c, bucket, objectListStream)
 }
 
 // DeleteMultipleObjectsFromString - delete a list of objects with json format string
@@ -745,12 +745,12 @@ func (c *Client) DeleteMultipleObjects(bucket string,
 //     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjectsFromString(bucket,
-        objectListString string) (*api.DeleteMultipleObjectsResult, error) {
-    body, err := bce.NewBodyFromString(objectListString)
-    if err != nil {
-        return nil, err
-    }
-    return api.DeleteMultipleObjects(c, bucket, body)
+	objectListString string) (*api.DeleteMultipleObjectsResult, error) {
+	body, err := bce.NewBodyFromString(objectListString)
+	if err != nil {
+		return nil, err
+	}
+	return api.DeleteMultipleObjects(c, bucket, body)
 }
 
 // DeleteMultipleObjectsFromStruct - delete a list of objects with object list struct
@@ -762,16 +762,16 @@ func (c *Client) DeleteMultipleObjectsFromString(bucket,
 //     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
-        objectListStruct *api.DeleteMultipleObjectsArgs) (*api.DeleteMultipleObjectsResult, error) {
-    jsonBytes, jsonErr := json.Marshal(objectListStruct)
-    if jsonErr != nil {
-        return nil, jsonErr
-    }
-    body, err := bce.NewBodyFromBytes(jsonBytes)
-    if err != nil {
-        return nil, err
-    }
-    return api.DeleteMultipleObjects(c, bucket, body)
+	objectListStruct *api.DeleteMultipleObjectsArgs) (*api.DeleteMultipleObjectsResult, error) {
+	jsonBytes, jsonErr := json.Marshal(objectListStruct)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+	return api.DeleteMultipleObjects(c, bucket, body)
 }
 
 // DeleteMultipleObjectsFromKeyList - delete a list of objects with given key string array
@@ -783,25 +783,25 @@ func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
 //     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
 func (c *Client) DeleteMultipleObjectsFromKeyList(bucket string,
-        keyList []string) (*api.DeleteMultipleObjectsResult, error) {
-    if len(keyList) == 0 {
-        return nil, fmt.Errorf("the key list to be deleted is empty")
-    }
-    args := make([]api.DeleteObjectArgs, len(keyList))
-    for i, k := range keyList {
-        args[i].Key = k
-    }
-    argsContainer := &api.DeleteMultipleObjectsArgs{args}
+	keyList []string) (*api.DeleteMultipleObjectsResult, error) {
+	if len(keyList) == 0 {
+		return nil, fmt.Errorf("the key list to be deleted is empty")
+	}
+	args := make([]api.DeleteObjectArgs, len(keyList))
+	for i, k := range keyList {
+		args[i].Key = k
+	}
+	argsContainer := &api.DeleteMultipleObjectsArgs{args}
 
-    jsonBytes, jsonErr := json.Marshal(argsContainer)
-    if jsonErr != nil {
-        return nil, jsonErr
-    }
-    body, err := bce.NewBodyFromBytes(jsonBytes)
-    if err != nil {
-        return nil, err
-    }
-    return api.DeleteMultipleObjects(c, bucket, body)
+	jsonBytes, jsonErr := json.Marshal(argsContainer)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+	return api.DeleteMultipleObjects(c, bucket, body)
 }
 
 // InitiateMultipartUpload - initiate a multipart upload to get a upload ID
@@ -816,8 +816,8 @@ func (c *Client) DeleteMultipleObjectsFromKeyList(bucket string,
 //     - *InitiateMultipartUploadResult: the result data structure
 //     - error: nil if ok otherwise the specific error
 func (c *Client) InitiateMultipartUpload(bucket, object, contentType string,
-        args *api.InitiateMultipartUploadArgs) (*api.InitiateMultipartUploadResult, error) {
-    return api.InitiateMultipartUpload(c, bucket, object, contentType, args)
+	args *api.InitiateMultipartUploadArgs) (*api.InitiateMultipartUploadResult, error) {
+	return api.InitiateMultipartUpload(c, bucket, object, contentType, args)
 }
 
 // BasicInitiateMultipartUpload - basic interface to initiate a multipart upload
@@ -829,8 +829,8 @@ func (c *Client) InitiateMultipartUpload(bucket, object, contentType string,
 //     - *InitiateMultipartUploadResult: the result data structure
 //     - error: nil if ok otherwise the specific error
 func (c *Client) BasicInitiateMultipartUpload(bucket,
-        object string) (*api.InitiateMultipartUploadResult, error) {
-    return api.InitiateMultipartUpload(c, bucket, object, "", nil)
+	object string) (*api.InitiateMultipartUploadResult, error) {
+	return api.InitiateMultipartUpload(c, bucket, object, "", nil)
 }
 
 // UploadPart - upload the single part in the multipart upload process
@@ -846,8 +846,8 @@ func (c *Client) BasicInitiateMultipartUpload(bucket,
 //     - string: the etag of the uploaded part
 //     - error: nil if ok otherwise the specific error
 func (c *Client) UploadPart(bucket, object, uploadId string, partNumber int,
-        content *bce.Body, args *api.UploadPartArgs) (string, error) {
-    return api.UploadPart(c, bucket, object, uploadId, partNumber, content, args)
+	content *bce.Body, args *api.UploadPartArgs) (string, error) {
+	return api.UploadPart(c, bucket, object, uploadId, partNumber, content, args)
 }
 
 // BasicUploadPart - basic interface to upload the single part in the multipart upload process
@@ -862,8 +862,8 @@ func (c *Client) UploadPart(bucket, object, uploadId string, partNumber int,
 //     - string: the etag of the uploaded part
 //     - error: nil if ok otherwise the specific error
 func (c *Client) BasicUploadPart(bucket, object, uploadId string, partNumber int,
-        content *bce.Body) (string, error) {
-    return api.UploadPart(c, bucket, object, uploadId, partNumber, content, nil)
+	content *bce.Body) (string, error) {
+	return api.UploadPart(c, bucket, object, uploadId, partNumber, content, nil)
 }
 
 // UploadPartCopy - copy the multipart object
@@ -880,9 +880,9 @@ func (c *Client) BasicUploadPart(bucket, object, uploadId string, partNumber int
 //     - *CopyObjectResult: the lastModified and eTag of the part
 //     - error: nil if ok otherwise the specific error
 func (c *Client) UploadPartCopy(bucket, object, srcBucket, srcObject, uploadId string,
-        partNumber int, args *api.UploadPartCopyArgs) (*api.CopyObjectResult, error) {
-    source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.UploadPartCopy(c, bucket, object, source, uploadId, partNumber, args)
+	partNumber int, args *api.UploadPartCopyArgs) (*api.CopyObjectResult, error) {
+	source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
+	return api.UploadPartCopy(c, bucket, object, source, uploadId, partNumber, args)
 }
 
 // BasicUploadPartCopy - basic interface to copy the multipart object
@@ -898,9 +898,9 @@ func (c *Client) UploadPartCopy(bucket, object, srcBucket, srcObject, uploadId s
 //     - *CopyObjectResult: the lastModified and eTag of the part
 //     - error: nil if ok otherwise the specific error
 func (c *Client) BasicUploadPartCopy(bucket, object, srcBucket, srcObject, uploadId string,
-        partNumber int) (*api.CopyObjectResult, error) {
-    source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
-    return api.UploadPartCopy(c, bucket, object, source, uploadId, partNumber, nil)
+	partNumber int) (*api.CopyObjectResult, error) {
+	source := fmt.Sprintf("/%s/%s", srcBucket, srcObject)
+	return api.UploadPartCopy(c, bucket, object, source, uploadId, partNumber, nil)
 }
 
 // CompleteMultipartUpload - finish a multipart upload operation with parts stream
@@ -915,8 +915,8 @@ func (c *Client) BasicUploadPartCopy(bucket, object, srcBucket, srcObject, uploa
 //     - *CompleteMultipartUploadResult: the result data
 //     - error: nil if ok otherwise the specific error
 func (c *Client) CompleteMultipartUpload(bucket, object, uploadId string,
-        parts *bce.Body, meta map[string]string) (*api.CompleteMultipartUploadResult, error) {
-    return api.CompleteMultipartUpload(c, bucket, object, uploadId, parts, meta)
+	parts *bce.Body, meta map[string]string) (*api.CompleteMultipartUploadResult, error) {
+	return api.CompleteMultipartUpload(c, bucket, object, uploadId, parts, meta)
 }
 
 // CompleteMultipartUploadFromStruct - finish a multipart upload operation with parts struct
@@ -931,17 +931,17 @@ func (c *Client) CompleteMultipartUpload(bucket, object, uploadId string,
 //     - *CompleteMultipartUploadResult: the result data
 //     - error: nil if ok otherwise the specific error
 func (c *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId string,
-        parts *api.CompleteMultipartUploadArgs,
-        meta map[string]string) (*api.CompleteMultipartUploadResult, error) {
-    jsonBytes, jsonErr := json.Marshal(parts)
-    if jsonErr != nil {
-        return nil, jsonErr
-    }
-    body, err := bce.NewBodyFromBytes(jsonBytes)
-    if err != nil {
-        return nil, err
-    }
-    return api.CompleteMultipartUpload(c, bucket, object, uploadId, body, meta)
+	parts *api.CompleteMultipartUploadArgs,
+	meta map[string]string) (*api.CompleteMultipartUploadResult, error) {
+	jsonBytes, jsonErr := json.Marshal(parts)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+	return api.CompleteMultipartUpload(c, bucket, object, uploadId, body, meta)
 }
 
 // AbortMultipartUpload - abort a multipart upload operation
@@ -953,7 +953,7 @@ func (c *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId stri
 // RETURNS:
 //     - error: nil if ok otherwise the specific error
 func (c *Client) AbortMultipartUpload(bucket, object, uploadId string) error {
-    return api.AbortMultipartUpload(c, bucket, object, uploadId)
+	return api.AbortMultipartUpload(c, bucket, object, uploadId)
 }
 
 // ListParts - list the successfully uploaded parts info by upload id
@@ -967,8 +967,8 @@ func (c *Client) AbortMultipartUpload(bucket, object, uploadId string) error {
 //     - *ListPartsResult: the uploaded parts info result
 //     - error: nil if ok otherwise the specific error
 func (c *Client) ListParts(bucket, object, uploadId string,
-        args *api.ListPartsArgs) (*api.ListPartsResult, error) {
-    return api.ListParts(c, bucket, object, uploadId, args)
+	args *api.ListPartsArgs) (*api.ListPartsResult, error) {
+	return api.ListParts(c, bucket, object, uploadId, args)
 }
 
 // BasicListParts - basic interface to list the successfully uploaded parts info by upload id
@@ -981,7 +981,7 @@ func (c *Client) ListParts(bucket, object, uploadId string,
 //     - *ListPartsResult: the uploaded parts info result
 //     - error: nil if ok otherwise the specific error
 func (c *Client) BasicListParts(bucket, object, uploadId string) (*api.ListPartsResult, error) {
-    return api.ListParts(c, bucket, object, uploadId, nil)
+	return api.ListParts(c, bucket, object, uploadId, nil)
 }
 
 // ListMultipartUploads - list the unfinished uploaded parts of the given bucket
@@ -993,8 +993,8 @@ func (c *Client) BasicListParts(bucket, object, uploadId string) (*api.ListParts
 //     - *ListMultipartUploadsResult: the unfinished uploaded parts info result
 //     - error: nil if ok otherwise the specific error
 func (c *Client) ListMultipartUploads(bucket string,
-        args *api.ListMultipartUploadsArgs) (*api.ListMultipartUploadsResult, error) {
-    return api.ListMultipartUploads(c, bucket, args)
+	args *api.ListMultipartUploadsArgs) (*api.ListMultipartUploadsResult, error) {
+	return api.ListMultipartUploads(c, bucket, args)
 }
 
 // BasicListMultipartUploads - basic interface to list the unfinished uploaded parts
@@ -1005,8 +1005,8 @@ func (c *Client) ListMultipartUploads(bucket string,
 //     - *ListMultipartUploadsResult: the unfinished uploaded parts info result
 //     - error: nil if ok otherwise the specific error
 func (c *Client) BasicListMultipartUploads(bucket string) (
-        *api.ListMultipartUploadsResult, error) {
-    return api.ListMultipartUploads(c, bucket, nil)
+	*api.ListMultipartUploadsResult, error) {
+	return api.ListMultipartUploads(c, bucket, nil)
 }
 
 // UploadSuperFile - parallel upload the super file by using the multipart upload interface
@@ -1019,97 +1019,97 @@ func (c *Client) BasicListMultipartUploads(bucket string) (
 // RETURNS:
 //     - error: nil if ok otherwise the specific error
 func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) error {
-    // Get the file size and check the size for multipart upload
-    file, fileErr := os.Open(fileName)
-    if fileErr != nil {
-        return fileErr
-    }
-    defer file.Close()
-    fileInfo, infoErr := file.Stat()
-    if infoErr != nil {
-        return infoErr
-    }
-    size := fileInfo.Size()
-    if size < MIN_MULTIPART_SIZE || c.MultipartSize < MIN_MULTIPART_SIZE {
-        return bce.NewBceClientError("multipart size should not be less than 5MB")
-    }
+	// Get the file size and check the size for multipart upload
+	file, fileErr := os.Open(fileName)
+	if fileErr != nil {
+		return fileErr
+	}
+	defer file.Close()
+	fileInfo, infoErr := file.Stat()
+	if infoErr != nil {
+		return infoErr
+	}
+	size := fileInfo.Size()
+	if size < MIN_MULTIPART_SIZE || c.MultipartSize < MIN_MULTIPART_SIZE {
+		return bce.NewBceClientError("multipart size should not be less than 5MB")
+	}
 
-    // Caculate part size and total part number
-    partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
-    partNum  := (size + partSize - 1) / partSize
-    if partNum > MAX_PART_NUMBER {
-        partSize = (size + MAX_PART_NUMBER - 1) / MAX_PART_NUMBER
-        partSize = (partSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
-        partNum  = (size + partSize - 1) / partSize
-    }
-    log.Debugf("starting upload super file, total parts: %d, part size: %d", partNum, partSize)
+	// Caculate part size and total part number
+	partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
+	partNum := (size + partSize - 1) / partSize
+	if partNum > MAX_PART_NUMBER {
+		partSize = (size + MAX_PART_NUMBER - 1) / MAX_PART_NUMBER
+		partSize = (partSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
+		partNum = (size + partSize - 1) / partSize
+	}
+	log.Debugf("starting upload super file, total parts: %d, part size: %d", partNum, partSize)
 
-    // Inner wrapper function of parallel uploading each part to get the ETag of the part
-    uploadPart := func(bucket, object, uploadId string, partNumber int, body *bce.Body,
-            result chan *api.UploadInfoType, ret chan bool, id int64, pool chan int64) {
-        etag, err := c.BasicUploadPart(bucket, object, uploadId, partNumber, body)
-        if err != nil {
-            result <- nil
-            ret <- false
-        } else {
-            result <- &api.UploadInfoType{partNumber, etag}
-            ret <- true
-        }
-        pool <- id
-    }
+	// Inner wrapper function of parallel uploading each part to get the ETag of the part
+	uploadPart := func(bucket, object, uploadId string, partNumber int, body *bce.Body,
+		result chan *api.UploadInfoType, ret chan bool, id int64, pool chan int64) {
+		etag, err := c.BasicUploadPart(bucket, object, uploadId, partNumber, body)
+		if err != nil {
+			result <- nil
+			ret <- false
+		} else {
+			result <- &api.UploadInfoType{partNumber, etag}
+			ret <- true
+		}
+		pool <- id
+	}
 
-    // Do the parallel multipart upload
-    resp, err := c.InitiateMultipartUpload(bucket, object, "",
-        &api.InitiateMultipartUploadArgs{StorageClass: storageClass})
-    if err != nil {
-        return err
-    }
-    uploadId := resp.UploadId
-    uploadedResult := make(chan *api.UploadInfoType, partNum)
-    retChan := make(chan bool, partNum)
-    workerPool := make(chan int64, c.MaxParallel)
-    for i := int64(0); i < c.MaxParallel; i++ {
-        workerPool <- i
-    }
-    for partId := int64(1); partId <= partNum; partId++ {
-        uploadSize := partSize
-        offset := (partId - 1) * partSize
-        left := size - offset
-        if uploadSize > left {
-            uploadSize = left
-        }
-        partBody, _ := bce.NewBodyFromSectionFile(file, offset, uploadSize)
-        select { // wait until get a worker to upload
-        case workerId := <-workerPool:
-            go uploadPart(bucket, object, uploadId, int(partId), partBody,
-                          uploadedResult, retChan, workerId, workerPool)
-        }
-    }
+	// Do the parallel multipart upload
+	resp, err := c.InitiateMultipartUpload(bucket, object, "",
+		&api.InitiateMultipartUploadArgs{StorageClass: storageClass})
+	if err != nil {
+		return err
+	}
+	uploadId := resp.UploadId
+	uploadedResult := make(chan *api.UploadInfoType, partNum)
+	retChan := make(chan bool, partNum)
+	workerPool := make(chan int64, c.MaxParallel)
+	for i := int64(0); i < c.MaxParallel; i++ {
+		workerPool <- i
+	}
+	for partId := int64(1); partId <= partNum; partId++ {
+		uploadSize := partSize
+		offset := (partId - 1) * partSize
+		left := size - offset
+		if uploadSize > left {
+			uploadSize = left
+		}
+		partBody, _ := bce.NewBodyFromSectionFile(file, offset, uploadSize)
+		select { // wait until get a worker to upload
+		case workerId := <-workerPool:
+			go uploadPart(bucket, object, uploadId, int(partId), partBody,
+				uploadedResult, retChan, workerId, workerPool)
+		}
+	}
 
-    // Check the return of each part uploading, and decide to complete or abort it
-    success := true
-    completeArgs := &api.CompleteMultipartUploadArgs{make([]api.UploadInfoType, partNum)}
-    for i := partNum; i > 0; i-- {
-        ret := <-retChan
-        if !ret { // if any error occurs, just break and abort it.
-            success = false
-            break
-        } else {
-            uploaded := <-uploadedResult
-            completeArgs.Parts[uploaded.PartNumber - 1] = *uploaded
-            log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
-        }
-    }
-    if !success {
-        c.AbortMultipartUpload(bucket, object, uploadId)
-        return fmt.Errorf("%s", "upload part occurs error")
-    }
-    if _, err := c.CompleteMultipartUploadFromStruct(bucket, object,
-            uploadId, completeArgs, nil); err != nil {
-        c.AbortMultipartUpload(bucket, object, uploadId)
-        return err
-    }
-    return nil
+	// Check the return of each part uploading, and decide to complete or abort it
+	success := true
+	completeArgs := &api.CompleteMultipartUploadArgs{make([]api.UploadInfoType, partNum)}
+	for i := partNum; i > 0; i-- {
+		ret := <-retChan
+		if !ret { // if any error occurs, just break and abort it.
+			success = false
+			break
+		} else {
+			uploaded := <-uploadedResult
+			completeArgs.Parts[uploaded.PartNumber-1] = *uploaded
+			log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
+		}
+	}
+	if !success {
+		c.AbortMultipartUpload(bucket, object, uploadId)
+		return fmt.Errorf("%s", "upload part occurs error")
+	}
+	if _, err := c.CompleteMultipartUploadFromStruct(bucket, object,
+		uploadId, completeArgs, nil); err != nil {
+		c.AbortMultipartUpload(bucket, object, uploadId)
+		return err
+	}
+	return nil
 }
 
 // DownloadSuperFile - parallel download the super file using the get object with range
@@ -1121,95 +1121,95 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 // RETURNS:
 //     - error: nil if ok otherwise the specific error
 func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) {
-    file, err := os.OpenFile(fileName, os.O_WRONLY | os.O_TRUNC | os.O_CREATE, 0644)
-    if err != nil {
-        return
-    }
-    defer func() {
-        file.Close()
-        if err != nil {
-            os.Remove(fileName)
-        }
-    }()
+	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+	if err != nil {
+		return
+	}
+	defer func() {
+		file.Close()
+		if err != nil {
+			os.Remove(fileName)
+		}
+	}()
 
-    meta, err := c.GetObjectMeta(bucket, object)
-    if err != nil {
-        return
-    }
-    size := meta.ContentLength
-    partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
-    partNum  := (size + partSize - 1) / partSize
-    log.Debugf("starting download super file, total parts: %d, part size: %d", partNum, partSize)
+	meta, err := c.GetObjectMeta(bucket, object)
+	if err != nil {
+		return
+	}
+	size := meta.ContentLength
+	partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
+	partNum := (size + partSize - 1) / partSize
+	log.Debugf("starting download super file, total parts: %d, part size: %d", partNum, partSize)
 
-    bodyChan := make(chan *struct{
-        stream io.ReadCloser
-        offset int64
-        size   int64
-    }, c.MaxParallel)
-    errorChan := make(chan error)
-    done := make(chan struct{}, c.MaxParallel)
+	bodyChan := make(chan *struct {
+		stream io.ReadCloser
+		offset int64
+		size   int64
+	}, c.MaxParallel)
+	errorChan := make(chan error)
+	done := make(chan struct{}, c.MaxParallel)
 
-    // Let the background goroutine to write the downloaded object
-    go func() {
-        for i := partNum; i > 0; i-- {
-            select {
-            case body := <-bodyChan:
-                log.Debugf("writing part %d with offset=%d, size=%d", body.offset / partSize,
-                    body.offset, body.size)
-                if body.stream == nil {
-                    errorChan <- fmt.Errorf("%s", "download object failed")
-                    return
-                }
-                file.Seek(body.offset, 0)
-                if _, err := io.CopyN(file, body.stream, body.size); err != nil {
-                    errorChan <- err
-                    return
-                }
-                done <- struct{}{}
-            }
-        }
-    }()
+	// Let the background goroutine to write the downloaded object
+	go func() {
+		for i := partNum; i > 0; i-- {
+			select {
+			case body := <-bodyChan:
+				log.Debugf("writing part %d with offset=%d, size=%d", body.offset/partSize,
+					body.offset, body.size)
+				if body.stream == nil {
+					errorChan <- fmt.Errorf("%s", "download object failed")
+					return
+				}
+				file.Seek(body.offset, 0)
+				if _, err := io.CopyN(file, body.stream, body.size); err != nil {
+					errorChan <- err
+					return
+				}
+				done <- struct{}{}
+			}
+		}
+	}()
 
-    // Set up multiple goroutine workers to download the object
-    workerPool := make(chan int64, c.MaxParallel)
-    for i := int64(0); i < c.MaxParallel; i++ {
-        workerPool <- i
-    }
-    for i := int64(0); i < partNum; i++ {
-        rangeStart := i * partSize
-        rangeEnd := (i + 1) * partSize - 1
-        if rangeEnd > size - 1 {
-            rangeEnd = size - 1
-        }
-        select {
-        case workerId := <-workerPool:
-            go func(rangeStart, rangeEnd, workerId int64) {
-                returnBody := &struct{
-                    stream io.ReadCloser
-                    offset int64
-                    size   int64
-                }{}
-                res, err := c.GetObject(bucket, object, nil, rangeStart, rangeEnd)
-                if err != nil {
-                    errorChan <- err
-                    return
-                }
-                returnBody.stream = res.Body
-                returnBody.offset = rangeStart
-                returnBody.size   = res.ContentLength
-                bodyChan <- returnBody
-                workerPool <- workerId
-            }(rangeStart, rangeEnd, workerId)
-        case err = <-errorChan: // return the error that occurs during downloading any part
-            return
-        }
-    }
+	// Set up multiple goroutine workers to download the object
+	workerPool := make(chan int64, c.MaxParallel)
+	for i := int64(0); i < c.MaxParallel; i++ {
+		workerPool <- i
+	}
+	for i := int64(0); i < partNum; i++ {
+		rangeStart := i * partSize
+		rangeEnd := (i+1)*partSize - 1
+		if rangeEnd > size-1 {
+			rangeEnd = size - 1
+		}
+		select {
+		case workerId := <-workerPool:
+			go func(rangeStart, rangeEnd, workerId int64) {
+				returnBody := &struct {
+					stream io.ReadCloser
+					offset int64
+					size   int64
+				}{}
+				res, err := c.GetObject(bucket, object, nil, rangeStart, rangeEnd)
+				if err != nil {
+					errorChan <- err
+					return
+				}
+				returnBody.stream = res.Body
+				returnBody.offset = rangeStart
+				returnBody.size = res.ContentLength
+				bodyChan <- returnBody
+				workerPool <- workerId
+			}(rangeStart, rangeEnd, workerId)
+		case err = <-errorChan: // return the error that occurs during downloading any part
+			return
+		}
+	}
 
-    // Wait for writing to local file done
-    for i := partNum; i > 0; i-- {
-        <-done
-    }
-    return nil
+	// Wait for writing to local file done
+	for i := partNum; i > 0; i-- {
+		<-done
+	}
+	return nil
 }
 
 // GeneratePresignedUrl - generate an authorization url with expire time and optional arguments
@@ -1224,9 +1224,9 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) 
 // RETURNS:
 //     - string: the presigned url with authorization string
 func (c *Client) GeneratePresignedUrl(bucket, object string, expireInSeconds int, method string,
-        headers, params map[string]string) string {
-    return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
-        expireInSeconds, method, headers, params)
+	headers, params map[string]string) string {
+	return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
+		expireInSeconds, method, headers, params)
 }
 
 // BasicGeneratePresignedUrl - basic interface to generate an authorization url with expire time
@@ -1238,7 +1238,6 @@ func (c *Client) GeneratePresignedUrl(bucket, object string, expireInSeconds int
 // RETURNS:
 //     - string: the presigned url with authorization string
 func (c *Client) BasicGeneratePresignedUrl(bucket, object string, expireInSeconds int) string {
-    return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
-        expireInSeconds, "", nil, nil)
+	return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
+		expireInSeconds, "", nil, nil)
 }
-

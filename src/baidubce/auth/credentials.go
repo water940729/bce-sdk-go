@@ -23,41 +23,40 @@ import "errors"
 
 // BceCredentials define the data structure for authorization
 type BceCredentials struct {
-    AccessKeyId     string // access key id to the service
-    SecretAccessKey string // secret access key to the service
-    SessionToken    string // session token generate by the STS service
+	AccessKeyId     string // access key id to the service
+	SecretAccessKey string // secret access key to the service
+	SessionToken    string // session token generate by the STS service
 }
 
 func (b *BceCredentials) String() string {
-    str := "ak: " + b.AccessKeyId + ", sk: " + b.SecretAccessKey
-    if len(b.SessionToken) != 0 {
-        return str + ", sessionToken: " + b.SessionToken
-    }
-    return str
+	str := "ak: " + b.AccessKeyId + ", sk: " + b.SecretAccessKey
+	if len(b.SessionToken) != 0 {
+		return str + ", sessionToken: " + b.SessionToken
+	}
+	return str
 }
 
 func NewBceCredentials(ak, sk string) (*BceCredentials, error) {
-    if len(ak) == 0 {
-        return nil, errors.New("accessKeyId should not be empty")
-    }
-    if len(sk) == 0 {
-        return nil, errors.New("secretKey should not be empty")
-    }
+	if len(ak) == 0 {
+		return nil, errors.New("accessKeyId should not be empty")
+	}
+	if len(sk) == 0 {
+		return nil, errors.New("secretKey should not be empty")
+	}
 
-    return &BceCredentials{ak, sk, ""}, nil
+	return &BceCredentials{ak, sk, ""}, nil
 }
 
 func NewSessionBceCredentials(ak, sk, token string) (*BceCredentials, error) {
-    if len(token) == 0 {
-        return nil, errors.New("sessionToken should not be empty")
-    }
+	if len(token) == 0 {
+		return nil, errors.New("sessionToken should not be empty")
+	}
 
-    result, err := NewBceCredentials(ak, sk)
-    if err != nil {
-        return nil, err
-    }
-    result.SessionToken = token
+	result, err := NewBceCredentials(ak, sk)
+	if err != nil {
+		return nil, err
+	}
+	result.SessionToken = token
 
-    return result, nil
+	return result, nil
 }
-

@@ -18,25 +18,25 @@
 package api
 
 import (
-    "strconv"
+	"strconv"
 
-    "baidubce/bce"
-    "baidubce/http"
+	"baidubce/bce"
+	"baidubce/http"
 )
 
 const (
-    DEFAULT_DURATION_SECONDS = 43200 // default duration is 12 hours
-    URI_PREFIX  = bce.URI_PREFIX + "v1" // sts service not support uri without prefix "v1"
-    REQUEST_URI = "/sessionToken"
+	DEFAULT_DURATION_SECONDS = 43200                 // default duration is 12 hours
+	URI_PREFIX               = bce.URI_PREFIX + "v1" // sts service not support uri without prefix "v1"
+	REQUEST_URI              = "/sessionToken"
 )
 
 type GetSessionTokenResult struct {
-    AccessKeyId     string
-    SecretAccessKey string
-    SessionToken    string
-    CreateTime      string
-    Expiration      string
-    UserId          string
+	AccessKeyId     string
+	SecretAccessKey string
+	SessionToken    string
+	CreateTime      string
+	Expiration      string
+	UserId          string
 }
 
 // GetSessionToken - get the session token from the STS service
@@ -50,37 +50,36 @@ type GetSessionTokenResult struct {
 //     - *GetSessionTokenResult: result of this api
 //     - error: nil if ok otherwise the specific error
 func GetSessionToken(cli bce.Client, durationSec int, acl string) (*GetSessionTokenResult, error) {
-    // If the duration seconds is not a positive, use the default value
-    if durationSec <= 0 {
-        durationSec = DEFAULT_DURATION_SECONDS
-    }
+	// If the duration seconds is not a positive, use the default value
+	if durationSec <= 0 {
+		durationSec = DEFAULT_DURATION_SECONDS
+	}
 
-    // Build the request
-    req := &bce.BceRequest{}
-    req.SetUri(URI_PREFIX + REQUEST_URI)
-    req.SetMethod(http.POST)
-    req.SetParam("durationSeconds", strconv.Itoa(durationSec))
-    if len(acl) > 0 {
-        req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
-        body, err := bce.NewBodyFromString(acl)
-        if err != nil {
-            return nil, err
-        }
-        req.SetBody(body)
-    }
+	// Build the request
+	req := &bce.BceRequest{}
+	req.SetUri(URI_PREFIX + REQUEST_URI)
+	req.SetMethod(http.POST)
+	req.SetParam("durationSeconds", strconv.Itoa(durationSec))
+	if len(acl) > 0 {
+		req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
+		body, err := bce.NewBodyFromString(acl)
+		if err != nil {
+			return nil, err
+		}
+		req.SetBody(body)
+	}
 
-    // Send requet and get response
-    resp := &bce.BceResponse{}
-    if err := cli.SendRequest(req, resp); err != nil {
-        return nil, err
-    }
-    if resp.IsFail() {
-        return nil, resp.ServiceError()
-    }
-    jsonBody := &GetSessionTokenResult{}
-    if err := resp.ParseJsonBody(jsonBody); err != nil {
-        return nil, err
-    }
-    return jsonBody, nil
+	// Send requet and get response
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	jsonBody := &GetSessionTokenResult{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+	return jsonBody, nil
 }
-
