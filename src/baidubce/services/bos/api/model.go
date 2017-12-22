@@ -246,6 +246,7 @@ type AppendObjectArgs struct {
 	CacheControl       string
 	ContentDisposition string
 	ContentMD5         string
+	ContentType        string
 	Expires            string
 	UserMeta           map[string]string
 	ContentSha256      string

@@ -119,9 +119,23 @@ func setOptionalNullHeaders(req *bce.BceRequest, args map[string]string) {
 			fallthrough
 		case http.CONTENT_DISPOSITION:
 			fallthrough
+		case http.CONTENT_ENCODING:
+			fallthrough
+		case http.CONTENT_RANGE:
+			fallthrough
 		case http.CONTENT_MD5:
 			fallthrough
+		case http.CONTENT_TYPE:
+			fallthrough
 		case http.EXPIRES:
+			fallthrough
+		case http.LAST_MODIFIED:
+			fallthrough
+		case http.ETAG:
+			fallthrough
+		case http.BCE_OBJECT_TYPE:
+			fallthrough
+		case http.BCE_NEXT_APPEND_OFFSET:
 			fallthrough
 		case http.BCE_CONTENT_SHA256:
 			fallthrough

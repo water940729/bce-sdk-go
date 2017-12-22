@@ -24,6 +24,7 @@ import (
 	"baidubce/auth"
 	"baidubce/bce"
 	"baidubce/http"
+	"baidubce/util"
 )
 
 // PutObject - put the object from the string or the stream
@@ -121,7 +122,7 @@ func CopyObject(cli bce.Client, bucket, object, source string,
 	if len(source) == 0 {
 		return nil, bce.NewBceClientError("copy source should not be null")
 	}
-	req.SetHeader(http.BCE_COPY_SOURCE, source)
+	req.SetHeader(http.BCE_COPY_SOURCE, util.UriEncode(source, false))
 
 	// Optional arguments settings
 	if args != nil {
@@ -457,6 +458,7 @@ func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
 			http.CACHE_CONTROL:       args.CacheControl,
 			http.CONTENT_DISPOSITION: args.ContentDisposition,
 			http.CONTENT_MD5:         args.ContentMD5,
+			http.CONTENT_TYPE:        args.ContentType,
 			http.EXPIRES:             args.Expires,
 			http.BCE_CONTENT_SHA256:  args.ContentSha256,
 		})
