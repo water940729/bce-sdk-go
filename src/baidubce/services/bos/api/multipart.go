@@ -22,6 +22,7 @@ import (
 
 	"baidubce/bce"
 	"baidubce/http"
+	"baidubce/util"
 )
 
 // InitiateMultipartUpload - initiate a multipart upload to get a upload ID
@@ -147,7 +148,7 @@ func UploadPartCopy(cli bce.Client, bucket, object, source, uploadId string, par
 	if len(source) == 0 {
 		return nil, bce.NewBceClientError("upload part copy source should not be empty")
 	}
-	req.SetHeader(http.BCE_COPY_SOURCE, source)
+	req.SetHeader(http.BCE_COPY_SOURCE, util.UriEncode(source, false))
 
 	// Optional arguments settings
 	if args != nil {
