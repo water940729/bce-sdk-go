@@ -1,6 +1,7 @@
 # GO SDK 文档
 
 ## 简介
+
 本文档主要介绍BOS GO SDK的安装和使用。在使用本文档前，您需要先了解
 BOS的一些基本知识，并已开通了BOS服务。若您还不了解BOS，可以参考[产
 品描述](https://cloud.baidu.com/doc/BOS/ProductDescription.html)和
@@ -9,14 +10,18 @@ BOS的一些基本知识，并已开通了BOS服务。若您还不了解BOS，�
 ## 安装SDK工具包
 
 ### 运行环境
+
 GO SDK可以在go1.3及以上环境下运行。
 
 ### 安装步骤
- - 方法一：使用`go get`工具`go get https://github.com/baidubce/bce-sdk-go`
- - 方法二：在[官方网站](https://cloud.baidu.com/doc/Developer/index.html)
+
+ - 在[官方网站](https://cloud.baidu.com/doc/Developer/index.html)
  下载源码，拷贝到个人项目的源码路径下，即可在项目中使用SDK。
 
+> 说明：后续会将代码开源到github上，以支持使用`go get`工具进行安装。
+
 ### SDK目录结构
+
 ```
 baidubce
 |--auth                   //BCE签名和权限认证
@@ -61,6 +66,7 @@ BOS Client对象是BOS服务的客户端，为开发者提供与BOS进行交互�
 #### 通过AK/SK方式访问BOS
 
 用户使用AK/SK方式访问BOS时，可以参考如下代码创建一个BOS Client对象：
+
 ```
 import (
     "baidubce/services/bos"
@@ -143,7 +149,7 @@ func main() {
 
 ### 接口说明
 
-BOS Client对象为用户使用BOS服务的客户端，提供了所有API的支持，统一封装
+BOS基于RESTful协议的接口对外提供服务，所有接口以官网API文档为依据实现于
 `baidubce/services/bos/api`目录下，分为`Bucket`相关接口、`Object`相关接
 口和`Multipart`相关接口三部分。每个接口的参数分为必需参数和可选参数两
 类，必需参数直接作为API函数的参数，可选参数以后缀名为`Args`的`struct`的
@@ -171,9 +177,10 @@ type CopyObjectResult struct {
 
 用户调用相关接口之后可以直接使用返回值对象的字段名访问相应的值。
 
-BOS Client将底层原始API进行了封装，最大程度的方便用户使用各个API，全部
+BOS Client将上述原始API进行了封装，最大程度的方便用户使用各个API，全部
 定义于`baidubce/services/bos/client.go`文件中。针对同一个API一般提供多
 种形式调用，以`GetObject` API举例来说明，在BOS Client对象上
+
   1. 首先提供了`GetObject`方法，直接调用原始API
   2. 封装`BasicGetObject`方法，仅使用必需参数调用
   3. 封装`BasicGetObjectToFile`方法，仅使用必须参数调用，将下载对象存入文件
@@ -199,9 +206,11 @@ Retry      | RetryPolicy | 连接重试策略
 ConnectionTimeoutInMillis| int     | 连接超时时间，单位毫秒，默认50秒
 
 说明：
+
   1. `Credentials`字段使用`auth.NewBceCredentials`与`auth.NewSessionBceCredentials`函数
      创建，默认使用前者，后者为使用STS鉴权时使用，详见上一小节。
   2. `SignOption`字段为生成签名字符串时的选项，详见下表说明：
+
      名称          | 类型  | 含义
      --------------|-------|-----------
      HeadersToSign |map[string]struct{} | 生成签名字符串时使用的HTTP头
@@ -576,7 +585,7 @@ etag, err := bosClient.PutObjectFromFile(bucketName, objectName, fileName, nil)
 
 // 2. 从字符串上传
 str := "test put object"
-etag, err := bosClient.PutObjectFromFile(bucketName, objectName, str, nil)
+etag, err := bosClient.PutObjectFromString(bucketName, objectName, str, nil)
 
 // 3. 从字节数组上传
 byteArr := []byte("test put object")
@@ -599,7 +608,7 @@ etag, err := bosClient.BasicPutObject(bucketName, objectName, bodyStream)
 
 用户可以使用参数对象`PutObjectArgs`设置上传Object的参数。目前支持的参数
 包括："CacheControl"、"ContentDisposition"、"Expires"、"ContentMD5"、"UserMeta"、
-"ContentSha256"和"StorageClass"。
+"ContentType"、"ContentLength"、"ContentSha256"和"StorageClass"。
 
 ```
 // 设置存储类型为低频存储，标准存储和冷存储类似
@@ -612,6 +621,10 @@ args := new(api.PutObjectArgs)
 args.UserMeta = map[string]string{"name": "my-custom-metadata"}
 etag, err := bosClient.PutObject(bucketName, objectName, bodyStream, args)
 ```
+
+> 注意：用户上传对象时会自动SDK会自动设置ContentLength和ContentMD5，用来保证
+> 数据的正确性。如果用户自行设定ContentLength，必须为大于等于0且小于等于实际
+> 对象大小的数值，从而上传截断部分的内容，为负数或大于实际大小均报错。
 
 #### 修改Object的Metadata
 
@@ -628,7 +641,7 @@ args.LastModified = "Wed, 29 Nov 2017 13:18:08 GMT"
 args.ContentType = "text/json"
 
 // 使用CopyObject接口修改Metadata，源对象和目的对象相同
-res, err := bosClient. CopyObject(bucket, object, bucket, object, args)
+res, err := bosClient.CopyObject(bucket, object, bucket, object, args)
 ```
 
 #### 使用Append方式上传
@@ -710,7 +723,7 @@ res, err := bosClient.SimpleListObjects(bucket, prefix, maxKeys, marker, delimit
 
 #### 获取对象内容
 
-BOS Client提供了四种接口用来获取一个对象的内容，示例代码如下：
+BOS Client提供了多种接口用来获取一个对象的内容，示例代码如下：
 
 ```
 // 1. 原始接口，可提供可选参数
@@ -719,7 +732,7 @@ rangeStart = 1024
 rangeEnd = 2048
 res, err := bosClient.GetObject(bucketName, objectName, responseHeaders, rangeStart, rangeEnd)
 buf := new(bytes.Buffer)
-io.Copy(buf, res.Body())
+io.Copy(buf, res.Body)
 // 只指定start
 res, err := bosClient.GetObject(bucketName, objectName, responseHeaders, rangeStart)
 // 不指定range
@@ -736,7 +749,7 @@ res, err := bosClient.BasicGetObjectToFile(bucketName, objectName, "path-to-loca
 
 上述获取对象返回的结果包含了该对象的metadata信息和流，用户可以直接
 访问相关字段，如获取对象的ETag可以直接使用`res.ETag`即可。用户可以对返
-回的流进行相关操作，示例中直接拷贝到了一个缓冲区`io.Copy(buf, res.Body())`。
+回的流进行相关操作，示例中直接拷贝到了一个缓冲区`io.Copy(buf, res.Body)`。
 用户可以通过设置可选参数中的`RangeStart`、`RangeEnd`参数实现分段下载和断点
 续传，详见`DownloadSuperFile`接口实现的并发下载。
 
@@ -813,8 +826,8 @@ res, err := bosClient.DeleteMultipleObjectsFromKeyList(bucket, object, deleteObj
 说明：
 
 > 一次删除多个Object的时候，返回的结果里包含了未删除成功的Object名称列
-> 表。删除部分对象成功时`err`是`nil`，此时判断是否删除全部成功可以通过
-> 检查返回的error是否为`io.EOF`，如果为`io.EOF`则表明删除全部Object成功。
+> 表。删除部分对象成功时`err`是`nil`，`res`里包含了为删除的名称列表，如
+> 果`err`与`res`均为`nil`则表明删除了全部Object成功。
 
 ## Object的分块操作
 
@@ -849,6 +862,7 @@ client.MaxParallel = 100
 块大小。这些参数的设置会对所有分块操作生效。
 
 ### Object的分块上传
+
 除了通过putObject接口上传文件到BOS以外，BOS还提供了另外一种上传模
 式 —— Multipart Upload。用户可以在如下的应用场景内（但不仅限于此），
 使用Multipart Upload上传模式，如：
@@ -890,15 +904,17 @@ res, err := bosClient.InitiateMultipartUpload(bucketName, objectKey, contentType
 ```
     file, _ := os.Open("/path/to/file.zip")
     result := make([]api.UploadInfoType)
-    for i, partNum := range(parts) {
+    for i := 0; i < partNum; i++  {
         partBody, _ := bce.NewBodyFromSectionFile(file, offset[i], uploadSize)
-        etag, err := bosClient.BasicUploadPart(bucketName, objectKey, uploadId, partNum, partBody)
+        etag, err := bosClient.BasicUploadPart(bucketName, objectKey, uploadId, i+1, partBody)
         result = append(result, api.UploadInfoType{partNum, etag})
     }
 ```
 
 这里使用了`BasicUploadPart`接口，只提供必需参数，也可以使用`UploadPart`接口
-提供`api.UploadPartArgs`对象来设置`Content-MD5`、`x-bce-content-sha256`参数。
+提供`api.UploadPartArgs`对象来设置`Content-MD5`、`x-bce-content-sha256`等参数。
+
+> 注意：这两个接口中的`PartNumber`参数是从`1`开始计算的。
 
 #### 结果控制
 
@@ -957,10 +973,10 @@ res, err := BasicListMultipartUploads(bucketName)
 
 ```
 optArgs := &api.UploadPartCopyArgs{}
-for i, partNum := range(parts) {
+for i := 0; i < partNum; i++  {
     res, _ := bosClient.UploadPartCopy(bucket, object, srcBucket, srcObject,
-            uploadId, partNum, optArgs)
-    result = append(result, api.UploadInfoType{partNum, res.Etag})
+            uploadId, i+1, optArgs)
+    result = append(result, api.UploadInfoType{i+1, res.Etag})
 }
 ```
 
@@ -1059,3 +1075,14 @@ if err != nil {
 }
 ```
 
+## 版本变更记录
+
+### v1.0.1 [2018-1-5]
+
+首次发布：
+
+ - 创建、查看、罗列、删除Bucket，获取位置和判断是否存在
+ - 支持管理Bucket的生命周期、日志、ACL、存储类型
+ - 上传、下载、删除、罗列Object，支持分块上传、分块拷贝
+ - 提供AppendObject功能和FetchObject功能
+ - 封装并发的下载和分块上传接口
