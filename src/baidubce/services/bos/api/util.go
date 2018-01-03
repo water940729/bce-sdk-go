@@ -152,3 +152,19 @@ func setOptionalNullHeaders(req *bce.BceRequest, args map[string]string) {
 		}
 	}
 }
+
+func setUserMetadata(req *bce.BceRequest, meta map[string]string) error {
+	if meta == nil {
+		return nil
+	}
+	for k, v := range meta {
+		if len(k) == 0 {
+			continue
+		}
+		if len(k) + len(v) > 32 * 1024 {
+			return bce.NewBceClientError("MetadataTooLarge")
+		}
+		req.SetHeader(http.BCE_USER_METADATA_PREFIX + k, v)
+	}
+	return nil
+}

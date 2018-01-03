@@ -15,10 +15,7 @@ GO SDK可以在go1.3及以上环境下运行。
 
 ### 安装步骤
 
- - 在[官方网站](https://cloud.baidu.com/doc/Developer/index.html)
- 下载源码，拷贝到个人项目的源码路径下，即可在项目中使用SDK。
-
-> 说明：后续会将代码开源到github上，以支持使用`go get`工具进行安装。
+ - 使用`go get`工具下载：`go get github.com/baidubce/bce-sdk-go`
 
 ### SDK目录结构
 

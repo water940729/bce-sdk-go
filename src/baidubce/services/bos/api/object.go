@@ -85,10 +85,8 @@ func PutObject(cli bce.Client, bucket, object string, body *bce.Body,
 					args.StorageClass)
 			}
 		}
-		if args.UserMeta != nil {
-			for k, v := range args.UserMeta {
-				req.SetHeader(k, v)
-			}
+		if err := setUserMetadata(req, args.UserMeta); err != nil {
+			return "", err
 		}
 	}
 
@@ -163,10 +161,8 @@ func CopyObject(cli bce.Client, bucket, object, source string,
 					args.StorageClass)
 			}
 		}
-		if args.UserMeta != nil {
-			for k, v := range args.UserMeta {
-				req.SetHeader(k, v)
-			}
+		if err := setUserMetadata(req, args.UserMeta); err != nil {
+			return nil, err
 		}
 	}
 
@@ -471,10 +467,8 @@ func AppendObject(cli bce.Client, bucket, object string, content *bce.Body,
 					args.StorageClass)
 			}
 		}
-		if args.UserMeta != nil {
-			for k, v := range args.UserMeta {
-				req.SetHeader(k, v)
-			}
+		if err := setUserMetadata(req, args.UserMeta); err != nil {
+			return nil, err
 		}
 	}
 
