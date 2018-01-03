@@ -576,11 +576,23 @@ func (c *Client) BasicGetObjectToFile(bucket, object, filePath string) error {
 	}
 	defer file.Close()
 
-	written, writeErr := io.CopyN(file, res.Body, res.ContentLength)
-	if writeErr != nil {
-		return writeErr
+	buf := make([]byte, 4096)
+	written := 0
+	for {
+		n, err := res.Body.Read(buf)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if n == 0 {
+			break
+		}
+		_, err = file.Write(buf[:n])
+		if err != nil {
+			return err
+		}
+		written += n
 	}
-	if written != res.ContentLength {
+	if int64(written) != res.ContentLength {
 		return fmt.Errorf("written content size does not match the response content")
 	}
 	return nil
@@ -1024,7 +1036,12 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 	if fileErr != nil {
 		return fileErr
 	}
-	defer file.Close()
+	oldTimeout := c.Config.ConnectionTimeoutInMillis
+	c.Config.ConnectionTimeoutInMillis = 0
+	defer func() {
+		c.Config.ConnectionTimeoutInMillis = oldTimeout
+		file.Close()
+	}()
 	fileInfo, infoErr := file.Stat()
 	if infoErr != nil {
 		return infoErr
@@ -1125,7 +1142,10 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) 
 	if err != nil {
 		return
 	}
+	oldTimeout := c.Config.ConnectionTimeoutInMillis
+	c.Config.ConnectionTimeoutInMillis = 0
 	defer func() {
+		c.Config.ConnectionTimeoutInMillis = oldTimeout
 		file.Close()
 		if err != nil {
 			os.Remove(fileName)
@@ -1141,38 +1161,8 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) 
 	partNum := (size + partSize - 1) / partSize
 	log.Debugf("starting download super file, total parts: %d, part size: %d", partNum, partSize)
 
-	bodyChan := make(chan *struct {
-		stream io.ReadCloser
-		offset int64
-		size   int64
-	}, c.MaxParallel)
-	errorChan := make(chan error)
-	done := make(chan struct{}, c.MaxParallel)
-
-	// Let the background goroutine to write the downloaded object
-	go func() {
-		for i := partNum; i > 0; i-- {
-			select {
-			case body := <-bodyChan:
-				log.Debugf("writing part %d with offset=%d, size=%d", body.offset/partSize,
-					body.offset, body.size)
-				if body.stream == nil {
-					errorChan <- fmt.Errorf("%s", "download object failed")
-					return
-				}
-				if _, err := file.Seek(body.offset, 0); err != nil {
-					errorChan <- err
-					return
-				}
-				if _, err := io.CopyN(file, body.stream, body.size); err != nil {
-					errorChan <- err
-					return
-				}
-				body.stream.Close()
-				done <- struct{}{}
-			}
-		}
-	}()
+	doneChan := make(chan struct{}, partNum)
+	abortChan := make(chan struct{})
 
 	// Set up multiple goroutine workers to download the object
 	workerPool := make(chan int64, c.MaxParallel)
@@ -1188,30 +1178,48 @@ func (c *Client) DownloadSuperFile(bucket, object, fileName string) (err error) 
 		select {
 		case workerId := <-workerPool:
 			go func(rangeStart, rangeEnd, workerId int64) {
-				returnBody := &struct {
-					stream io.ReadCloser
-					offset int64
-					size   int64
-				}{}
-				res, err := c.GetObject(bucket, object, nil, rangeStart, rangeEnd)
-				if err != nil {
-					errorChan <- err
+				res, rangeGetErr := c.GetObject(bucket, object, nil, rangeStart, rangeEnd)
+				if rangeGetErr != nil {
+					log.Errorf("download object part(offset:%d, size:%d) failed: %v",
+						rangeStart, res.ContentLength, rangeGetErr)
+					abortChan <- struct{}{}
+					err = rangeGetErr
 					return
 				}
-				returnBody.stream = res.Body
-				returnBody.offset = rangeStart
-				returnBody.size = res.ContentLength
-				bodyChan <- returnBody
+				defer res.Body.Close()
+				log.Debugf("writing part %d with offset=%d, size=%d", rangeStart/partSize,
+					rangeStart, res.ContentLength)
+				buf := make([]byte, 4096)
+				offset := rangeStart
+				for {
+					n, e := res.Body.Read(buf)
+					if e != nil && e != io.EOF {
+						abortChan <- struct{}{}
+						err = e
+						return
+					}
+					if n == 0 {
+						break
+					}
+					if _, writeErr := file.WriteAt(buf[:n], offset); writeErr != nil {
+						abortChan <- struct{}{}
+						err = writeErr
+						return
+					}
+					offset += int64(n)
+				}
+				log.Debugf("writing part %d done", rangeStart/partSize)
 				workerPool <- workerId
+				doneChan <- struct{}{}
 			}(rangeStart, rangeEnd, workerId)
-		case err = <-errorChan: // return the error that occurs during downloading any part
+		case <-abortChan: // abort range get if error occurs during downloading any part
 			return
 		}
 	}
 
 	// Wait for writing to local file done
 	for i := partNum; i > 0; i-- {
-		<-done
+		<-doneChan
 	}
 	return nil
 }
