@@ -20,19 +20,19 @@ GO SDK可以在go1.3及以上环境下运行。
 ### SDK目录结构
 
 ```
-baidubce
 |--auth                   //BCE签名和权限认证
 |--bce                    //BCE公用基础组件
 |--http                   //http请求模块
 |--services               //BCE相关服务目录
 |  |--bos                 //BOS服务目录
-|     |--bos_client.go    //BOS客户端入口
-|     |--api              //BOS相关API目录
-|        |--bucket.go     //BOS的Bucket相关API实现
-|        |--object.go     //BOS的Object相关API实现
-|        |--multipart.go  //BOS的Multipart相关API实现
-|        |--module.go     //BOS相关API的数据模型
-|        |--util.go       //BOS相关API实现使用的工具
+|  |  |--bos_client.go    //BOS客户端入口
+|  |  |--api              //BOS相关API目录
+|  |     |--bucket.go     //BOS的Bucket相关API实现
+|  |     |--object.go     //BOS的Object相关API实现
+|  |     |--multipart.go  //BOS的Multipart相关API实现
+|  |     |--module.go     //BOS相关API的数据模型
+|  |     |--util.go       //BOS相关API实现使用的工具
+|  |--sts                 //STS服务目录
 |--util                   //BCE公用的工具实现
 ```
 
@@ -66,7 +66,7 @@ BOS Client对象是BOS服务的客户端，为开发者提供与BOS进行交互�
 
 ```
 import (
-    "baidubce/services/bos"
+    "github.com/baidubce/bce-sdk-go/services/bos"
 )
 
 func main() {
@@ -98,9 +98,9 @@ func main() {
 import (
     "fmt"
 
-    "baidubce/auth"
-    "baidubce/services/bos"
-    "baidubce/services/sts"
+    "github.com/baidubce/bce-sdk-go/auth"
+    "github.com/baidubce/bce-sdk-go/services/bos"
+    "github.com/baidubce/bce-sdk-go/services/sts"
 )
 
 func main() {
@@ -147,10 +147,10 @@ func main() {
 ### 接口说明
 
 BOS基于RESTful协议的接口对外提供服务，所有接口以官网API文档为依据实现于
-`baidubce/services/bos/api`目录下，分为`Bucket`相关接口、`Object`相关接
+`services/bos/api`目录下，分为`Bucket`相关接口、`Object`相关接
 口和`Multipart`相关接口三部分。每个接口的参数分为必需参数和可选参数两
 类，必需参数直接作为API函数的参数，可选参数以后缀名为`Args`的`struct`的
-形式定义于`model.go`文件中，如`CopyObject`接口的必需参数为`bucket名称`、
+形式定义于`services/bos/api/model.go`文件中，如`CopyObject`接口的必需参数为`bucket名称`、
 `object名称`和`CopySource`，但同时提供可选参数`CopyObjectArgs`，分别可以
 用来指定拷贝的相关选项。 每个API函数返回的值也不同，分别以后缀名为`Result`
 的`struct`定义于`model.go`文件中，具体某个API的返回参数的字段详见API说明
@@ -166,6 +166,24 @@ type CopyObjectArgs struct {
     IfUnmodifiedSince string
 }
 
+type ObjectMeta struct {
+	CacheControl       string
+	ContentDisposition string
+	ContentEncoding    string
+	ContentLength      int64
+	ContentRange       string
+	ContentType        string
+	ContentMD5         string
+	ContentSha256      string
+	Expires            string
+	LastModified       string
+	ETag               string
+	UserMeta           map[string]string
+	StorageClass       string
+	NextAppendOffset   string
+	ObjectType         string
+}
+
 type CopyObjectResult struct {
     LastModified string
     ETag         string
@@ -175,7 +193,7 @@ type CopyObjectResult struct {
 用户调用相关接口之后可以直接使用返回值对象的字段名访问相应的值。
 
 BOS Client将上述原始API进行了封装，最大程度的方便用户使用各个API，全部
-定义于`baidubce/services/bos/client.go`文件中。针对同一个API一般提供多
+定义于`services/bos/client.go`文件中。针对同一个API一般提供多
 种形式调用，以`GetObject` API举例来说明，在BOS Client对象上
 
   1. 首先提供了`GetObject`方法，直接调用原始API
@@ -208,11 +226,11 @@ ConnectionTimeoutInMillis| int     | 连接超时时间，单位毫秒，默认5
      创建，默认使用前者，后者为使用STS鉴权时使用，详见上一小节。
   2. `SignOption`字段为生成签名字符串时的选项，详见下表说明：
 
-     名称          | 类型  | 含义
-     --------------|-------|-----------
-     HeadersToSign |map[string]struct{} | 生成签名字符串时使用的HTTP头
-     Timestamp     | int64 | 生成的签名字符串中使用的时间戳，默认使用请求发送时的值
-     ExpireSeconds | int   | 签名字符串的有效期
+名称          | 类型  | 含义
+--------------|-------|-----------
+HeadersToSign |map[string]struct{} | 生成签名字符串时使用的HTTP头
+Timestamp     | int64 | 生成的签名字符串中使用的时间戳，默认使用请求发送时的值
+ExpireSeconds | int   | 签名字符串的有效期
 
      其中，HeadersToSign默认为`Host`，`Content-Type`，`Content-Length`，`Content-MD5`；
      TimeStamp一般为零值，表示使用调用生成认证字符串时的时间戳，用户一般不应该明确指定
@@ -781,6 +799,34 @@ url := bosClient.BasicGeneratePresignedUrl(bucketName, objectName, expire)
 
 ### 拷贝Object
 
+在`修改Object的Metadata`小节已经给出了利用`CopyObject`接口修改meta信息，如果
+源对象和目的对象不相同，就会进行实际的拷贝。
+
+当前BOS的CopyObject接口是通过同步方式实现的。同步方式下，BOS端会等待Copy实
+际完成才返回成功。同步Copy能帮助用户更准确的判断Copy状态，但用户感知的复制
+时间会变长，且复制时间和文件大小成正比。同步Copy方式更符合业界常规，提升
+了与其它平台的兼容性。同步Copy方式还简化了BOS服务端的业务逻辑，提高了服务效率。
+
+```
+// 1. 原始接口，可设置拷贝参数
+res, err := bosClient.CopyObject(bucketName, objectName, srcBucket, srcObject, nil)
+
+// 2. 忽略拷贝参数，使用默认
+res, err := bosClient.BasicCopyObject(bucketName, objectName, srcBucket, srcObject)
+```
+
+支持的拷贝参数详见官网API文档，定义如下：
+
+```
+type CopyObjectArgs struct {
+	ObjectMeta
+	MetadataDirective string
+	IfMatch           string
+	IfNoneMatch       string
+	IfModifiedSince   string
+	IfUnmodifiedSince string
+}
+```
 
 ### 删除Object
 
