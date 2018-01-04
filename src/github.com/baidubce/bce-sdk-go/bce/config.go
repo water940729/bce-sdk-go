@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"runtime"
 
-	"baidubce/auth"
+	"github.com/baidubce/bce-sdk-go/auth"
 )
 
 // Constants and default values for the package bce

@@ -21,8 +21,8 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"baidubce/bce"
-	"baidubce/http"
+	"github.com/baidubce/bce-sdk-go/bce"
+	"github.com/baidubce/bce-sdk-go/http"
 )
 
 // ListBuckets - list all buckets of the account

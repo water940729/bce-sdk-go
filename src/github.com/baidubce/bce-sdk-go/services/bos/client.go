@@ -25,10 +25,10 @@ import (
 	"net/http"
 	"os"
 
-	"baidubce/auth"
-	"baidubce/bce"
-	"baidubce/services/bos/api"
-	"baidubce/util/log"
+	"github.com/baidubce/bce-sdk-go/auth"
+	"github.com/baidubce/bce-sdk-go/bce"
+	"github.com/baidubce/bce-sdk-go/services/bos/api"
+	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
 const (

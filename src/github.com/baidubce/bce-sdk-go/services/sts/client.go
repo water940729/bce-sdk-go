@@ -20,10 +20,10 @@
 package sts
 
 import (
-	"baidubce/auth"
-	"baidubce/bce"
-	"baidubce/services/sts/api"
-	"baidubce/util"
+	"github.com/baidubce/bce-sdk-go/auth"
+	"github.com/baidubce/bce-sdk-go/bce"
+	"github.com/baidubce/bce-sdk-go/services/sts/api"
+	"github.com/baidubce/bce-sdk-go/util"
 )
 
 const DEFAULT_SERVICE_DOMAIN = "sts." + bce.DEFAULT_REGION + "." + bce.DEFAULT_DOMAIN

@@ -41,10 +41,10 @@ import (
 	"fmt"
 	"time"
 
-	"baidubce/auth"
-	"baidubce/http"
-	"baidubce/util"
-	"baidubce/util/log"
+	"github.com/baidubce/bce-sdk-go/auth"
+	"github.com/baidubce/bce-sdk-go/http"
+	"github.com/baidubce/bce-sdk-go/util"
+	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
 // Client is the general interface which can perform sending request. Different service

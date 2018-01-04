@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"strings"
 
-	"baidubce/bce"
-	"baidubce/http"
-	"baidubce/util"
+	"github.com/baidubce/bce-sdk-go/bce"
+	"github.com/baidubce/bce-sdk-go/http"
+	"github.com/baidubce/bce-sdk-go/util"
 )
 
 // InitiateMultipartUpload - initiate a multipart upload to get a upload ID

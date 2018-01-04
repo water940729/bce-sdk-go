@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"baidubce/http"
+	"github.com/baidubce/bce-sdk-go/http"
 )
 
 // BceResponse defines the response structure for receiving BCE services response.

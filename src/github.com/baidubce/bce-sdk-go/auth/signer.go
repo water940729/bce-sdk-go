@@ -21,9 +21,9 @@ import (
 	"sort"
 	"strings"
 
-	"baidubce/http"
-	"baidubce/util"
-	"baidubce/util/log"
+	"github.com/baidubce/bce-sdk-go/http"
+	"github.com/baidubce/bce-sdk-go/util"
+	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
 var (

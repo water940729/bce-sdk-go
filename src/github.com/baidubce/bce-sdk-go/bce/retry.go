@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"time"
 
-	"baidubce/util/log"
+	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
 // RetryPolicy defines the two methods to retry for sending request.

@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"testing"
 
-	"baidubce/util/log"
+	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
 var CLIENT *Client
@@ -21,7 +21,7 @@ type Conf struct {
 
 func init() {
 	_, f, _, _ := runtime.Caller(0)
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 7; i++ {
 		f = filepath.Dir(f)
 	}
 	conf := filepath.Join(f, "config.json")

@@ -20,8 +20,8 @@ package api
 import (
 	"strconv"
 
-	"baidubce/bce"
-	"baidubce/http"
+	"github.com/baidubce/bce-sdk-go/bce"
+	"github.com/baidubce/bce-sdk-go/http"
 )
 
 const (
