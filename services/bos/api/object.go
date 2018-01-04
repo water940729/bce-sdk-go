@@ -273,7 +273,7 @@ func GetObject(cli bce.Client, bucket, object string, responseHeaders map[string
 			if result.UserMeta == nil {
 				result.UserMeta = make(map[string]string)
 			}
-			result.UserMeta[k] = v
+			result.UserMeta[k[len(bcePrefix):]] = v
 		}
 	}
 	if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {
@@ -354,7 +354,7 @@ func GetObjectMeta(cli bce.Client, bucket, object string) (*GetObjectMetaResult,
 			if result.UserMeta == nil {
 				result.UserMeta = make(map[string]string)
 			}
-			result.UserMeta[k] = v
+			result.UserMeta[k[len(bcePrefix):]] = v
 		}
 	}
 	if val, ok := headers[toHttpHeaderKey(http.BCE_OBJECT_TYPE)]; ok {

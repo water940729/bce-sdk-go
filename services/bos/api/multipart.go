@@ -201,8 +201,8 @@ func CompleteMultipartUpload(cli bce.Client, bucket, object, uploadId string,
 
 	// Optional arguments settings
 	if meta != nil {
-		for k, v := range meta {
-			req.SetHeader(k, v)
+		if err := setUserMetadata(req, meta); err != nil {
+			return nil, err
 		}
 	}
 
