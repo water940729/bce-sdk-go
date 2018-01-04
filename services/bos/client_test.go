@@ -470,6 +470,15 @@ func TestBasicGetObjectToFile(t *testing.T) {
 	err := BOS_CLIENT.BasicGetObjectToFile(EXISTS_BUCKET, "test-put-object", fname)
 	ExpectEqual(t.Errorf, err, nil)
 	os.Remove(fname)
+
+	fname = "/bin/test-get-object"
+	err = BOS_CLIENT.BasicGetObjectToFile(EXISTS_BUCKET, "test-put-object", fname)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v", err)
+
+	err = BOS_CLIENT.BasicGetObjectToFile(EXISTS_BUCKET, "not-exist-object-name", fname)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v", err)
 }
 
 func TestGetObjectMeta(t *testing.T) {

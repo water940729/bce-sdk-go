@@ -576,23 +576,11 @@ func (c *Client) BasicGetObjectToFile(bucket, object, filePath string) error {
 	}
 	defer file.Close()
 
-	buf := make([]byte, 4096)
-	written := 0
-	for {
-		n, err := res.Body.Read(buf)
-		if err != nil && err != io.EOF {
-			return err
-		}
-		if n == 0 {
-			break
-		}
-		_, err = file.Write(buf[:n])
-		if err != nil {
-			return err
-		}
-		written += n
+	written, writeErr := io.CopyN(file, res.Body, res.ContentLength)
+	if writeErr != nil {
+		return writeErr
 	}
-	if int64(written) != res.ContentLength {
+	if written != res.ContentLength {
 		return fmt.Errorf("written content size does not match the response content")
 	}
 	return nil
