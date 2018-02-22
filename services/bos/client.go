@@ -1051,14 +1051,14 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 
 	// Inner wrapper function of parallel uploading each part to get the ETag of the part
 	uploadPart := func(bucket, object, uploadId string, partNumber int, body *bce.Body,
-		result chan *api.UploadInfoType, ret chan bool, id int64, pool chan int64) {
+		result chan *api.UploadInfoType, ret chan error, id int64, pool chan int64) {
 		etag, err := c.BasicUploadPart(bucket, object, uploadId, partNumber, body)
 		if err != nil {
 			result <- nil
-			ret <- false
+			ret <- err
 		} else {
 			result <- &api.UploadInfoType{partNumber, etag}
-			ret <- true
+			ret <- nil
 		}
 		pool <- id
 	}
@@ -1071,7 +1071,7 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 	}
 	uploadId := resp.UploadId
 	uploadedResult := make(chan *api.UploadInfoType, partNum)
-	retChan := make(chan bool, partNum)
+	retChan := make(chan error, partNum)
 	workerPool := make(chan int64, c.MaxParallel)
 	for i := int64(0); i < c.MaxParallel; i++ {
 		workerPool <- i
@@ -1092,12 +1092,11 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 	}
 
 	// Check the return of each part uploading, and decide to complete or abort it
-	success := true
+	var uploadPartErr error
 	completeArgs := &api.CompleteMultipartUploadArgs{make([]api.UploadInfoType, partNum)}
 	for i := partNum; i > 0; i-- {
-		ret := <-retChan
-		if !ret { // if any error occurs, just break and abort it.
-			success = false
+		uploadPartErr := <-retChan
+		if uploadPartErr != nil { // if any error occurs, just break and abort it.
 			break
 		} else {
 			uploaded := <-uploadedResult
@@ -1105,9 +1104,9 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 			log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
 		}
 	}
-	if !success {
+	if uploadPartErr != nil {
 		c.AbortMultipartUpload(bucket, object, uploadId)
-		return fmt.Errorf("%s", "upload part occurs error")
+		return uploadPartErr
 	}
 	if _, err := c.CompleteMultipartUploadFromStruct(bucket, object,
 		uploadId, completeArgs, nil); err != nil {
