@@ -1054,11 +1054,9 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 		result chan *api.UploadInfoType, ret chan error, id int64, pool chan int64) {
 		etag, err := c.BasicUploadPart(bucket, object, uploadId, partNumber, body)
 		if err != nil {
-			result <- nil
 			ret <- err
 		} else {
 			result <- &api.UploadInfoType{partNumber, etag}
-			ret <- nil
 		}
 		pool <- id
 	}
@@ -1088,25 +1086,18 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 		case workerId := <-workerPool:
 			go uploadPart(bucket, object, uploadId, int(partId), partBody,
 				uploadedResult, retChan, workerId, workerPool)
+		case uploadPartErr := <-retChan:
+			c.AbortMultipartUpload(bucket, object, uploadId)
+			return uploadPartErr
 		}
 	}
 
 	// Check the return of each part uploading, and decide to complete or abort it
-	var uploadPartErr error
 	completeArgs := &api.CompleteMultipartUploadArgs{make([]api.UploadInfoType, partNum)}
 	for i := partNum; i > 0; i-- {
-		uploadPartErr := <-retChan
-		if uploadPartErr != nil { // if any error occurs, just break and abort it.
-			break
-		} else {
-			uploaded := <-uploadedResult
-			completeArgs.Parts[uploaded.PartNumber-1] = *uploaded
-			log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
-		}
-	}
-	if uploadPartErr != nil {
-		c.AbortMultipartUpload(bucket, object, uploadId)
-		return uploadPartErr
+		uploaded := <-uploadedResult
+		completeArgs.Parts[uploaded.PartNumber-1] = *uploaded
+		log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
 	}
 	if _, err := c.CompleteMultipartUploadFromStruct(bucket, object,
 		uploadId, completeArgs, nil); err != nil {
