@@ -1054,6 +1054,7 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 		result chan *api.UploadInfoType, ret chan error, id int64, pool chan int64) {
 		etag, err := c.BasicUploadPart(bucket, object, uploadId, partNumber, body)
 		if err != nil {
+			result <- nil
 			ret <- err
 		} else {
 			result <- &api.UploadInfoType{partNumber, etag}
@@ -1096,6 +1097,10 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 	completeArgs := &api.CompleteMultipartUploadArgs{make([]api.UploadInfoType, partNum)}
 	for i := partNum; i > 0; i-- {
 		uploaded := <-uploadedResult
+		if uploaded == nil { // error occurs and not be caught in `select' statement
+			c.AbortMultipartUpload(bucket, object, uploadId)
+			return <-retChan
+		}
 		completeArgs.Parts[uploaded.PartNumber-1] = *uploaded
 		log.Debugf("upload part %d success, etag: %s", uploaded.PartNumber, uploaded.ETag)
 	}
