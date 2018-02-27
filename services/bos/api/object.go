@@ -565,7 +565,7 @@ func GeneratePresignedUrl(conf *bce.BceClientConfiguration, signer auth.Signer, 
 	req := &bce.BceRequest{}
 
 	// Set basic arguments
-	req.SetUri(getObjectUri(bucket, object))
+	req.SetUri(bce.URI_PREFIX + object)
 	if len(method) == 0 {
 		method = http.GET
 	}
@@ -574,6 +574,7 @@ func GeneratePresignedUrl(conf *bce.BceClientConfiguration, signer auth.Signer, 
 	if req.Protocol() == "" {
 		req.SetProtocol(bce.DEFAULT_PROTOCOL)
 	}
+	req.SetHost(bucket + "." + req.Host())
 
 	// Set headers and params if given.
 	req.SetHeader(http.HOST, req.Host())
