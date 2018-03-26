@@ -1219,6 +1219,7 @@ res, err := bosClient.DeleteMultipleObjectsFromKeyList(bucket, deleteObjects)
 > **说明：**
 >
 > 一次删除多个Object的时候，返回的结果里包含了未删除成功的Object名称列表。删除部分对象成功时`res`里包含了未删除成功的名称列表。
+> 删除部分对象成功时`err`为`nil`且`res`不为`nil`，判断全部删除成功：`err`为`io.EOF`且`res`为`nil`。
 
 ## 查看文件是否存在
 
