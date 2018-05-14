@@ -37,16 +37,19 @@ type Client struct {
 
 // NewClient make the CFC service client with default configuration.
 // Use `cli.Config.xxx` to access the config or change it to non-default value.
-func NewClient(ak, sk, endpoint string) (*Client, error) {
+func newClient(ak, sk, token, endpoint string) (*Client, error) {
 	var credentials *auth.BceCredentials
 	var err error
 	if len(ak) == 0 || len(sk) == 0 {
 		return nil, errors.New("ak sk illegal")
-	} else {
+	}
+	if len(token) == 0 {
 		credentials, err = auth.NewBceCredentials(ak, sk)
-		if err != nil {
-			return nil, err
-		}
+	} else {
+		credentials, err = auth.NewSessionBceCredentials(ak, sk, token)
+	}
+	if err != nil {
+		return nil, err
 	}
 	if len(endpoint) == 0 {
 		endpoint = DEFAULT_SERVICE_DOMAIN
@@ -63,9 +66,16 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 		Retry:       bce.DEFAULT_RETRY_POLICY,
 		ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
 	v1Signer := &auth.BceV1Signer{}
-
 	client := &Client{bce.NewBceClient(defaultConf, v1Signer)}
 	return client, nil
+}
+
+func NewClient(ak, sk, endpoint string) (*Client, error) {
+	return newClient(ak, sk, "", endpoint)
+}
+
+func NewStsClient(ak, sk, token, endpoint string) (*Client, error) {
+	return newClient(ak, sk, token, endpoint)
 }
 
 func (c *Client) Invocations(functionName string, payload interface{}, args *api.InvocationsArgs) (*api.InvocationResult, error) {
