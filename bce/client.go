@@ -117,8 +117,9 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 	for {
 		// The request body should be temporarily saved if retry to send the http request
 		var retryBuf bytes.Buffer
+		var teeReader io.Reader
 		if req.Body() != nil {
-			teeReader := io.TeeReader(req.Body(), &retryBuf)
+			teeReader = io.TeeReader(req.Body(), &retryBuf)
 			req.Request.SetBody(ioutil.NopCloser(teeReader))
 		}
 		httpResp, err := http.Execute(&req.Request)
@@ -133,6 +134,7 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 						retries, err)}
 			}
 			retries++
+			ioutil.ReadAll(teeReader)
 			log.Warnf("send request failed: %v, retry for %d time(s)", err, retries)
 			if req.Body() != nil {
 				req.Request.SetBody(ioutil.NopCloser(&retryBuf))
@@ -156,6 +158,7 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 				return err
 			}
 			retries++
+			ioutil.ReadAll(teeReader)
 			log.Warnf("send request failed, retry for %d time(s)", retries)
 			if req.Body() != nil {
 				req.Request.SetBody(ioutil.NopCloser(&retryBuf))
