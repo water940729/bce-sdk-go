@@ -729,21 +729,22 @@ fmt.Println(res.UploadId) // 打印初始化分块上传后获取的UploadId
 
 ```go
 // import "github.com/baidubce/bce-sdk-go/bce"
+// import "github.com/baidubce/bce-sdk-go/services/bos"
 // import "github.com/baidubce/bce-sdk-go/services/bos/api"
 
 file, _ := os.Open("/path/to/file.zip")
 
 // 分块大小按MULTIPART_ALIGN=1MB对齐
 partSize := (bosClient.MultipartSize +
-	bce.MULTIPART_ALIGN - 1) / bce.MULTIPART_ALIGN * bce.MULTIPART_ALIGN
+	bos.MULTIPART_ALIGN - 1) / bos.MULTIPART_ALIGN * bos.MULTIPART_ALIGN
 
 // 获取文件大小，并计算分块数目，最大分块数MAX_PART_NUMBER=10000
 fileInfo, _ := file.Stat()
 fileSize := fileInfo.Size()
 partNum := (fileSize + partSize - 1) / partSize
-if partNum > bce.MAX_PART_NUMBER { // 超过最大分块数，需调整分块大小
-	partSize := (fileSize + bce.MAX_PART_NUMBER + 1) / bce.MAX_PART_NUMBER
-	partSize := (partSize + bce.MULTIPART_ALIGN - 1) / bce.MULTIPART_ALIGN * bce.MULTIPART_ALIGN
+if partNum > bos.MAX_PART_NUMBER { // 超过最大分块数，需调整分块大小
+	partSize := (fileSize + bos.MAX_PART_NUMBER + 1) / bos.MAX_PART_NUMBER
+	partSize := (partSize + bos.MULTIPART_ALIGN - 1) / bos.MULTIPART_ALIGN * bos.MULTIPART_ALIGN
 	partNum = (fileSize + partSize - 1) / partSize
 }
 
