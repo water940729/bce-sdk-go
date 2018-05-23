@@ -24,7 +24,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/baidubce/bce-sdk-go/auth"
 	"github.com/baidubce/bce-sdk-go/bce"
@@ -1027,16 +1026,8 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 	}
 	oldTimeout := c.Config.ConnectionTimeoutInMillis
 	c.Config.ConnectionTimeoutInMillis = 0
-	oldEndpoint := c.Config.Endpoint
-	host := oldEndpoint
-	pos := strings.Index(oldEndpoint, "://")
-	if pos != -1 {
-		host = oldEndpoint[pos+3:]
-	}
-	c.Config.Endpoint = "https://" + host
 	defer func() {
 		c.Config.ConnectionTimeoutInMillis = oldTimeout
-		c.Config.Endpoint = oldEndpoint
 		file.Close()
 	}()
 	fileInfo, infoErr := file.Stat()

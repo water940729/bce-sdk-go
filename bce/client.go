@@ -134,9 +134,9 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 						retries, err)}
 			}
 			retries++
-			ioutil.ReadAll(teeReader)
 			log.Warnf("send request failed: %v, retry for %d time(s)", err, retries)
 			if req.Body() != nil {
+				ioutil.ReadAll(teeReader)
 				req.Request.SetBody(ioutil.NopCloser(&retryBuf))
 			}
 			continue
@@ -158,9 +158,9 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 				return err
 			}
 			retries++
-			ioutil.ReadAll(teeReader)
 			log.Warnf("send request failed, retry for %d time(s)", retries)
 			if req.Body() != nil {
+				ioutil.ReadAll(teeReader)
 				req.Request.SetBody(ioutil.NopCloser(&retryBuf))
 			}
 			continue
