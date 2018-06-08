@@ -21,8 +21,9 @@ var (
 
 // For security reason, ak/sk should not hard write here.
 type Conf struct {
-	AK string
-	SK string
+	AK       string
+	SK       string
+	Endpoint string
 }
 
 type PayloadDemo struct {
@@ -32,10 +33,7 @@ type PayloadDemo struct {
 
 func init() {
 	_, f, _, _ := runtime.Caller(0)
-	for i := 0; i < 7; i++ {
-		f = filepath.Dir(f)
-	}
-	conf := filepath.Join(f, "config.json")
+	conf := filepath.Join(filepath.Dir(f), "config.json")
 	fp, err := os.Open(conf)
 	if err != nil {
 		fmt.Printf("config json file of ak/sk not given:(%s) err(%v)\n", conf, err)
@@ -44,12 +42,11 @@ func init() {
 	decoder := json.NewDecoder(fp)
 	confObj := &Conf{}
 	decoder.Decode(confObj)
-
 	FunctionName = fmt.Sprintf("sl%s", time.Now().Format("2006-01-02T150405"))
-
-	CfcClient, _ = NewClient(confObj.AK, confObj.SK, "https://cfc.bj.baidubce.com")
-	//log.SetLogHandler(log.STDERR | log.FILE)
-	//log.SetRotateType(log.ROTATE_SIZE)
+	CfcClient, err = NewClient(confObj.AK, confObj.SK, confObj.Endpoint)
+	if err != nil {
+		panic(err)
+	}
 	log.SetLogLevel(log.WARN)
 }
 

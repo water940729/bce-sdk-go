@@ -57,7 +57,8 @@ func Invocations(cli bce.Client, functionName string, payload interface{}, args 
 				return nil, err
 			}
 		}
-		if !json.Valid(payloadBytes) {
+		var js interface{}
+		if json.Unmarshal([]byte(payloadBytes), &js) != nil {
 			return nil, errors.New(ParseJsonError)
 		}
 
