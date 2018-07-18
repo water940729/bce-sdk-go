@@ -193,6 +193,20 @@ type GetBucketReplicationProgressResult struct {
 	LatestReplicationTime     string  `json:"latestReplicationTime"`
 }
 
+// BucketEncryptionType defines the data structure for Put and Get of bucket encryption
+type BucketEncryptionType struct {
+	EncryptionAlgorithm string `json:"encryptionAlgorithm"`
+}
+
+// BucketStaticWebsiteType defines the data structure for Put and Get of bucket static website
+type BucketStaticWebsiteType struct {
+	Index    string `json:"index"`
+	NotFound string `json:"notFound"`
+}
+
+type PutBucketStaticWebsiteArgs BucketStaticWebsiteType
+type GetBucketStaticWebsiteResult BucketStaticWebsiteType
+
 // PutObjectArgs defines the optional args structure for the put object api.
 type PutObjectArgs struct {
 	CacheControl       string

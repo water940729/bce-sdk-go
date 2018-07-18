@@ -501,6 +501,120 @@ func (c *Client) GetBucketReplicationProgress(bucket string) (
 	return api.GetBucketReplicationProgress(c, bucket)
 }
 
+// PutBucketEncryption - set the bucket encryption config of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - algorithm: the encryption algorithm name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketEncryption(bucket, algorithm string) error {
+	return api.PutBucketEncryption(c, bucket, algorithm)
+}
+
+// GetBucketEncryption - get the bucket encryption config
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - string: the encryption algorithm name
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetBucketEncryption(bucket string) (string, error) {
+	return api.GetBucketEncryption(c, bucket)
+}
+
+// DeleteBucketEncryption - delete the bucket encryption config of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteBucketEncryption(bucket string) error {
+	return api.DeleteBucketEncryption(c, bucket)
+}
+
+// PutBucketStaticWebsite - set the bucket static website config
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - config: the static webiste config body stream
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketStaticWebsite(bucket string, config *bce.Body) error {
+	return api.PutBucketStaticWebsite(c, bucket, config)
+}
+
+// PutBucketStaticWebsiteFromString - set the bucket static website config from json string
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - jsonConfig: the static webiste config json string
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketStaticWebsiteFromString(bucket, jsonConfig string) error {
+	body, err := bce.NewBodyFromString(jsonConfig)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketStaticWebsite(c, bucket, body)
+}
+
+// PutBucketStaticWebsiteFromStruct - set the bucket static website config from struct
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - confObj: the static webiste config object
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketStaticWebsiteFromStruct(bucket string, 
+	confObj *api.PutBucketStaticWebsiteArgs) error {
+	jsonBytes, jsonErr := json.Marshal(confObj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketStaticWebsite(c, bucket, body)
+}
+
+// SimplePutBucketStaticWebsite - simple set the bucket static website config
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - index: the static webiste config for index file name
+//     - notFound: the static webiste config for notFound file name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) SimplePutBucketStaticWebsite(bucket, index, notFound string) error {
+	confObj := &api.PutBucketStaticWebsiteArgs{index, notFound}
+	return c.PutBucketStaticWebsiteFromStruct(bucket, confObj)
+}
+
+// GetBucketStaticWebsite - get the bucket static webiste config
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - result: the static webiste config result object
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetBucketStaticWebsite(bucket string) (
+	*api.GetBucketStaticWebsiteResult, error) {
+	return api.GetBucketStaticWebsite(c, bucket)
+}
+
+// DeleteBucketStaticWebsite - delete the bucket static website config of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteBucketStaticWebsite(bucket string) error {
+	return api.DeleteBucketStaticWebsite(c, bucket)
+}
+
+
 // PutObject - upload a new object or rewrite the existed object with raw stream
 //
 // PARAMS:
