@@ -41,6 +41,9 @@ const (
 	RAW_CONTENT_TYPE = "application/octet-stream"
 
 	THRESHOLD_100_CONTINUE = 1 << 20 // add 100 continue header if body size bigger than 1MB
+
+	STATUS_ENABLED  = "enabled"
+	STATUS_DISABLED = "disabled"
 )
 
 var (

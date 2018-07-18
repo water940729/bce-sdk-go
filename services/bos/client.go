@@ -190,11 +190,11 @@ func (c *Client) GetBucketLocation(bucket string) (string, error) {
 	return api.GetBucketLocation(c, bucket)
 }
 
-// PutBucketAcl - set the acl of the given bucket with acl json file stream
+// PutBucketAcl - set the acl of the given bucket with acl body stream
 //
 // PARAMS:
 //     - bucket: the bucket name
-//     - aclBody: the acl json file body
+//     - aclBody: the acl json body stream
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketAcl(bucket string, aclBody *bce.Body) error {
@@ -405,6 +405,100 @@ func (c *Client) PutBucketStorageclass(bucket, storageClass string) error {
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketStorageclass(bucket string) (string, error) {
 	return api.GetBucketStorageclass(c, bucket)
+}
+
+// PutBucketReplication - set the bucket replication config of different region
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - replicationConf: the replication config json body stream
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketReplication(bucket string, replicationConf *bce.Body) error {
+	return api.PutBucketReplication(c, bucket, replicationConf)
+}
+
+// PutBucketReplicationFromFile - set the bucket replication config with json file name
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - confFile: the config json file name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketReplicationFromFile(bucket, confFile string) error {
+	body, err := bce.NewBodyFromFile(confFile)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketReplication(c, bucket, body)
+}
+
+// PutBucketReplicationFromString - set the bucket replication config with json string
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - confString: the config string with json format
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketReplicationFromString(bucket, confString string) error {
+	body, err := bce.NewBodyFromString(confString)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketReplication(c, bucket, body)
+}
+
+// PutBucketReplicationFromStruct - set the bucket replication config with struct
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - confObj: the replication config struct object
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketReplicationFromStruct(bucket string,
+	confObj *api.PutBucketReplicationArgs) error {
+	jsonBytes, jsonErr := json.Marshal(confObj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketReplication(c, bucket, body)
+}
+
+// GetBucketReplication - get the bucket replication config of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - *api.GetBucketReplicationResult: the result of the bucket replication config
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetBucketReplication(bucket string) (*api.GetBucketReplicationResult, error) {
+	return api.GetBucketReplication(c, bucket)
+}
+
+// DeleteBucketReplication - delete the bucket replication config of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteBucketReplication(bucket string) error {
+	return api.DeleteBucketReplication(c, bucket)
+}
+
+// GetBucketReplicationProgress - get the bucket replication process of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - *api.GetBucketReplicationProgressResult: the process of the bucket replication
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetBucketReplicationProgress(bucket string) (
+	*api.GetBucketReplicationProgressResult, error) {
+	return api.GetBucketReplicationProgress(c, bucket)
 }
 
 // PutObject - upload a new object or rewrite the existed object with raw stream

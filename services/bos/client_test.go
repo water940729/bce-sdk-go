@@ -348,6 +348,122 @@ func TestGetBucketStorageClass(t *testing.T) {
 	t.Logf("%+v", res)
 }
 
+func TestPutBucketReplication(t *testing.T) {
+	BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
+	str := `{
+		"id": "abc",
+		"status":"enabled",
+		"resource": ["bos-rd-ssy/films"],
+		"destination": {
+			"bucket": "bos-rd-su-test",
+			"storageClass": "COLD"
+		},
+		"replicateDeletes": "disabled"
+}`
+	body, _ := bce.NewBodyFromString(str)
+	err := BOS_CLIENT.PutBucketReplication(EXISTS_BUCKET, body)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketReplication(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Id, "abc")
+	ExpectEqual(t.Errorf, res.Status, "enabled")
+	ExpectEqual(t.Errorf, res.Resource[0], "bos-rd-ssy/films")
+	ExpectEqual(t.Errorf, res.Destination.Bucket, "bos-rd-su-test")
+	ExpectEqual(t.Errorf, res.ReplicateDeletes, "disabled")
+}
+
+func TestPutBucketReplicationFromFile(t *testing.T) {
+	BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
+	str := `{
+		"id": "abc",
+		"status":"enabled",
+		"resource": ["bos-rd-ssy/films"],
+		"destination": {
+			"bucket": "bos-rd-su-test",
+			"storageClass": "COLD"
+		},
+		"replicateDeletes": "disabled"
+}`
+	fname := "/tmp/test-put-bucket-replication-by-file"
+	f, _ := os.Create(fname)
+	f.WriteString(str)
+	f.Close()
+	err := BOS_CLIENT.PutBucketReplicationFromFile(EXISTS_BUCKET, fname)
+	os.Remove(fname)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketReplication(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Id, "abc")
+	ExpectEqual(t.Errorf, res.Status, "enabled")
+	ExpectEqual(t.Errorf, res.Resource[0], "bos-rd-ssy/films")
+	ExpectEqual(t.Errorf, res.Destination.Bucket, "bos-rd-su-test")
+	ExpectEqual(t.Errorf, res.ReplicateDeletes, "disabled")
+}
+
+func TestPutBucketReplicationFromString(t *testing.T) {
+	BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
+	str := `{
+		"id": "abc",
+		"status":"enabled",
+		"resource": ["bos-rd-ssy/films"],
+		"destination": {
+			"bucket": "bos-rd-su-test",
+			"storageClass": "COLD"
+		},
+		"replicateDeletes": "disabled"
+}`
+	err := BOS_CLIENT.PutBucketReplicationFromString(EXISTS_BUCKET, str)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketReplication(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Id, "abc")
+	ExpectEqual(t.Errorf, res.Status, "enabled")
+	ExpectEqual(t.Errorf, res.Resource[0], "bos-rd-ssy/films")
+	ExpectEqual(t.Errorf, res.Destination.Bucket, "bos-rd-su-test")
+	ExpectEqual(t.Errorf, res.ReplicateDeletes, "disabled")
+}
+
+func TestPutBucketReplicationFromStruct(t *testing.T) {
+	BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
+	args := &api.PutBucketReplicationArgs{
+		Id: "abc",
+		Status: "enabled",
+		Resource: []string{"bos-rd-ssy/films"},
+		Destination: &api.BucketReplicationDescriptor{"bos-rd-su-test", "COLD"},
+		ReplicateDeletes: "disabled",
+	}
+	err := BOS_CLIENT.PutBucketReplicationFromStruct(EXISTS_BUCKET, args)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketReplication(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Id, "abc")
+	ExpectEqual(t.Errorf, res.Status, "enabled")
+	ExpectEqual(t.Errorf, res.Resource[0], "bos-rd-ssy/films")
+	ExpectEqual(t.Errorf, res.Destination.Bucket, "bos-rd-su-test")
+	ExpectEqual(t.Errorf, res.ReplicateDeletes, "disabled")
+}
+
+func TestGetBucketReplication(t *testing.T) {
+	res, err := BOS_CLIENT.GetBucketReplication(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Id, "abc")
+	ExpectEqual(t.Errorf, res.Status, "enabled")
+	ExpectEqual(t.Errorf, res.Resource[0], "bos-rd-ssy/films")
+	ExpectEqual(t.Errorf, res.Destination.Bucket, "bos-rd-su-test")
+	ExpectEqual(t.Errorf, res.ReplicateDeletes, "disabled")
+}
+
+func TestGetBucketReplicationProcess(t *testing.T) {
+	res, err := BOS_CLIENT.GetBucketReplicationProgress(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+}
+
+func TestDeleteBucketReplication(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
 func TestPutObject(t *testing.T) {
 	args := &api.PutObjectArgs{StorageClass: api.STORAGE_CLASS_COLD}
 	body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
