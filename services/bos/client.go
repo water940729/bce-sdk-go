@@ -614,6 +614,102 @@ func (c *Client) DeleteBucketStaticWebsite(bucket string) error {
 	return api.DeleteBucketStaticWebsite(c, bucket)
 }
 
+// PutBucketCors - set the bucket CORS config
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - config: the bucket CORS config body stream
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketCors(bucket string, config *bce.Body) error {
+	return api.PutBucketCors(c, bucket, config)
+}
+
+// PutBucketCorsFromFile - set the bucket CORS config from json config file
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - filename: the bucket CORS json config file name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketCorsFromFile(bucket, filename string) error {
+	body, err := bce.NewBodyFromFile(filename)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketCors(c, bucket, body)
+}
+
+// PutBucketCorsFromString - set the bucket CORS config from json config string
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - filename: the bucket CORS json config string
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketCorsFromString(bucket, jsonConfig string) error {
+	body, err := bce.NewBodyFromString(jsonConfig)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketCors(c, bucket, body)
+}
+
+// PutBucketCorsFromStruct - set the bucket CORS config from json config object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - filename: the bucket CORS json config object
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketCorsFromStruct(bucket string, confObj *api.PutBucketCorsArgs) error {
+	jsonBytes, jsonErr := json.Marshal(confObj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	return api.PutBucketCors(c, bucket, body)
+}
+
+// GetBucketCors - get the bucket CORS config
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - result: the bucket CORS config result object
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetBucketCors(bucket string) (*api.GetBucketCorsResult, error) {
+	return api.GetBucketCors(c, bucket)
+}
+
+// DeleteBucketCors - delete the bucket CORS config of the given bucket
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteBucketCors(bucket string) error {
+	return api.DeleteBucketCors(c, bucket)
+}
+
+// OptionsObject - the preflight response for CORS
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name that will access in the next request
+//     - origin: current request origin host name
+//     - method: next request mehtod that will be send, must belongs to "PUT/GET/DELETE/POST/HEAD"
+//     - headers: optional next request headers, allow multiple headers
+// RETURNS:
+//     - result: the CORS setting for the given object
+//     - error: nil if success otherwise the specific error
+func (c *Client) OptionsObject(bucket, object, origin, method string,
+	headers ...string) (*api.OptionsObjectResult, error) {
+	return api.OptionsObject(c, bucket, object, origin, method, headers...)
+}
 
 // PutObject - upload a new object or rewrite the existed object with raw stream
 //

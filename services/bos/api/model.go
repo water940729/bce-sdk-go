@@ -207,6 +207,34 @@ type BucketStaticWebsiteType struct {
 type PutBucketStaticWebsiteArgs BucketStaticWebsiteType
 type GetBucketStaticWebsiteResult BucketStaticWebsiteType
 
+type BucketCORSType struct {
+	AllowedOrigins       []string `json:"allowedOrigins"`
+	AllowedMethods       []string `json:"allowedMethods"`
+	AllowedHeaders       []string `json:"allowedHeaders,omitempty"`
+	AllowedExposeHeaders []string `json:"allowedExposeHeaders,omitempty"`
+	MaxAgeSeconds        int64    `json:"maxAgeSeconds,omitempty"`
+}
+
+// PutBucketCorsArgs defines the request argument for bucket CORS setting
+type PutBucketCorsArgs struct {
+	CorsConfiguration []BucketCORSType `json:"corsConfiguration"`
+}
+
+// GetBucketCorsResult defines the data structure of getting bucket CORS result
+type GetBucketCorsResult struct {
+	CorsConfiguration []BucketCORSType `json:"corsConfiguration"`
+}
+
+// OptionsObjectResult defines the result data sturcture for OptionsObject API
+type OptionsObjectResult struct {
+	AccessControlAllowCredentials string
+	AccessControlAllowHeaders     []string
+	AccessControlAllowMethods     []string
+	AccessControlAllowOrigin      string
+	AccessControlExposeHeaders    []string
+	AccessControlMaxAge           int64
+}
+
 // PutObjectArgs defines the optional args structure for the put object api.
 type PutObjectArgs struct {
 	CacheControl       string
