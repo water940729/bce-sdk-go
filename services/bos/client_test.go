@@ -44,6 +44,9 @@ func init() {
 	//log.SetLogHandler(log.STDERR | log.FILE)
 	//log.SetRotateType(log.ROTATE_SIZE)
 	log.SetLogLevel(log.WARN)
+
+	//log.SetLogHandler(log.STDERR)
+	//log.SetLogLevel(log.DEBUG)
 }
 
 // ExpectEqual is the helper function for test each case
@@ -462,6 +465,85 @@ func TestGetBucketReplicationProcess(t *testing.T) {
 func TestDeleteBucketReplication(t *testing.T) {
 	err := BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
 	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestPutBucketEncryption(t *testing.T) {
+	err := BOS_CLIENT.PutBucketEncryption(EXISTS_BUCKET, api.ENCRYPTION_AES256)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketEncryption(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res, api.ENCRYPTION_AES256)
+}
+
+func TestGetBucketEncryption(t *testing.T) {
+	res, err := BOS_CLIENT.GetBucketEncryption(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%+v", res)
+}
+
+func TestDeleteBucketEncryption(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketEncryption(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketEncryption(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%+v", res)
+}
+
+func TestPutBucketStaticWebsite(t *testing.T) {
+	BOS_CLIENT.DeleteBucketStaticWebsite(EXISTS_BUCKET)
+	body, _ := bce.NewBodyFromString(`{"index": "index.html", "notFound":"blank.html"}`)
+	err := BOS_CLIENT.PutBucketStaticWebsite(EXISTS_BUCKET, body)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Index, "index.html")
+	ExpectEqual(t.Errorf, res.NotFound, "blank.html")
+}
+
+func TestPutBucketStaticWebsiteFromString(t *testing.T) {
+	BOS_CLIENT.DeleteBucketStaticWebsite(EXISTS_BUCKET)
+	jsonConf := `{"index": "index.html", "notFound":"blank.html"}`
+	err := BOS_CLIENT.PutBucketStaticWebsiteFromString(EXISTS_BUCKET, jsonConf)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Index, "index.html")
+	ExpectEqual(t.Errorf, res.NotFound, "blank.html")
+}
+
+func TestPutBucketStaticWebsiteFromStruct(t *testing.T) {
+	BOS_CLIENT.DeleteBucketStaticWebsite(EXISTS_BUCKET)
+	obj := &api.PutBucketStaticWebsiteArgs{"index.html", "blank.html"}
+	err := BOS_CLIENT.PutBucketStaticWebsiteFromStruct(EXISTS_BUCKET, obj)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Index, "index.html")
+	ExpectEqual(t.Errorf, res.NotFound, "blank.html")
+}
+
+func TestSimplePutBucketStaticWebsite(t *testing.T) {
+	BOS_CLIENT.DeleteBucketStaticWebsite(EXISTS_BUCKET)
+	err := BOS_CLIENT.SimplePutBucketStaticWebsite(EXISTS_BUCKET, "index.html", "blank.html")
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.Index, "index.html")
+	ExpectEqual(t.Errorf, res.NotFound, "blank.html")
+}
+
+func TestGetBucketStaticWebsite(t *testing.T) {
+	res, err := BOS_CLIENT.GetBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+}
+
+func TestDeleteBucketStaticWebsite(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketStaticWebsite(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v", res)
 }
 
 func TestPutObject(t *testing.T) {

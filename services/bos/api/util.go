@@ -44,6 +44,8 @@ const (
 
 	STATUS_ENABLED  = "enabled"
 	STATUS_DISABLED = "disabled"
+
+	ENCRYPTION_AES256 = "AES256"
 )
 
 var (
