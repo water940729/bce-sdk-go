@@ -546,6 +546,121 @@ func TestDeleteBucketStaticWebsite(t *testing.T) {
 	t.Logf("%v", res)
 }
 
+func TestPutBucketCors(t *testing.T) {
+	body, _ := bce.NewBodyFromString(`
+	{
+		"corsConfiguration": [
+			{
+				"allowedOrigins": ["https://www.baidu.com"],
+				"allowedMethods": ["GET"],
+				"maxAgeSeconds": 1800
+			}
+		]
+	}
+	`)
+	err := BOS_CLIENT.PutBucketCors(EXISTS_BUCKET, body)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedOrigins[0], "https://www.baidu.com")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedMethods[0], "GET")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].MaxAgeSeconds, 1800)
+}
+
+func TestPutBucketCorsFromFile(t *testing.T) {
+	str := `{
+		"corsConfiguration": [
+			{
+				"allowedOrigins": ["https://www.baidu.com"],
+				"allowedMethods": ["GET"],
+				"maxAgeSeconds": 1800
+			}
+		]
+	}`
+	fname := "/tmp/test-put-bucket-cors-by-file"
+	f, _ := os.Create(fname)
+	f.WriteString(str)
+	f.Close()
+	err := BOS_CLIENT.PutBucketCorsFromFile(EXISTS_BUCKET, fname)
+	os.Remove(fname)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedOrigins[0], "https://www.baidu.com")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedMethods[0], "GET")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].MaxAgeSeconds, 1800)
+
+	err = BOS_CLIENT.PutBucketCorsFromFile(EXISTS_BUCKET, "/tmp/not-exist")
+	ExpectEqual(t.Errorf, err != nil, true)
+}
+
+func TestPutBucketCorsFromString(t *testing.T) {
+	str := `{
+		"corsConfiguration": [
+			{
+				"allowedOrigins": ["https://www.baidu.com"],
+				"allowedMethods": ["GET"],
+				"maxAgeSeconds": 1800
+			}
+		]
+	}`
+	err := BOS_CLIENT.PutBucketCorsFromString(EXISTS_BUCKET, str)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedOrigins[0], "https://www.baidu.com")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedMethods[0], "GET")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].MaxAgeSeconds, 1800)
+
+	err = BOS_CLIENT.PutBucketCorsFromString(EXISTS_BUCKET, "")
+	ExpectEqual(t.Errorf, err != nil, true)
+}
+
+func TestPutBucketCorsFromStruct(t *testing.T) {
+	obj := &api.PutBucketCorsArgs{
+		[]api.BucketCORSType{
+			api.BucketCORSType{
+				AllowedOrigins: []string{"https://www.baidu.com"},
+				AllowedMethods: []string{"GET"},
+				MaxAgeSeconds:  1200,
+			},
+		},
+	}
+	err := BOS_CLIENT.PutBucketCorsFromStruct(EXISTS_BUCKET, obj)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedOrigins[0], "https://www.baidu.com")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedMethods[0], "GET")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].MaxAgeSeconds, 1200)
+
+	err = BOS_CLIENT.PutBucketCorsFromStruct(EXISTS_BUCKET, nil)
+	ExpectEqual(t.Errorf, err != nil, true)
+}
+
+func TestGetBucketCors(t *testing.T) {
+	res, err := BOS_CLIENT.GetBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedOrigins[0], "https://www.baidu.com")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].AllowedMethods[0], "GET")
+	ExpectEqual(t.Errorf, res.CorsConfiguration[0].MaxAgeSeconds, 1200)
+}
+
+func TestOptionsObject(t *testing.T) {
+	res, err := BOS_CLIENT.OptionsObject(EXISTS_BUCKET, "glog.go", "https://www.baidu.com", "GET")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+}
+
+func TestDeleteBucketCors(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCors(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v, %v", res, err)
+}
+
 func TestPutObject(t *testing.T) {
 	args := &api.PutObjectArgs{StorageClass: api.STORAGE_CLASS_COLD}
 	body, _ := bce.NewBodyFromString("aaaaaaaaaaa")

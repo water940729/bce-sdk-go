@@ -20,6 +20,7 @@ package api
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
@@ -745,4 +746,153 @@ func DeleteBucketStaticWebsite(cli bce.Client, bucket string) error {
 	}
 	defer func() { resp.Body().Close() }()
 	return nil
+}
+
+// PutBucketCors - set the bucket CORS config
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - confBody: the CORS config body stream
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func PutBucketCors(cli bce.Client, bucket string, confBody *bce.Body) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.PUT)
+	req.SetParam("cors", "")
+	if confBody != nil {
+		req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
+		req.SetBody(confBody)
+	}
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	defer func() { resp.Body().Close() }()
+	return nil
+}
+
+// GetBucketCors - get the CORS config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - result: the bucket CORS config result object
+//     - error: nil if success otherwise the specific error
+func GetBucketCors(cli bce.Client, bucket string) (
+	*GetBucketCorsResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.GET)
+	req.SetParam("cors", "")
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	result := &GetBucketCorsResult{}
+	if err := resp.ParseJsonBody(result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// DeleteBucketCors - delete the CORS config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func DeleteBucketCors(cli bce.Client, bucket string) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.DELETE)
+	req.SetParam("cors", "")
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	defer func() { resp.Body().Close() }()
+	return nil
+}
+
+// OptionsObject - the preflight response for bucket CORS of the object
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - object: the object name that will access in the next request
+//     - origin: current request origin host name
+//     - method: next request mehtod that will be send, must belongs to "PUT/GET/DELETE/POST/HEAD"
+//     - headers: optional next request headers, allow multiple headers
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func OptionsObject(cli bce.Client, bucket, object, origin, method string,
+	headers ...string) (*OptionsObjectResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetMethod(http.OPTIONS)
+	if len(origin) == 0 {
+		return nil, bce.NewBceClientError("origin header can not be empty")
+	}
+	req.SetHeader(http.ORIGIN, origin)
+	if !validAccessControlRequestMethod(method) {
+		return nil, bce.NewBceClientError("access control request method is invalid")
+	}
+	req.SetHeader(http.ACCESS_CONTROL_REQUEST_METHOD, method)
+	if len(headers) != 0 {
+		req.SetHeader(http.ACCESS_CONTROL_REQUEST_HEADERS, strings.Join(headers, ","))
+	}
+
+	spliter := func(headerVal string) []string {
+		arr := strings.Split(headerVal, ",")
+		for i := range arr {
+			arr[i] = strings.TrimSpace(arr[i])
+		}
+		return arr
+	}
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	respHeaders := resp.Headers()
+	result := &OptionsObjectResult{}
+	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_CREDENTIALS]; ok {
+		result.AccessControlAllowCredentials = val
+	}
+	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_HEADERS]; ok {
+		result.AccessControlAllowHeaders = spliter(val)
+	}
+	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_METHODS]; ok {
+		result.AccessControlAllowMethods = spliter(val)
+	}
+	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_ORIGIN]; ok {
+		result.AccessControlAllowOrigin = val
+	}
+	if val, ok := respHeaders[http.ACCESS_CONTROL_EXPOSE_HEADERS]; ok {
+		result.AccessControlExposeHeaders = spliter(val)
+	}
+	if val, ok := respHeaders[http.ACCESS_CONTROL_MAX_AGE]; ok {
+		if age, err := strconv.ParseInt(val, 10, 64); err == nil {
+			result.AccessControlMaxAge = age
+		}
+	}
+	defer func() { resp.Body().Close() }()
+	return result, nil
 }
