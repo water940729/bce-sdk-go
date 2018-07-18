@@ -468,3 +468,112 @@ func GetBucketStorageclass(cli bce.Client, bucket string) (string, error) {
 	}
 	return result.StorageClass, nil
 }
+
+// PutBucketReplication - set the bucket replication of different region
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - replicationConf: the replication config body stream
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func PutBucketReplication(cli bce.Client, bucket string, replicationConf *bce.Body) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.PUT)
+	req.SetParam("replication", "")
+	if replicationConf != nil {
+		req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
+		req.SetBody(replicationConf)
+	}
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	defer func() { resp.Body().Close() }()
+	return nil
+}
+
+// GetBucketReplication - get the bucket replication config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - *GetBucketReplicationResult: the result of the bucket replication config
+//     - error: nil if success otherwise the specific error
+func GetBucketReplication(cli bce.Client, bucket string) (*GetBucketReplicationResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.GET)
+	req.SetParam("replication", "")
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	result := &GetBucketReplicationResult{}
+	if err := resp.ParseJsonBody(result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// DeleteBucketReplication - delete the bucket replication config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func DeleteBucketReplication(cli bce.Client, bucket string) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.DELETE)
+	req.SetParam("replication", "")
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	defer func() { resp.Body().Close() }()
+	return nil
+}
+
+// GetBucketReplicationProgress - get the bucket replication process of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - *GetBucketReplicationProgressResult: the result of the bucket replication process
+//     - error: nil if success otherwise the specific error
+func GetBucketReplicationProgress(cli bce.Client, bucket string) (
+	*GetBucketReplicationProgressResult, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.GET)
+	req.SetParam("replicationProgress", "")
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	result := &GetBucketReplicationProgressResult{}
+	if err := resp.ParseJsonBody(result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
