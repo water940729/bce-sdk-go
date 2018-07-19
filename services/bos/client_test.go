@@ -661,6 +661,30 @@ func TestDeleteBucketCors(t *testing.T) {
 	t.Logf("%v, %v", res, err)
 }
 
+func TestPutBucketCopyrightProtection(t *testing.T) {
+	err := BOS_CLIENT.PutBucketCopyrightProtection(EXISTS_BUCKET,
+		"bos-rd-ssy/glog.go", "bos-rd-ssy/films/*")
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCopyrightProtection(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	ExpectEqual(t.Errorf, res[0], "bos-rd-ssy/glog.go")
+	ExpectEqual(t.Errorf, res[1], "bos-rd-ssy/films/*")
+}
+
+func TestGetBucketCopyrightProtection(t *testing.T) {
+	res, err := BOS_CLIENT.GetBucketCopyrightProtection(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v, %v", res, err)
+}
+
+func TestDeleteBucketCopyrightProtection(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketCopyrightProtection(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketCopyrightProtection(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v, %v", res, err)
+}
+
 func TestPutObject(t *testing.T) {
 	args := &api.PutObjectArgs{StorageClass: api.STORAGE_CLASS_COLD}
 	body, _ := bce.NewBodyFromString("aaaaaaaaaaa")
@@ -974,4 +998,124 @@ func TestGeneratePresignedUrl(t *testing.T) {
 	resp, err = http.Head(url)
 	ExpectEqual(t.Errorf, err, nil)
 	ExpectEqual(t.Errorf, resp.StatusCode, 200)
+}
+
+func TestPutObjectAcl(t *testing.T) {
+	acl := `{
+    "accessControlList":[
+        {
+            "grantee":[{
+                "id":"e13b12d0131b4c8bae959df4969387b8"
+            }],
+            "permission":["READ"]
+        }
+    ]
+}`
+	body, _ := bce.NewBodyFromString(acl)
+	err := BOS_CLIENT.PutObjectAcl(EXISTS_BUCKET, "glog.go", body)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "READ")
+}
+
+func TestPutObjectAclFromCanned(t *testing.T) {
+	err := BOS_CLIENT.PutObjectAclFromCanned(EXISTS_BUCKET, "glog.go", api.CANNED_ACL_PUBLIC_READ)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+}
+
+func TestPutObjectAclGrantRead(t *testing.T) {
+	err := BOS_CLIENT.PutObjectAclGrantRead(EXISTS_BUCKET,
+		"glog.go", "e13b12d0131b4c8bae959df4969387b8")
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "READ")
+}
+
+func TestPutObjectAclGrantFullControl(t *testing.T) {
+	err := BOS_CLIENT.PutObjectAclGrantFullControl(EXISTS_BUCKET,
+		"glog.go", "e13b12d0131b4c8bae959df4969387b8")
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "FULL_CONTROL")
+}
+
+func TestPutObjectAclFromFile(t *testing.T) {
+	acl := `{
+    "accessControlList":[
+        {
+            "grantee":[{
+                "id":"e13b12d0131b4c8bae959df4969387b8"
+            }],
+            "permission":["READ"]
+        }
+    ]
+}`
+	fname := "/tmp/test-put-object-acl-by-file"
+	f, _ := os.Create(fname)
+	f.WriteString(acl)
+	f.Close()
+	err := BOS_CLIENT.PutObjectAclFromFile(EXISTS_BUCKET, "glog.go", fname)
+	os.Remove(fname)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "READ")
+}
+
+func TestPutObjectAclFromString(t *testing.T) {
+	acl := `{
+    "accessControlList":[
+        {
+            "grantee":[{
+                "id":"e13b12d0131b4c8bae959df4969387b8"
+            }],
+            "permission":["FULL_CONTROL"]
+        }
+    ]
+}`
+	err := BOS_CLIENT.PutObjectAclFromString(EXISTS_BUCKET, "glog.go", acl)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "FULL_CONTROL")
+}
+
+func TestPutObjectAclFromStruct(t *testing.T) {
+	aclObj := &api.PutObjectAclArgs{
+		[]api.GrantType{
+			api.GrantType{
+				Grantee: []api.GranteeType{
+					api.GranteeType{"e13b12d0131b4c8bae959df4969387b8"},
+				},
+				Permission: []string{
+					"READ",
+				},
+			},
+		},
+	}
+	err := BOS_CLIENT.PutObjectAclFromStruct(EXISTS_BUCKET, "glog.go", aclObj)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v", res)
+	ExpectEqual(t.Errorf, res.AccessControlList[0].Permission[0], "READ")
+}
+
+func TestDeleteObjectAcl(t *testing.T) {
+	err := BOS_CLIENT.DeleteObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v, %v", res, err)
 }

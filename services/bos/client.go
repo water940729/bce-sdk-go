@@ -566,7 +566,7 @@ func (c *Client) PutBucketStaticWebsiteFromString(bucket, jsonConfig string) err
 //     - confObj: the static webiste config object
 // RETURNS:
 //     - error: nil if success otherwise the specific error
-func (c *Client) PutBucketStaticWebsiteFromStruct(bucket string, 
+func (c *Client) PutBucketStaticWebsiteFromStruct(bucket string,
 	confObj *api.PutBucketStaticWebsiteArgs) error {
 	jsonBytes, jsonErr := json.Marshal(confObj)
 	if jsonErr != nil {
@@ -709,6 +709,39 @@ func (c *Client) DeleteBucketCors(bucket string) error {
 func (c *Client) OptionsObject(bucket, object, origin, method string,
 	headers ...string) (*api.OptionsObjectResult, error) {
 	return api.OptionsObject(c, bucket, object, origin, method, headers...)
+}
+
+// PutBucketCopyrightProtection - set the copyright protection config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - resources: the resource items in the bucket to be protected
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutBucketCopyrightProtection(bucket string, resources ...string) error {
+	return api.PutBucketCopyrightProtection(c, bucket, resources...)
+}
+
+// GetBucketCopyrightProtection - get the bucket copyright protection config
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - result: the bucket copyright protection config resources
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetBucketCopyrightProtection(bucket string) ([]string, error) {
+	return api.GetBucketCopyrightProtection(c, bucket)
+}
+
+// DeleteBucketCopyrightProtection - delete the bucket copyright protection config
+//
+// PARAMS:
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteBucketCopyrightProtection(bucket string) error {
+	return api.DeleteBucketCopyrightProtection(c, bucket)
 }
 
 // PutObject - upload a new object or rewrite the existed object with raw stream
@@ -1539,4 +1572,126 @@ func (c *Client) GeneratePresignedUrl(bucket, object string, expireInSeconds int
 func (c *Client) BasicGeneratePresignedUrl(bucket, object string, expireInSeconds int) string {
 	return api.GeneratePresignedUrl(c.Config, c.Signer, bucket, object,
 		expireInSeconds, "", nil, nil)
+}
+
+// PutObjectAcl - set the ACL of the given object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+//     - aclBody: the acl json body stream
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAcl(bucket, object string, aclBody *bce.Body) error {
+	return api.PutObjectAcl(c, bucket, object, "", nil, nil, aclBody)
+}
+
+// PutObjectAclFromCanned - set the canned acl of the given object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+//     - cannedAcl: the cannedAcl string
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAclFromCanned(bucket, object, cannedAcl string) error {
+	return api.PutObjectAcl(c, bucket, object, cannedAcl, nil, nil, nil)
+}
+
+// PutObjectAclGrantRead - set the canned grant read acl of the given object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+//     - ids: the user id list to grant read for this object
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAclGrantRead(bucket, object string, ids ...string) error {
+	return api.PutObjectAcl(c, bucket, object, "", ids, nil, nil)
+}
+
+// PutObjectAclGrantFullControl - set the canned grant full-control acl of the given object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+//     - ids: the user id list to grant full-control for this object
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAclGrantFullControl(bucket, object string, ids ...string) error {
+	return api.PutObjectAcl(c, bucket, object, "", nil, ids, nil)
+}
+
+// PutObjectAclFromFile - set the acl of the given object with acl json file name
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+//     - aclFile: the acl file name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAclFromFile(bucket, object, aclFile string) error {
+	body, err := bce.NewBodyFromFile(aclFile)
+	if err != nil {
+		return err
+	}
+	return api.PutObjectAcl(c, bucket, object, "", nil, nil, body)
+}
+
+// PutObjectAclFromString - set the acl of the given object with acl json string
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+//     - aclString: the acl string with json format
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAclFromString(bucket, object, aclString string) error {
+	body, err := bce.NewBodyFromString(aclString)
+	if err != nil {
+		return err
+	}
+	return api.PutObjectAcl(c, bucket, object, "", nil, nil, body)
+}
+
+// PutObjectAclFromStruct - set the acl of the given object with acl data structure
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - aclObj: the acl struct object
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) PutObjectAclFromStruct(bucket, object string, aclObj *api.PutObjectAclArgs) error {
+	jsonBytes, jsonErr := json.Marshal(aclObj)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	return api.PutObjectAcl(c, bucket, object, "", nil, nil, body)
+}
+
+// GetObjectAcl - get the acl of the given object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+// RETURNS:
+//     - *api.GetObjectAclResult: the result of the object acl
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetObjectAcl(bucket, object string) (*api.GetObjectAclResult, error) {
+	return api.GetObjectAcl(c, bucket, object)
+}
+
+// DeleteObjectAcl - delete the acl of the given object
+//
+// PARAMS:
+//     - bucket: the bucket name
+//     - object: the object name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteObjectAcl(bucket, object string) error {
+	return api.DeleteObjectAcl(c, bucket, object)
 }

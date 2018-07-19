@@ -235,6 +235,19 @@ type OptionsObjectResult struct {
 	AccessControlMaxAge           int64
 }
 
+// CopyrightProtectionType defines the data structure for Put and Get copyright protection API
+type CopyrightProtectionType struct {
+	Resource []string `json:"resource"`
+}
+
+// ObjectAclType defines the data structure for Put and Get object acl API
+type ObjectAclType struct {
+	AccessControlList []GrantType `json:"accessControlList"`
+}
+
+type PutObjectAclArgs ObjectAclType
+type GetObjectAclResult ObjectAclType
+
 // PutObjectArgs defines the optional args structure for the put object api.
 type PutObjectArgs struct {
 	CacheControl       string
