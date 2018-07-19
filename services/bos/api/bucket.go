@@ -896,3 +896,93 @@ func OptionsObject(cli bce.Client, bucket, object, origin, method string,
 	defer func() { resp.Body().Close() }()
 	return result, nil
 }
+
+// PutBucketCopyrightProtection - set the copyright protection config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+//     - resources: the resource items in the bucket to be protected
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func PutBucketCopyrightProtection(cli bce.Client, bucket string, resources ...string) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.PUT)
+	req.SetParam("copyrightProtection", "")
+	if len(resources) == 0 {
+		return bce.NewBceClientError("the resource to set copyright protection is empty")
+	}
+	arg := &CopyrightProtectionType{resources}
+	jsonBytes, jsonErr := json.Marshal(arg)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+	req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
+	req.SetBody(body)
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	defer func() { resp.Body().Close() }()
+	return nil
+}
+
+// GetBucketCopyrightProtection - get the copyright protection config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - result: the bucket copyright protection resources array
+//     - error: nil if success otherwise the specific error
+func GetBucketCopyrightProtection(cli bce.Client, bucket string) ([]string, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.GET)
+	req.SetParam("copyrightProtection", "")
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+	result := &CopyrightProtectionType{}
+	if err := resp.ParseJsonBody(result); err != nil {
+		return nil, err
+	}
+	return result.Resource, nil
+}
+
+// DeleteBucketCopyrightProtection - delete the copyright protection config of the given bucket
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - bucket: the bucket name
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func DeleteBucketCopyrightProtection(cli bce.Client, bucket string) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getBucketUri(bucket))
+	req.SetMethod(http.DELETE)
+	req.SetParam("copyrightProtection", "")
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+	defer func() { resp.Body().Close() }()
+	return nil
+}
