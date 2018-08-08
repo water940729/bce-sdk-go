@@ -20,13 +20,12 @@ import (
 	"errors"
 	"io/ioutil"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
 func Invocations(cli bce.Client, functionName string, payload interface{}, args *InvocationsArgs) (*InvocationResult, error) {
-	if err := validateFunctionName(functionName); err != nil {
+	if err := checkFunctionName(functionName); err != nil {
 		return nil, err
 	}
 	if len(args.InvocationType) == 0 {
@@ -40,9 +39,11 @@ func Invocations(cli bce.Client, functionName string, payload interface{}, args 
 	req.SetMethod(http.POST)
 	req.SetParam("invocationType", string(args.InvocationType))
 	req.SetParam("logType", string(args.LogType))
-	if len(args.Qualifier) > 0 {
-		req.SetParam("Qualifier", args.Qualifier)
+	req.SetParam("Qualifier", args.Qualifier)
+	if len(args.Trigger) > 0 {
+		req.SetParam(BceFaasTriggerKey, string(args.Trigger))
 	}
+
 	if payload != nil {
 		var payloadBytes []byte
 		var err error
@@ -66,6 +67,7 @@ func Invocations(cli bce.Client, functionName string, payload interface{}, args 
 		if err != nil {
 			return nil, err
 		}
+		req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
 		req.SetBody(requestBody)
 	}
 	resp := &bce.BceResponse{}
@@ -99,9 +101,6 @@ func Invocations(cli bce.Client, functionName string, payload interface{}, args 
 }
 
 func ListFunctions(cli bce.Client, args *ListFunctionsArgs) ([]*Function, error) {
-	if ok, err := govalidator.ValidateStruct(args); !ok {
-		return nil, err
-	}
 	req := &bce.BceRequest{}
 	req.SetUri(getFunctionsUri())
 	req.SetMethod(http.GET)
@@ -123,10 +122,7 @@ func ListFunctions(cli bce.Client, args *ListFunctionsArgs) ([]*Function, error)
 }
 
 func GetFunction(cli bce.Client, functionName, qualifier string) (*GetFunctionResult, error) {
-	if err := validateFunctionName(functionName); err != nil {
-		return nil, err
-	}
-	if err := validateQualifier(qualifier); err != nil {
+	if err := checkFunctionName(functionName); err != nil {
 		return nil, err
 	}
 	req := &bce.BceRequest{}
@@ -149,7 +145,7 @@ func GetFunction(cli bce.Client, functionName, qualifier string) (*GetFunctionRe
 }
 
 func CreateFunction(cli bce.Client, args *FunctionArgs) (*Function, error) {
-	if err := validateAndInitCreateFunctionArgs(args); err != nil {
+	if err := checkCreateFunctionArgs(args); err != nil {
 		return nil, err
 	}
 	req := &bce.BceRequest{}
@@ -164,6 +160,7 @@ func CreateFunction(cli bce.Client, args *FunctionArgs) (*Function, error) {
 		if err != nil {
 			return nil, err
 		}
+		req.SetHeader(http.CONTENT_TYPE, bce.DEFAULT_CONTENT_TYPE)
 		req.SetBody(requestBody)
 	}
 	resp := &bce.BceResponse{}

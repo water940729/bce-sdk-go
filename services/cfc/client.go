@@ -78,7 +78,8 @@ func NewStsClient(ak, sk, token, endpoint string) (*Client, error) {
 	return newClient(ak, sk, token, endpoint)
 }
 
-func (c *Client) Invocations(functionName string, payload interface{}, args *api.InvocationsArgs) (*api.InvocationResult, error) {
+func (c *Client) Invocations(functionName string, payload interface{}, args *api.InvocationsArgs) (
+	*api.InvocationResult, error) {
 	return api.Invocations(c, functionName, payload, args)
 }
 

@@ -21,13 +21,20 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
-
-	"github.com/asaskevich/govalidator"
 )
 
 const (
-	functionNameInvalid = "function name invalid"
-	qualifierInvalid    = "qualifier invalid"
+	RegularFunctionName = `^[a-zA-Z0-9-_:]+|\$LATEST$`
+)
+
+const (
+	functionNameInvalid = "the function name of %s Must Match " + RegularFunctionName
+	strLenIllegal       = "the length of %s is illegal, must in %d~%d"
+	intLenIllegal       = "the size of %d is illegal, must in %d~%d"
+)
+
+const (
+	memoryError = "memory size of %d must be a multiple of 64 MB"
 )
 
 // The limit of memory, in MB, your cfc function is given. cfc uses this memory size to
@@ -53,88 +60,54 @@ func getFunctionUri(functionName string) string {
 	return fmt.Sprintf("/v1/functions/%s", functionName)
 }
 
-func validateFunctionName(functionName string) error {
-	if !govalidator.Matches(functionName, `^[a-zA-Z0-9-_:]+|\$LATEST$`) {
-		return errors.New(functionNameInvalid)
-	}
-	return nil
+func matches(str, pattern string) bool {
+	match, _ := regexp.MatchString(pattern, str)
+	return match
 }
 
-func validateQualifier(qualifier string) error {
-	if !govalidator.Matches(qualifier, `^|[a-zA-Z0-9$_-]+`) {
-		return errors.New(qualifierInvalid)
-	}
-	return nil
-}
-
-func validateAndInitCreateFunctionArgs(args *FunctionArgs) error {
-	if ok, err := govalidator.ValidateStruct(args); !ok {
+func checkCreateFunctionArgs(args *FunctionArgs) error {
+	if err := checkFunctionName(args.FunctionName); err != nil {
 		return err
-	} else if err := validateFunctionName(args.FunctionName); err != nil {
+	} else if err = checkPtrString(args.Description, 0, 255); err != nil {
 		return err
-	} else if err := checkPtrString(&args.Description, 0, 255); err != nil {
+	} else if err = checkPtrIntSize(args.Timeout, 1, 300); err != nil {
 		return err
-	} else if err := checkPtrIntSize(&args.Timeout, 1, 300); err != nil {
-		return err
-	} else if err := checkMemorySize(args.MemorySize); err != nil {
+	} else if err = checkMemorySize(args.MemorySize); err != nil {
 		return err
 	}
 	return nil
 }
 
-func checkPtrString(s *string, min, max int) error {
-	if s == nil {
-		return nil
+func checkFunctionName(functionName string) error {
+	if !matches(functionName, RegularFunctionName) {
+		return fmt.Errorf(functionNameInvalid, functionName)
 	}
-	l := len(*s)
+	return nil
+}
 
+func checkPtrString(s string, min, max int) error {
+	l := len(s)
 	if l < min || l > max {
-		errStr := fmt.Sprintf("the length of %s is illegal, must in %d~%d", *s, min, max)
+		errStr := fmt.Sprintf(strLenIllegal, s, min, max)
 		return errors.New(errStr)
 	}
 	return nil
 }
 
-func checkPtrIntSize(s *int, min, max int) error {
-	if s == nil {
-		return nil
-	}
-
-	if *s < min || *s > max {
-		errStr := fmt.Sprintf("the size of %d is illegal, must in %d~%d", *s, min, max)
+func checkPtrIntSize(s int, min, max int) error {
+	if s < min || s > max {
+		errStr := fmt.Sprintf(intLenIllegal, s, min, max)
 		return errors.New(errStr)
 	}
 	return nil
-}
-
-func checkAliasName(n string) error {
-	if s, _ := regexp.MatchString(`^([0-9]+)$`, n); s {
-		return errors.New("Alias Name Must Match (?!^[0-9]+$)([a-zA-Z0-9-_]+)")
-	}
-
-	return nil
-}
-
-func max(x, y int64) int64 {
-	if x > y {
-		return x
-	}
-	return y
-}
-
-func min(x, y int64) int64 {
-	if x < y {
-		return x
-	}
-	return y
 }
 
 func checkMemorySize(size int) error {
-	if err := checkPtrIntSize(&size, minMemoryLimit, maxMemoryLimit); err != nil {
+	if err := checkPtrIntSize(size, minMemoryLimit, maxMemoryLimit); err != nil {
 		return err
 	}
 	if size%64 != 0 {
-		return errors.New("memory size must be a multiple of 64 MB")
+		return fmt.Errorf(memoryError, size)
 	}
 	return nil
 }

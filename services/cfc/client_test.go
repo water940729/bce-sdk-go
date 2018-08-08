@@ -19,6 +19,10 @@ var (
 	FunctionName string
 )
 
+const (
+	invokeTestReturnPayload = "Hello World"
+)
+
 // For security reason, ak/sk should not hard write here.
 type Conf struct {
 	AK       string
@@ -47,10 +51,13 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	//log.SetLogHandler(log.STDERR | log.FILE)
+	//log.SetRotateType(log.ROTATE_SIZE)
 	log.SetLogLevel(log.WARN)
 }
 
 func TestCreateFunction(t *testing.T) {
+	// This function return Hello World
 	zipFile := "UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAaW5kZXgucHlKSU1TyEjMS8lJLdJILUvNK9FRSM7PK0mtKNG0UuBSUFBQKCjKzCuByGmCBYpSS0qL8hSUPFJzcvIVwvOLclKUuAABAAD//1BLBwhwCJ1tRwAAAEgAAABQSwECFAAUAAgACAAAAAAAcAidbUcAAABIAAAACAAAAAAAAAAAAAAAAAAAAAAAaW5kZXgucHlQSwUGAAAAAAEAAQA2AAAAfQAAAAAA"
 	args := &api.FunctionArgs{
 		Code:         &api.CodeFile{ZipFile: zipFile},
@@ -88,51 +95,63 @@ func TestGetFunction(t *testing.T) {
 
 func TestInvocations(t *testing.T) {
 	cases := []struct {
-		name    string
-		payload interface{}
-		err     error
+		args        *api.InvocationsArgs
+		payload     interface{}
+		respPayload string
+		err         error
 	}{
 		{
-			payload: nil,
-			err:     nil,
+			args: &api.InvocationsArgs{
+				InvocationType: api.InvocationTypeRequestResponse,
+			},
+			payload:     nil,
+			respPayload: invokeTestReturnPayload,
+			err:         nil,
 		},
 		{
-			payload: `[{"a":1},{"a":2}]`,
-			err:     nil,
+			args: &api.InvocationsArgs{
+				InvocationType: api.InvocationTypeEvent,
+			},
+			payload:     `[{"a":1},{"a":2}]`,
+			respPayload: "",
+			err:         nil,
 		},
 		{
-			payload: `[{"a":,{"a":2}]`,
-			err:     errors.New(api.ParseJsonError),
+			args: &api.InvocationsArgs{
+				InvocationType: api.InvocationTypeRequestResponse,
+			},
+			payload:     `[{"a":,{"a":2}]`,
+			respPayload: "",
+			err:         errors.New(api.ParseJsonError),
 		},
 		{
-			payload: []byte(`{"a":1}`),
-			err:     nil,
+			args: &api.InvocationsArgs{
+				InvocationType: api.InvocationTypeEvent,
+			},
+			payload:     []byte(`{"a":1}`),
+			respPayload: "",
+			err:         nil,
 		},
 		{
-			payload: &PayloadDemo{A: "1", B: 2},
-			err:     nil,
-		},
-		{
-			payload: []*PayloadDemo{&PayloadDemo{A: "1", B: 2}, &PayloadDemo{A: "3", B: 4}},
-			err:     nil,
+			args: &api.InvocationsArgs{
+				InvocationType: api.InvocationTypeRequestResponse,
+			},
+			payload:     []*PayloadDemo{&PayloadDemo{A: "1", B: 2}, &PayloadDemo{A: "3", B: 4}},
+			respPayload: invokeTestReturnPayload,
+			err:         nil,
 		},
 	}
 	for _, tc := range cases {
 		t.Run("invoke", func(t *testing.T) {
-			args := &api.InvocationsArgs{}
-			args.InvocationType = api.InvocationTypeRequestResponse
-			args.LogType = api.LogTypeTail
-			res, err := CfcClient.Invocations(FunctionName, tc.payload, args)
+			res, err := CfcClient.Invocations(FunctionName, tc.payload, tc.args)
 			if err == nil && tc.err != nil {
 				t.Errorf("Expected err to be %v, but got nil", tc.err)
 			} else if err != nil && tc.err == nil {
 				t.Errorf("Expected err to be nil, but got %v", err)
 			} else if err != nil && tc.err != nil && err.Error() != tc.err.Error() {
 				t.Errorf("Expected err to be %v, but got %v", tc.err, err)
-			}
-			if err == nil {
-				t.Logf("res log(%s)\n", res.LogResult)
-				t.Logf("res payload(%s)\n", res.Payload)
+			} else if res != nil && res.Payload != tc.respPayload {
+				t.Errorf("Expected Payload to be %s, but got %s", tc.respPayload, res.Payload)
 			}
 		})
 	}
