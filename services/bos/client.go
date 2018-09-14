@@ -140,7 +140,7 @@ func (c *Client) HeadBucket(bucket string) error {
 // PARAMS:
 //     - bucket: the bucket name
 // RETURNS:
-//     - bool: true if exists and false if not exists or occrus error
+//     - bool: true if exists and false if not exists or occurs error
 //     - error: nil if exists or not exist, otherwise the specific error
 func (c *Client) DoesBucketExist(bucket string) (bool, error) {
 	err := api.HeadBucket(c, bucket)
@@ -537,7 +537,7 @@ func (c *Client) DeleteBucketEncryption(bucket string) error {
 //
 // PARAMS:
 //     - bucket: the bucket name
-//     - config: the static webiste config body stream
+//     - config: the static website config body stream
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketStaticWebsite(bucket string, config *bce.Body) error {
@@ -548,7 +548,7 @@ func (c *Client) PutBucketStaticWebsite(bucket string, config *bce.Body) error {
 //
 // PARAMS:
 //     - bucket: the bucket name
-//     - jsonConfig: the static webiste config json string
+//     - jsonConfig: the static website config json string
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketStaticWebsiteFromString(bucket, jsonConfig string) error {
@@ -563,7 +563,7 @@ func (c *Client) PutBucketStaticWebsiteFromString(bucket, jsonConfig string) err
 //
 // PARAMS:
 //     - bucket: the bucket name
-//     - confObj: the static webiste config object
+//     - confObj: the static website config object
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) PutBucketStaticWebsiteFromStruct(bucket string,
@@ -583,8 +583,8 @@ func (c *Client) PutBucketStaticWebsiteFromStruct(bucket string,
 //
 // PARAMS:
 //     - bucket: the bucket name
-//     - index: the static webiste config for index file name
-//     - notFound: the static webiste config for notFound file name
+//     - index: the static website config for index file name
+//     - notFound: the static website config for notFound file name
 // RETURNS:
 //     - error: nil if success otherwise the specific error
 func (c *Client) SimplePutBucketStaticWebsite(bucket, index, notFound string) error {
@@ -592,12 +592,12 @@ func (c *Client) SimplePutBucketStaticWebsite(bucket, index, notFound string) er
 	return c.PutBucketStaticWebsiteFromStruct(bucket, confObj)
 }
 
-// GetBucketStaticWebsite - get the bucket static webiste config
+// GetBucketStaticWebsite - get the bucket static website config
 //
 // PARAMS:
 //     - bucket: the bucket name
 // RETURNS:
-//     - result: the static webiste config result object
+//     - result: the static website config result object
 //     - error: nil if success otherwise the specific error
 func (c *Client) GetBucketStaticWebsite(bucket string) (
 	*api.GetBucketStaticWebsiteResult, error) {
@@ -693,22 +693,6 @@ func (c *Client) GetBucketCors(bucket string) (*api.GetBucketCorsResult, error) 
 //     - error: nil if success otherwise the specific error
 func (c *Client) DeleteBucketCors(bucket string) error {
 	return api.DeleteBucketCors(c, bucket)
-}
-
-// OptionsObject - the preflight response for CORS
-//
-// PARAMS:
-//     - bucket: the bucket name
-//     - object: the object name that will access in the next request
-//     - origin: current request origin host name
-//     - method: next request mehtod that will be send, must belongs to "PUT/GET/DELETE/POST/HEAD"
-//     - headers: optional next request headers, allow multiple headers
-// RETURNS:
-//     - result: the CORS setting for the given object
-//     - error: nil if success otherwise the specific error
-func (c *Client) OptionsObject(bucket, object, origin, method string,
-	headers ...string) (*api.OptionsObjectResult, error) {
-	return api.OptionsObject(c, bucket, object, origin, method, headers...)
 }
 
 // PutBucketCopyrightProtection - set the copyright protection config of the given bucket
@@ -981,7 +965,7 @@ func (c *Client) SimpleFetchObject(bucket, object, source, mode,
 	return api.FetchObject(c, bucket, object, source, args)
 }
 
-// AppendObject - append the gievn content to a new or existed object which is appendable
+// AppendObject - append the given content to a new or existed object which is appendable
 //
 // PARAMS:
 //     - bucket: the name of the bucket
@@ -1115,7 +1099,7 @@ func (c *Client) DeleteMultipleObjectsFromStruct(bucket string,
 //
 // PARAMS:
 //     - bucket: the name of the bucket to delete
-//     - keyList: the key stirng list to be deleted
+//     - keyList: the key string list to be deleted
 // RETURNS:
 //     - *api.DeleteMultipleObjectsResult: the delete information
 //     - error: any error if it occurs
@@ -1376,7 +1360,7 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 		return bce.NewBceClientError("multipart size should not be less than 1MB")
 	}
 
-	// Caculate part size and total part number
+	// Calculate part size and total part number
 	partSize := (c.MultipartSize + MULTIPART_ALIGN - 1) / MULTIPART_ALIGN * MULTIPART_ALIGN
 	partNum := (size + partSize - 1) / partSize
 	if partNum > MAX_PART_NUMBER {

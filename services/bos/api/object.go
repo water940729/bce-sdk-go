@@ -430,7 +430,7 @@ func FetchObject(cli bce.Client, bucket, object, source string,
 	return jsonBody, nil
 }
 
-// AppendObject - append the gievn content to a new or existed object which is appendable
+// AppendObject - append the given content to a new or existed object which is appendable
 //
 // PARAMS:
 //     - cli: the client agent which can perform sending request

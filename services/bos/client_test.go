@@ -647,12 +647,6 @@ func TestGetBucketCors(t *testing.T) {
 	ExpectEqual(t.Errorf, res.CorsConfiguration[0].MaxAgeSeconds, 1200)
 }
 
-func TestOptionsObject(t *testing.T) {
-	res, err := BOS_CLIENT.OptionsObject(EXISTS_BUCKET, "glog.go", "https://www.baidu.com", "GET")
-	ExpectEqual(t.Errorf, err, nil)
-	t.Logf("%v", res)
-}
-
 func TestDeleteBucketCors(t *testing.T) {
 	err := BOS_CLIENT.DeleteBucketCors(EXISTS_BUCKET)
 	ExpectEqual(t.Errorf, err, nil)

@@ -99,17 +99,6 @@ func validCannedAcl(val string) bool {
 	return false
 }
 
-func validAccessControlRequestMethod(val string) bool {
-	if val == http.GET ||
-		val == http.PUT ||
-		val == http.POST ||
-		val == http.DELETE ||
-		val == http.HEAD {
-		return true
-	}
-	return false
-}
-
 func toHttpHeaderKey(key string) string {
 	var result bytes.Buffer
 	needToUpper := true

@@ -20,7 +20,6 @@ package api
 import (
 	"encoding/json"
 	"strconv"
-	"strings"
 
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
@@ -667,7 +666,7 @@ func DeleteBucketEncryption(cli bce.Client, bucket string) error {
 	return nil
 }
 
-// PutBucketStaticWebsite - set the bucket static webiste config
+// PutBucketStaticWebsite - set the bucket static website config
 //
 // PARAMS:
 //     - cli: the client agent which can perform sending request
@@ -696,13 +695,13 @@ func PutBucketStaticWebsite(cli bce.Client, bucket string, confBody *bce.Body) e
 	return nil
 }
 
-// GetBucketStaticWebsite - get the static webiste config of the given bucket
+// GetBucketStaticWebsite - get the static website config of the given bucket
 //
 // PARAMS:
 //     - cli: the client agent which can perform sending request
 //     - bucket: the bucket name
 // RETURNS:
-//     - result: the bucket static webiste config result object
+//     - result: the bucket static website config result object
 //     - error: nil if success otherwise the specific error
 func GetBucketStaticWebsite(cli bce.Client, bucket string) (
 	*GetBucketStaticWebsiteResult, error) {
@@ -725,7 +724,7 @@ func GetBucketStaticWebsite(cli bce.Client, bucket string) (
 	return result, nil
 }
 
-// DeleteBucketStaticWebsite - delete the static webiste config of the given bucket
+// DeleteBucketStaticWebsite - delete the static website config of the given bucket
 //
 // PARAMS:
 //     - cli: the client agent which can perform sending request
@@ -827,74 +826,6 @@ func DeleteBucketCors(cli bce.Client, bucket string) error {
 	}
 	defer func() { resp.Body().Close() }()
 	return nil
-}
-
-// OptionsObject - the preflight response for bucket CORS of the object
-//
-// PARAMS:
-//     - cli: the client agent which can perform sending request
-//     - bucket: the bucket name
-//     - object: the object name that will access in the next request
-//     - origin: current request origin host name
-//     - method: next request mehtod that will be send, must belongs to "PUT/GET/DELETE/POST/HEAD"
-//     - headers: optional next request headers, allow multiple headers
-// RETURNS:
-//     - error: nil if success otherwise the specific error
-func OptionsObject(cli bce.Client, bucket, object, origin, method string,
-	headers ...string) (*OptionsObjectResult, error) {
-	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object))
-	req.SetMethod(http.OPTIONS)
-	if len(origin) == 0 {
-		return nil, bce.NewBceClientError("origin header can not be empty")
-	}
-	req.SetHeader(http.ORIGIN, origin)
-	if !validAccessControlRequestMethod(method) {
-		return nil, bce.NewBceClientError("access control request method is invalid")
-	}
-	req.SetHeader(http.ACCESS_CONTROL_REQUEST_METHOD, method)
-	if len(headers) != 0 {
-		req.SetHeader(http.ACCESS_CONTROL_REQUEST_HEADERS, strings.Join(headers, ","))
-	}
-
-	spliter := func(headerVal string) []string {
-		arr := strings.Split(headerVal, ",")
-		for i := range arr {
-			arr[i] = strings.TrimSpace(arr[i])
-		}
-		return arr
-	}
-	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
-		return nil, err
-	}
-	if resp.IsFail() {
-		return nil, resp.ServiceError()
-	}
-	respHeaders := resp.Headers()
-	result := &OptionsObjectResult{}
-	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_CREDENTIALS]; ok {
-		result.AccessControlAllowCredentials = val
-	}
-	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_HEADERS]; ok {
-		result.AccessControlAllowHeaders = spliter(val)
-	}
-	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_METHODS]; ok {
-		result.AccessControlAllowMethods = spliter(val)
-	}
-	if val, ok := respHeaders[http.ACCESS_CONTROL_ALLOW_ORIGIN]; ok {
-		result.AccessControlAllowOrigin = val
-	}
-	if val, ok := respHeaders[http.ACCESS_CONTROL_EXPOSE_HEADERS]; ok {
-		result.AccessControlExposeHeaders = spliter(val)
-	}
-	if val, ok := respHeaders[http.ACCESS_CONTROL_MAX_AGE]; ok {
-		if age, err := strconv.ParseInt(val, 10, 64); err == nil {
-			result.AccessControlMaxAge = age
-		}
-	}
-	defer func() { resp.Body().Close() }()
-	return result, nil
 }
 
 // PutBucketCopyrightProtection - set the copyright protection config of the given bucket

@@ -225,16 +225,6 @@ type GetBucketCorsResult struct {
 	CorsConfiguration []BucketCORSType `json:"corsConfiguration"`
 }
 
-// OptionsObjectResult defines the result data sturcture for OptionsObject API
-type OptionsObjectResult struct {
-	AccessControlAllowCredentials string
-	AccessControlAllowHeaders     []string
-	AccessControlAllowMethods     []string
-	AccessControlAllowOrigin      string
-	AccessControlExposeHeaders    []string
-	AccessControlMaxAge           int64
-}
-
 // CopyrightProtectionType defines the data structure for Put and Get copyright protection API
 type CopyrightProtectionType struct {
 	Resource []string `json:"resource"`
