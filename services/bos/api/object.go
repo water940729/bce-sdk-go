@@ -622,7 +622,8 @@ func GeneratePresignedUrl(conf *bce.BceClientConfiguration, signer auth.Signer, 
 	// Generate the authorization string and return the signed url.
 	signer.Sign(&req.Request, conf.Credentials, &option)
 	req.SetParam("authorization", req.Header(http.AUTHORIZATION))
-	return fmt.Sprintf("%s://%s%s?%s", req.Protocol(), req.Host(), req.Uri(), req.QueryString())
+	return fmt.Sprintf("%s://%s%s?%s", req.Protocol(), req.Host(),
+		util.UriEncode(req.Uri(), false), req.QueryString())
 }
 
 // PutObjectAcl - set the ACL of the given object
