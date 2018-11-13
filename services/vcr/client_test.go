@@ -68,4 +68,3 @@ func TestSimplePutText(t *testing.T) {
 		t.Logf("%+v", res)
 	}
 }
-
