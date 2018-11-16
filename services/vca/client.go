@@ -63,6 +63,6 @@ func (c *Client) PutMedia(args *api.PutMediaArgs) (*api.GetMediaResult, error) {
 	return api.PutMedia(c, args)
 }
 
-func (c *Client) GetMediaResult(source string) (*api.GetMediaResult, error) {
+func (c *Client) GetMedia(source string) (*api.GetMediaResult, error) {
 	return api.GetMedia(c, source)
 }

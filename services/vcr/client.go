@@ -68,7 +68,7 @@ func (c *Client) SimplePutMedia(source string, description string, preset string
 	return api.PutMedia(c, args)
 }
 
-func (c *Client) GetMediaResult(source string) (*api.GetMediaResult, error) {
+func (c *Client) GetMedia(source string) (*api.GetMediaResult, error) {
 	return api.GetMedia(c, source)
 }
 
