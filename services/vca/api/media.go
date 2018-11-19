@@ -12,9 +12,9 @@
  * and limitations under the License.
  */
 
-// media.go - the media APIs definition supported by the VCR service
+// media.go - the media APIs definition supported by the VCA service
 
-// Package api defines all APIs supported by the VCR service of BCE.
+// Package api defines all APIs supported by the VCA service of BCE.
 package api
 
 import (
@@ -23,14 +23,14 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
-func PutMedia(cli bce.Client, args *PutMediaArgs) error {
+func PutMedia(cli bce.Client, args *PutMediaArgs) (*GetMediaResult, error) {
 	jsonBytes, jsonErr := json.Marshal(args)
 	if jsonErr != nil {
-		return jsonErr
+		return nil, jsonErr
 	}
 	body, err := bce.NewBodyFromBytes(jsonBytes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req := &bce.BceRequest{}
@@ -40,13 +40,16 @@ func PutMedia(cli bce.Client, args *PutMediaArgs) error {
 
 	resp := &bce.BceResponse{}
 	if err := cli.SendRequest(req, resp); err != nil {
-		return err
+		return nil, err
 	}
 	if resp.IsFail() {
-		return resp.ServiceError()
+		return nil, resp.ServiceError()
 	}
-	defer func() { resp.Body().Close() }()
-	return nil
+	jsonBody := &GetMediaResult{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+	return jsonBody, nil
 }
 
 func GetMedia(cli bce.Client, source string) (*GetMediaResult, error) {

@@ -12,19 +12,19 @@
  * and limitations under the License.
  */
 
-// client.go - define the client for VCR service
+// client.go - define the client for VCA service
 
-// Package vcr defines the VCR services of BCE. The supported APIs are all defined in sub-package
-package vcr
+// Package vca defines the VCA services of BCE. The supported APIs are all defined in sub-package
+package vca
 
 import (
 	"github.com/baidubce/bce-sdk-go/auth"
 	"github.com/baidubce/bce-sdk-go/bce"
-	"github.com/baidubce/bce-sdk-go/services/vcr/api"
+	"github.com/baidubce/bce-sdk-go/services/vca/api"
 )
 
 const (
-	DEFAULT_SERVICE_DOMAIN = "vcr." + bce.DEFAULT_REGION + "." + bce.DEFAULT_DOMAIN
+	DEFAULT_SERVICE_DOMAIN = "vca." + bce.DEFAULT_REGION + "." + bce.DEFAULT_DOMAIN
 )
 
 // Client of VCR service is a kind of BceClient, so derived from BceClient
@@ -59,24 +59,10 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 	return client, nil
 }
 
-func (c *Client) PutMedia(args *api.PutMediaArgs) error {
-	return api.PutMedia(c, args)
-}
-
-func (c *Client) SimplePutMedia(source string, description string, preset string, notification string) error {
-	args := &api.PutMediaArgs{Source: source, Description: description, Preset: preset, Notification: notification}
+func (c *Client) PutMedia(args *api.PutMediaArgs) (*api.GetMediaResult, error) {
 	return api.PutMedia(c, args)
 }
 
 func (c *Client) GetMedia(source string) (*api.GetMediaResult, error) {
 	return api.GetMedia(c, source)
-}
-
-func (c *Client) PutText(args *api.PutTextArgs) (*api.PutTextResult, error) {
-	return api.PutText(c, args)
-}
-
-func (c *Client) SimplePutText(text string) (*api.PutTextResult, error) {
-	args := &api.PutTextArgs{Text: text}
-	return api.PutText(c, args)
 }

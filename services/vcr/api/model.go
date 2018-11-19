@@ -25,41 +25,41 @@ const (
 )
 
 type PutMediaArgs struct {
-	Source 		 string `json:"source"`
-	Auth		 string `json:"auth"`
+	Source       string `json:"source"`
+	Auth         string `json:"auth"`
 	Description  string `json:"description"`
-	Preset 		 string `json:"preset"`
+	Preset       string `json:"preset"`
 	Notification string `json:"notification"`
 }
 
 type GetMediaResult struct {
-	Source 		 string 	   `json:"source"`
-	MediaId 	 string 	   `json:"mediaId"`
-	Description  string 	   `json:"description"`
-	Preset 		 string 	   `json:"preset"`
-	Status 		 string 	   `json:"status"`
-	Percent 	 int 		   `json:"percent"`
-	Notification string 	   `json:"notification"`
-	CreateTime   string 	   `json:"createTime"`
-	FinishTime   string 	   `json:"finishTime"`
-	Label 		 string 	   `json:"label"`
-	Results 	 []CheckResult `json:"results"`
-	Error 		 CheckError    `json:"error"`
+	Source       string        `json:"source"`
+	MediaId      string        `json:"mediaId"`
+	Description  string        `json:"description"`
+	Preset       string        `json:"preset"`
+	Status       string        `json:"status"`
+	Percent      int           `json:"percent"`
+	Notification string        `json:"notification"`
+	CreateTime   string        `json:"createTime"`
+	FinishTime   string        `json:"finishTime"`
+	Label        string        `json:"label"`
+	Results      []CheckResult `json:"results"`
+	Error        CheckError    `json:"error"`
 }
 
 type CheckResult struct {
-	Type  string 	   `json:"type"`
+	Type  string       `json:"type"`
 	Items []ResultItem `json:"items"`
 }
 
 type ResultItem struct {
-	SubType 	  string   `json:"subType"`
+	SubType       string   `json:"subType"`
 	Target        string   `json:"target"`
-	TimeInSeconds int	   `json:"timeInSeconds"`
+	TimeInSeconds int      `json:"timeInSeconds"`
 	Confidence    float32  `json:"confidence"`
 	Label         string   `json:"label"`
 	Extra         string   `json:"extra"`
-	Evidence 	  Evidence `json:"evidence"`
+	Evidence      Evidence `json:"evidence"`
 }
 
 type Evidence struct {
@@ -86,7 +86,7 @@ type PutTextArgs struct {
 }
 
 type PutTextResult struct {
-	Text    string 		  `json:"text"`
-	Preset  string 		  `json:"preset"`
+	Text    string        `json:"text"`
+	Preset  string        `json:"preset"`
 	Results []CheckResult `json:"results"`
 }

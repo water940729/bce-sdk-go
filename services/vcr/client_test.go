@@ -45,7 +45,7 @@ func TestSimplePutMedia(t *testing.T) {
 }
 
 func TestGetMedia(t *testing.T) {
-	if res, err := CLIENT.GetMediaResult(MEDIA_SOURCE); err != nil {
+	if res, err := CLIENT.GetMedia(MEDIA_SOURCE); err != nil {
 		t.Log("get media error")
 	} else {
 		t.Logf("%+v", res)
@@ -68,4 +68,3 @@ func TestSimplePutText(t *testing.T) {
 		t.Logf("%+v", res)
 	}
 }
-
