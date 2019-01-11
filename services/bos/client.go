@@ -1252,7 +1252,7 @@ func (c *Client) CompleteMultipartUpload(bucket, object, uploadId string,
 //     - error: nil if ok otherwise the specific error
 func (c *Client) CompleteMultipartUploadFromStruct(bucket, object, uploadId string,
 	args *api.CompleteMultipartUploadArgs) (*api.CompleteMultipartUploadResult, error) {
-	jsonBytes, jsonErr := json.Marshal(args.Parts)
+	jsonBytes, jsonErr := json.Marshal(args)
 	if jsonErr != nil {
 		return nil, jsonErr
 	}
