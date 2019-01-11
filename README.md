@@ -810,9 +810,9 @@ for i := int64(1); i <= partNum; i++  {
 ```go
 // import "github.com/baidubce/bce-sdk-go/services/bos/api"
 
-completeArgs := &api.CompleteMultipartUploadArgs{partEtags}
+completeArgs := &api.CompleteMultipartUploadArgs{Parts: partEtags}
 res, _ := bosClient.CompleteMultipartUploadFromStruct(
-	bucketName, objectKey, uploadId, completeArgs, nil)
+	bucketName, objectKey, uploadId, completeArgs)
 
 // 输出结果对象的内容
 fmt.Println(res.Location)
@@ -1533,9 +1533,9 @@ for partNumber := int64(1); partNumber <= totalParts; partNumber++ {
 }
 
 // 3. 完成汇总
-completeArgs := &api.CompleteMultipartUploadArgs{copyInfo}
+completeArgs := &api.CompleteMultipartUploadArgs{Parts: copyInfo}
 completeRes, err := bosClient.CompleteMultipartUploadFromStruct(
-	initResult.Bucket, initResult.Key, initResult.UploadId, completeArgs, nil)
+	initResult.Bucket, initResult.Key, initResult.UploadId, completeArgs)
 if err != nil {
 	bosClient.AbortMultipartUpload(initResult.Bucket, initResult.Key, initResult.UploadId)
 	fmt.Println("abort multipart upload copy with error:", err)
