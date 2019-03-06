@@ -18,5 +18,6 @@ cp -Rf ./bce $DEST
 cp -Rf ./http $DEST
 cp -Rf ./services $DEST
 cp -Rf ./util $DEST
+cp -Rf ./doc $DEST
 echo "Build gosdk success"
 
