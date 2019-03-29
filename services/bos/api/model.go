@@ -248,6 +248,7 @@ type PutObjectArgs struct {
 	Expires            string
 	UserMeta           map[string]string
 	ContentSha256      string
+	ContentCrc32       string
 	StorageClass       string
 	Process            string
 }
@@ -277,6 +278,7 @@ type ObjectMeta struct {
 	ContentType        string
 	ContentMD5         string
 	ContentSha256      string
+	ContentCrc32       string
 	Expires            string
 	LastModified       string
 	ETag               string
@@ -322,6 +324,7 @@ type AppendObjectArgs struct {
 	Expires            string
 	UserMeta           map[string]string
 	ContentSha256      string
+	ContentCrc32       string
 	StorageClass       string
 }
 
@@ -329,6 +332,7 @@ type AppendObjectArgs struct {
 type AppendObjectResult struct {
 	ContentMD5       string
 	NextAppendOffset int64
+	ContentCrc32     string
 	ETag             string
 }
 
@@ -373,6 +377,7 @@ type InitiateMultipartUploadResult struct {
 type UploadPartArgs struct {
 	ContentMD5    string
 	ContentSha256 string
+	ContentCrc32  string
 }
 
 // UploadPartCopyArgs defines the optional arguments of UploadPartCopy.
@@ -392,17 +397,19 @@ type UploadInfoType struct {
 
 // CompleteMultipartUploadArgs defines the input arguments structure of CompleteMultipartUpload.
 type CompleteMultipartUploadArgs struct {
-	Parts    []UploadInfoType  `json:"parts"`
-	UserMeta map[string]string `json:"-"`
-	Process  string            `json:"-"`
+	Parts        []UploadInfoType  `json:"parts"`
+	UserMeta     map[string]string `json:"-"`
+	Process      string            `json:"-"`
+	ContentCrc32 string            `json:"-"`
 }
 
 // CompleteMultipartUploadResult defines the result structure of CompleteMultipartUpload.
 type CompleteMultipartUploadResult struct {
-	Location string `json:"location"`
-	Bucket   string `json:"bucket"`
-	Key      string `json:"key"`
-	ETag     string `json:"eTag"`
+	Location     string `json:"location"`
+	Bucket       string `json:"bucket"`
+	Key          string `json:"key"`
+	ETag         string `json:"eTag"`
+	ContentCrc32 string `json:"-"`
 }
 
 // ListPartsArgs defines the input optional arguments of listing parts information.
