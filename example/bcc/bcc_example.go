@@ -14,6 +14,7 @@ const (
 	LogDir   = "./logs/"
 )
 
+
 func main() {
 	log.SetLogLevel(log.DEBUG)
 	log.SetLogHandler(log.FILE)

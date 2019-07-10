@@ -72,12 +72,12 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 		HeadersToSign: auth.DEFAULT_HEADERS_TO_SIGN,
 		ExpireSeconds: auth.DEFAULT_EXPIRE_SECONDS}
 	defaultConf := &bce.BceClientConfiguration{
-		Endpoint:    endpoint,
-		Region:      bce.DEFAULT_REGION,
-		UserAgent:   bce.DEFAULT_USER_AGENT,
-		Credentials: credentials,
-		SignOption:  defaultSignOptions,
-		Retry:       bce.DEFAULT_RETRY_POLICY,
+		Endpoint:                  endpoint,
+		Region:                    bce.DEFAULT_REGION,
+		UserAgent:                 bce.DEFAULT_USER_AGENT,
+		Credentials:               credentials,
+		SignOption:                defaultSignOptions,
+		Retry:                     bce.DEFAULT_RETRY_POLICY,
 		ConnectionTimeoutInMillis: bce.DEFAULT_CONNECTION_TIMEOUT_IN_MILLIS}
 	v1Signer := &auth.BceV1Signer{}
 
@@ -1414,7 +1414,7 @@ func (c *Client) UploadSuperFile(bucket, object, fileName, storageClass string) 
 
 	// Check the return of each part uploading, and decide to complete or abort it
 	completeArgs := &api.CompleteMultipartUploadArgs{
-		Parts :make([]api.UploadInfoType, partNum),
+		Parts: make([]api.UploadInfoType, partNum),
 	}
 	for i := partNum; i > 0; i-- {
 		uploaded := <-uploadedResult

@@ -190,3 +190,141 @@ type GetInstanceVNCResult struct {
 type PurchaseReservedArgs struct {
 	Billing Billing `json:"billing"`
 }
+
+type VolumeStatus string
+
+const (
+	VolumeStatusAVAILABLE          VolumeStatus = "Available"
+	VolumeStatusINUSE              VolumeStatus = "InUse"
+	VolumeStatusSNAPSHOTPROCESSING VolumeStatus = "SnapshotProcessing"
+	VolumeStatusRECHARGING         VolumeStatus = "Recharging"
+	VolumeStatusDETACHING          VolumeStatus = "Detaching"
+	VolumeStatusDELETING           VolumeStatus = "Deleting"
+	VolumeStatusEXPIRED            VolumeStatus = "Expired"
+	VolumeStatusNOTAVAILABLE       VolumeStatus = "NotAvailable"
+	VolumeStatusDELETED            VolumeStatus = "Deleted"
+	VolumeStatusSCALING            VolumeStatus = "Scaling"
+	VolumeStatusIMAGEPROCESSING    VolumeStatus = "ImageProcessing"
+	VolumeStatusCREATING           VolumeStatus = "Creating"
+	VolumeStatusATTACHING          VolumeStatus = "Attaching"
+	VolumeStatusERROR              VolumeStatus = "Error"
+)
+
+type VolumeType string
+
+const (
+	VolumeTypeSYSTEM    VolumeType = "System"
+	VolumeTypeEPHEMERAL VolumeType = "Ephemeral"
+	VolumeTypeCDS       VolumeType = "Cds"
+)
+
+type RenameCSDVolumeArgs struct {
+	Name string `json:"name"`
+}
+
+type ModifyCSDVolumeArgs struct {
+	CdsName string `json:"cdsName,omitempty"`
+	Desc    string `json:"desc,omitempty"`
+}
+
+type DetachVolumeArgs struct {
+	InstanceId string `json:"instanceId"`
+}
+
+type PurchaseReservedCSDVolumeArgs struct {
+	Billing *Billing `json:"billing"`
+}
+
+type DeleteCSDVolumeArgs struct {
+	ManualSnapshot string `json:"manualSnapshot,omitempty"`
+	AutoSnapshot   string `json:"autoSnapshot,omitempty"`
+}
+
+type ModifyChargeTypeCSDVolumeArgs struct {
+	Billing string `json:"billing"`
+}
+
+type ListCDSVolumeResult struct {
+	Marker      string         `json:"marker"`
+	IsTruncated bool           `json:"isTruncated"`
+	NextMarker  string         `json:"nextMarker"`
+	MaxKeys     int            `json:"maxKeys"`
+	Volumes     *[]VolumeModel `json:"volumes"`
+}
+
+type VolumeModel struct {
+	Type               VolumeType               `json:"type"`
+	StorageType        StorageType              `json:"storageType"`
+	Id                 string                   `json:"id"`
+	Name               string                   `json:"name"`
+	DiskSizeInGB       int                      `json:"diskSizeInGB"`
+	PaymentTiming      string                   `json:"paymentTiming"`
+	ExpireTime         string                   `json:"expireTime"`
+	Status             VolumeStatus             `json:"status"`
+	Desc               string                   `json:"desc"`
+	Attachments        *[]VolumeAttachmentModel `json:"attachments"`
+	ZoneName           string                   `json:"zoneName"`
+	AutoSnapshotPolicy *AutoSnapshotPolicyModel `json:"autoSnapshotPolicy"`
+	CreateTime         string                   `json:"createTime"`
+}
+
+type VolumeAttachmentModel struct {
+	VolumeId   string `json:"volumeId"`
+	InstanceId string `json:"instanceId"`
+	Device     string `json:"device"`
+	Serial     string `json:"serial"`
+}
+
+type AttachVolumeResult struct {
+	VolumeAttachment *VolumeAttachmentModel `json:"volumeAttachment"`
+}
+
+type CreateCDSVolumeArgs struct {
+	SnapshotId    string      `json:"snapshotId,omitempty"`
+	ZoneName      string      `json:"zoneName,omitempty"`
+	PurchaseCount int         `json:"purchaseCount,omitempty"`
+	CdsSizeInGB   int         `json:"cdsSizeInGB,omitempty"`
+	StorageType   StorageType `json:"storageType,omitempty"`
+	Billing       *Billing    `json:"billing"`
+}
+
+type CreateCDSVolumeResult struct {
+	VolumeIds *[]string `json:"volumeIds"`
+}
+
+type GetVolumeDetailResult struct {
+	Volume *VolumeModel `json:"volume"`
+}
+
+type AttachVolumeArgs struct {
+	InstanceId string `json:"instanceId"`
+}
+
+type ResizeCSDVolumeArgs struct {
+	NewCdsSizeInGB int `json:"newCdsSizeInGB"`
+}
+
+type RollbackCSDVolumeArgs struct {
+	NewCdsSizeInGB string `json:"newCdsSizeInGB"`
+}
+
+type ListCDSVolumeArgs struct {
+	MaxKeys    int
+	InstanceId string
+	ZoneName   string
+	Marker     string
+}
+
+type AutoSnapshotPolicyModel struct {
+	CreatedTime     string `json:"createdTime"`
+	Id              string `json:"id"`
+	Status          string `json:"status"`
+	RetentionDays   int    `json:"retentionDays"`
+	UpdatedTime     string `json:"updatedTime"`
+	DeletedTime     string `json:"deletedTime"`
+	LastExecuteTime string `json:"lastExecuteTime"`
+	VolumeCount     int    `json:"volumeCount"`
+	Name            string `json:"name"`
+	TimePoints      *[]int `json:"timePoints"`
+	RepeatWeekdays  *[]int `json:"repeatWeekdays"`
+}

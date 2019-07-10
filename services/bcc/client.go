@@ -242,3 +242,56 @@ func (c *Client) InstancePurchaseReserved(instanceId string, args *api.PurchaseR
 
 	return api.InstancePurchaseReserved(c, instanceId, body)
 }
+
+//cds sdk
+func (c *Client) CreateCDSVolume(args *api.CreateCDSVolumeArgs) (*api.CreateCDSVolumeResult, error) {
+	return api.CreateCDSVolume(c, args)
+}
+
+func (c *Client) ListCDSVolume(queryArgs *api.ListCDSVolumeArgs) (*api.ListCDSVolumeResult, error) {
+	return api.ListCDSVolume(c, queryArgs)
+}
+
+func (c *Client) GetCDSVolumeDetail(volumeId string) (*api.GetVolumeDetailResult, error) {
+	return api.GetCDSVolumeDetail(c, volumeId)
+}
+
+func (c *Client) AttachCDSVolume(volumeId string, args *api.AttachVolumeArgs) (*api.AttachVolumeResult, error) {
+	return api.AttachCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) DetachCDSVolume(volumeId string, args *api.DetachVolumeArgs) error {
+	return api.DetachCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) DeleteCDSVolume(volumeId string) error {
+	return api.DeleteCDSVolume(c, volumeId)
+}
+
+func (c *Client) DeleteCDSVolumeNew(volumeId string, args *api.DeleteCSDVolumeArgs) error {
+	return api.DeleteCDSVolumeNew(c, volumeId, args)
+}
+
+func (c *Client) ResizeCDSVolume(volumeId string, args *api.ResizeCSDVolumeArgs) error {
+	return api.ResizeCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) RollbackCDSVolume(volumeId string, args *api.RollbackCSDVolumeArgs) error {
+	return api.RollbackCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) PurchaseReservedCDSVolume(volumeId string, args *api.PurchaseReservedCSDVolumeArgs) error {
+	return api.PurchaseReservedCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) RenameCDSVolume(volumeId string, args *api.RenameCSDVolumeArgs) error {
+	return api.RenameCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) ModifyCDSVolume(volumeId string, args *api.ModifyCSDVolumeArgs) error {
+	return api.ModifyCDSVolume(c, volumeId, args)
+}
+
+func (c *Client) ModifyChargeTypeCDSVolume(volumeId string, args *api.ModifyChargeTypeCSDVolumeArgs) error {
+	return api.ModifyChargeTypeCDSVolume(c, volumeId, args)
+}

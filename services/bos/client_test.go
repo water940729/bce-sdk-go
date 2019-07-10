@@ -429,10 +429,10 @@ func TestPutBucketReplicationFromString(t *testing.T) {
 func TestPutBucketReplicationFromStruct(t *testing.T) {
 	BOS_CLIENT.DeleteBucketReplication(EXISTS_BUCKET)
 	args := &api.PutBucketReplicationArgs{
-		Id: "abc",
-		Status: "enabled",
-		Resource: []string{"bos-rd-ssy/films"},
-		Destination: &api.BucketReplicationDescriptor{"bos-rd-su-test", "COLD"},
+		Id:               "abc",
+		Status:           "enabled",
+		Resource:         []string{"bos-rd-ssy/films"},
+		Destination:      &api.BucketReplicationDescriptor{"bos-rd-su-test", "COLD"},
 		ReplicateDeletes: "disabled",
 	}
 	err := BOS_CLIENT.PutBucketReplicationFromStruct(EXISTS_BUCKET, args)
