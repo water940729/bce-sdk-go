@@ -295,3 +295,24 @@ func (c *Client) ModifyCDSVolume(volumeId string, args *api.ModifyCSDVolumeArgs)
 func (c *Client) ModifyChargeTypeCDSVolume(volumeId string, args *api.ModifyChargeTypeCSDVolumeArgs) error {
 	return api.ModifyChargeTypeCDSVolume(c, volumeId, args)
 }
+
+//securityGroup sdk
+func (c *Client) CreateSecurityGroup(args *api.CreateSecurityGroupArgs) (*api.CreateSecurityGroupResult, error) {
+	return api.CreateSecurityGroup(c, args)
+}
+
+func (c *Client) ListSecurityGroup(queryArgs *api.ListSecurityGroupArgs) (*api.ListSecurityGroupResult, error) {
+	return api.ListSecurityGroup(c, queryArgs)
+}
+
+func (c *Client) AuthorizeSecurityGroupRule(securityGroupId string, args *api.AuthorizeSecurityGroupArgs) error {
+	return api.AuthorizeSecurityGroupRule(c, securityGroupId, args)
+}
+
+func (c *Client) RevokeSecurityGroupRule(securityGroupId string, args *api.RevokeSecurityGroupArgs) error {
+	return api.RevokeSecurityGroupRule(c, securityGroupId, args)
+}
+
+func (c *Client) DeleteSecurityGroupRule(securityGroupId string) error {
+	return api.DeleteSecurityGroupRule(c, securityGroupId)
+}

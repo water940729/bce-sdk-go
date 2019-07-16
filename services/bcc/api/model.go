@@ -328,3 +328,57 @@ type AutoSnapshotPolicyModel struct {
 	TimePoints      []int  `json:"timePoints"`
 	RepeatWeekdays  []int  `json:"repeatWeekdays"`
 }
+
+type SecurityGroupRuleModel struct {
+	SourceIp        string `json:"sourceIp,omitempty"`
+	DestIp          string `json:"destIp,omitempty"`
+	Protocol        string `json:"protocol,omitempty"`
+	SourceGroupId   string `json:"sourceGroupId,omitempty"`
+	Ethertype       string `json:"ethertype,omitempty"`
+	PortRange       string `json:"portRange,omitempty"`
+	DestGroupId     string `json:"destGroupId,omitempty"`
+	SecurityGroupId string `json:"securityGroupId,omitempty"`
+	Remark          string `json:"remark,omitempty"`
+	Direction       string `json:"direction,omitempty"`
+}
+
+type SecurityGroupModel struct {
+	Id    string                   `json:"id"`
+	Name  string                   `json:"name"`
+	Desc  string                   `json:"desc"`
+	VpcId string                   `json:"vpcId"`
+	Rules []SecurityGroupRuleModel `json:"rules"`
+}
+
+type CreateSecurityGroupArgs struct {
+	Name  string                    `json:"name"`
+	Desc  string                    `json:"desc,omitempty"`
+	Rules *[]SecurityGroupRuleModel `json:"rules"`
+}
+
+type ListSecurityGroupArgs struct {
+	Marker     string
+	MaxKeys    int
+	InstanceId string
+	VpcId      string
+}
+
+type CreateSecurityGroupResult struct {
+	SecurityGroupId string `json:"securityGroupId"`
+}
+
+type ListSecurityGroupResult struct {
+	Marker         string               `json:"marker"`
+	IsTruncated    bool                 `json:"isTruncated"`
+	NextMarker     string               `json:"nextMarker"`
+	MaxKeys        int                  `json:"maxKeys"`
+	SecurityGroups []SecurityGroupModel `json:"securityGroups"`
+}
+
+type AuthorizeSecurityGroupArgs struct {
+	Rule *SecurityGroupRuleModel `json:"rule"`
+}
+
+type RevokeSecurityGroupArgs struct {
+	Rule *SecurityGroupRuleModel `json:"rule"`
+}

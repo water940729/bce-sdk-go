@@ -73,7 +73,6 @@ func ExpectEqual(alert func(format string, args ...interface{}),
 	return true
 }
 
-//bcc sdk unit test
 func TestCreateInstance(t *testing.T) {
 	createInstanceArgs := &api.CreateInstanceArgs{
 		ImageId: "m-DpgNg8lO",
@@ -97,6 +96,25 @@ func TestCreateInstance(t *testing.T) {
 	createResult, err := BCC_CLIENT.CreateInstance(createInstanceArgs)
 	ExpectEqual(t.Errorf, err, nil)
 	BCC_TestBccId = createResult.InstanceIds[0]
+}
+
+func TestCreateSecurityGroup(t *testing.T) {
+	args := &api.CreateSecurityGroupArgs{
+		Name: "testSecurityGroup",
+		Rules: &[]api.SecurityGroupRuleModel{
+			{
+				Remark:        "备注",
+				Protocol:      "tcp",
+				PortRange:     "1-65535",
+				Direction:     "ingress",
+				SourceIp:      "",
+				SourceGroupId: "",
+			},
+		},
+	}
+	result, err := BCC_CLIENT.CreateSecurityGroup(args)
+	ExpectEqual(t.Errorf, err, nil)
+	BCC_TestSecurityGroupId = result.SecurityGroupId
 }
 
 func TestListInstances(t *testing.T) {
@@ -174,7 +192,6 @@ func TestUnBindSecurityGroup(t *testing.T) {
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-//cds sdk unit test
 func TestCreateCDSVolume(t *testing.T) {
 	args := &api.CreateCDSVolumeArgs{
 		PurchaseCount: 1,
@@ -290,5 +307,46 @@ func TestDeleteCDSVolume(t *testing.T) {
 
 func TestDeleteInstance(t *testing.T) {
 	err := BCC_CLIENT.DeleteInstance(BCC_TestBccId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestListSecurityGroup(t *testing.T) {
+	queryArgs := &api.ListSecurityGroupArgs{}
+	_, err := BCC_CLIENT.ListSecurityGroup(queryArgs)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestAuthorizeSecurityGroupRule(t *testing.T) {
+	args := &api.AuthorizeSecurityGroupArgs{
+		Rule: &api.SecurityGroupRuleModel{
+			Remark:        "备注",
+			Protocol:      "udp",
+			PortRange:     "1-65535",
+			Direction:     "ingress",
+			SourceIp:      "",
+			SourceGroupId: "",
+		},
+	}
+	err := BCC_CLIENT.AuthorizeSecurityGroupRule(BCC_TestSecurityGroupId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestRevokeSecurityGroupRule(t *testing.T) {
+	args := &api.RevokeSecurityGroupArgs{
+		Rule: &api.SecurityGroupRuleModel{
+			Remark:        "备注",
+			Protocol:      "udp",
+			PortRange:     "1-65535",
+			Direction:     "ingress",
+			SourceIp:      "",
+			SourceGroupId: "",
+		},
+	}
+	err := BCC_CLIENT.RevokeSecurityGroupRule(BCC_TestSecurityGroupId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestDeleteSecurityGroupRule(t *testing.T) {
+	err := BCC_CLIENT.DeleteSecurityGroupRule(BCC_TestSecurityGroupId)
 	ExpectEqual(t.Errorf, err, nil)
 }
