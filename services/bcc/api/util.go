@@ -14,7 +14,8 @@ const (
 	REQUEST_INSTANCE_URI = "/instance"
 	REQUEST_VNC_SUFFIX   = "/vnc"
 
-	REQUEST_VOLUME_URI = "/volume"
+	REQUEST_VOLUME_URI        = "/volume"
+	REQUEST_SECURITYGROUP_URI = "/securityGroup"
 )
 
 func getInstanceUri() string {
@@ -48,4 +49,12 @@ func getVolumeUri() string {
 
 func getVolumeUriWithId(id string) string {
 	return URI_PREFIX + REQUEST_VOLUME_URI + "/" + id
+}
+
+func getSecurityGroupUri() string {
+	return URI_PREFIX + REQUEST_SECURITYGROUP_URI
+}
+
+func getSecurityGroupUriWithId(id string) string {
+	return URI_PREFIX + REQUEST_SECURITYGROUP_URI + "/" + id
 }
