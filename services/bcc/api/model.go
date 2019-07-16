@@ -241,15 +241,15 @@ type DeleteCSDVolumeArgs struct {
 }
 
 type ModifyChargeTypeCSDVolumeArgs struct {
-	Billing string `json:"billing"`
+	Billing *Billing `json:"billing"`
 }
 
 type ListCDSVolumeResult struct {
-	Marker      string         `json:"marker"`
-	IsTruncated bool           `json:"isTruncated"`
-	NextMarker  string         `json:"nextMarker"`
-	MaxKeys     int            `json:"maxKeys"`
-	Volumes     *[]VolumeModel `json:"volumes"`
+	Marker      string        `json:"marker"`
+	IsTruncated bool          `json:"isTruncated"`
+	NextMarker  string        `json:"nextMarker"`
+	MaxKeys     int           `json:"maxKeys"`
+	Volumes     []VolumeModel `json:"volumes"`
 }
 
 type VolumeModel struct {
@@ -262,7 +262,7 @@ type VolumeModel struct {
 	ExpireTime         string                   `json:"expireTime"`
 	Status             VolumeStatus             `json:"status"`
 	Desc               string                   `json:"desc"`
-	Attachments        *[]VolumeAttachmentModel `json:"attachments"`
+	Attachments        []VolumeAttachmentModel  `json:"attachments"`
 	ZoneName           string                   `json:"zoneName"`
 	AutoSnapshotPolicy *AutoSnapshotPolicyModel `json:"autoSnapshotPolicy"`
 	CreateTime         string                   `json:"createTime"`
@@ -289,7 +289,7 @@ type CreateCDSVolumeArgs struct {
 }
 
 type CreateCDSVolumeResult struct {
-	VolumeIds *[]string `json:"volumeIds"`
+	VolumeIds []string `json:"volumeIds"`
 }
 
 type GetVolumeDetailResult struct {
@@ -305,7 +305,7 @@ type ResizeCSDVolumeArgs struct {
 }
 
 type RollbackCSDVolumeArgs struct {
-	NewCdsSizeInGB string `json:"newCdsSizeInGB"`
+	SnapshotId string `json:"snapshotId"`
 }
 
 type ListCDSVolumeArgs struct {
@@ -325,6 +325,6 @@ type AutoSnapshotPolicyModel struct {
 	LastExecuteTime string `json:"lastExecuteTime"`
 	VolumeCount     int    `json:"volumeCount"`
 	Name            string `json:"name"`
-	TimePoints      *[]int `json:"timePoints"`
-	RepeatWeekdays  *[]int `json:"repeatWeekdays"`
+	TimePoints      []int  `json:"timePoints"`
+	RepeatWeekdays  []int  `json:"repeatWeekdays"`
 }

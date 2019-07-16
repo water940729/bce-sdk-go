@@ -47,7 +47,7 @@ func main() {
 	}
 	log.Info("list cds volume success: %+v\n", listCdsResult)
 
-	volumeDetail, err := client.GetCDSVolumeDetail((*createResult.VolumeIds)[0])
+	volumeDetail, err := client.GetCDSVolumeDetail(createResult.VolumeIds[0])
 	if err != nil {
 		log.Errorf("get cds volume detail error: %+v\n", err)
 		return
@@ -57,7 +57,7 @@ func main() {
 	attachCdsArgs := &api.AttachVolumeArgs{
 		InstanceId: "i-AhFKN8Gb",
 	}
-	attachCdsResult, err := client.AttachCDSVolume((*createResult.VolumeIds)[0], attachCdsArgs)
+	attachCdsResult, err := client.AttachCDSVolume(createResult.VolumeIds[0], attachCdsArgs)
 	if err != nil {
 		log.Errorf("attach cds to bcc error: %+v\n", err)
 		return
@@ -67,7 +67,7 @@ func main() {
 	detachCdsArgs := &api.DetachVolumeArgs{
 		InstanceId: "i-AhFKN8Gb",
 	}
-	err = client.DetachCDSVolume((*createResult.VolumeIds)[0], detachCdsArgs)
+	err = client.DetachCDSVolume(createResult.VolumeIds[0], detachCdsArgs)
 	if err != nil {
 		log.Errorf("detach cds volume error: %+v\n", err)
 		return
@@ -77,7 +77,7 @@ func main() {
 	resizeCdsArgs := &api.ResizeCSDVolumeArgs{
 		NewCdsSizeInGB: 100,
 	}
-	err = client.ResizeCDSVolume((*createResult.VolumeIds)[0], resizeCdsArgs)
+	err = client.ResizeCDSVolume(createResult.VolumeIds[0], resizeCdsArgs)
 	if err != nil {
 		log.Errorf("resize cds volume error: %+v\n", err)
 		return
@@ -87,7 +87,7 @@ func main() {
 	renameArgs := &api.RenameCSDVolumeArgs{
 		Name: "tf-testVolume",
 	}
-	err = client.RenameCDSVolume((*createResult.VolumeIds)[0], renameArgs)
+	err = client.RenameCDSVolume(createResult.VolumeIds[0], renameArgs)
 	if err != nil {
 		log.Errorf("rename cds volume error: %+v\n", err)
 		return
@@ -98,14 +98,14 @@ func main() {
 		CdsName: "tf-aaa",
 		Desc:    "tf-desc",
 	}
-	err = client.ModifyCDSVolume((*createResult.VolumeIds)[0], modifyArgs)
+	err = client.ModifyCDSVolume(createResult.VolumeIds[0], modifyArgs)
 	if err != nil {
 		log.Errorf("modify cds volume error: %+v\n", err)
 		return
 	}
 	log.Infof("modify cds volume success\n")
 
-	err = client.DeleteCDSVolume((*createResult.VolumeIds)[0])
+	err = client.DeleteCDSVolume(createResult.VolumeIds[0])
 	if err != nil {
 		log.Errorf("delete cds volume error: %+v\n", err)
 		return
