@@ -1,6 +1,7 @@
 package bce
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -12,12 +13,9 @@ type RequestBuilder struct {
 	method      string            // required
 	client      Client            // required
 	queryParams map[string]string // optional
-	header      map[string]string // optional
-
-	// bodyBytes stores bytes that has been marshaled by json.
-	// TODO: set the field to a interface{}.
-	bodyBytes []byte      // optional
-	result    interface{} // optional
+	headers     map[string]string // optional
+	body        interface{}       // optional
+	result      interface{}       // optional
 }
 
 // create RequestBuilder with the client.
@@ -60,20 +58,20 @@ func (b *RequestBuilder) WithQueryParams(params map[string]string) *RequestBuild
 }
 
 func (b *RequestBuilder) WithHeader(key, value string) *RequestBuilder {
-	if b.header == nil {
-		b.header = make(map[string]string)
+	if b.headers == nil {
+		b.headers = make(map[string]string)
 	}
-	b.header[key] = value
+	b.headers[key] = value
 	return b
 }
 
 func (b *RequestBuilder) WithHeaders(headers map[string]string) *RequestBuilder {
-	b.header = headers
+	b.headers = headers
 	return b
 }
 
-func (b *RequestBuilder) WithBodyBytes(bodyBytes []byte) *RequestBuilder {
-	b.bodyBytes = bodyBytes
+func (b *RequestBuilder) WithBody(body interface{}) *RequestBuilder {
+	b.body = body
 	return b
 }
 
@@ -122,11 +120,18 @@ func (b *RequestBuilder) buildBceRequest() (*BceRequest, error) {
 	req.SetUri(b.url)
 	req.SetMethod(b.method)
 
+	if b.headers != nil {
+		req.SetHeaders(b.headers)
+	}
 	if b.queryParams != nil {
 		req.SetParams(b.queryParams)
 	}
-	if b.bodyBytes != nil {
-		body, err := NewBodyFromBytes(b.bodyBytes)
+	if b.body != nil {
+		bodyBytes, err := json.Marshal(b.body)
+		if err != nil {
+			return nil, err
+		}
+		body, err := NewBodyFromBytes(bodyBytes)
 		if err != nil {
 			return nil, err
 		}

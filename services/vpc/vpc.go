@@ -1,24 +1,20 @@
 package vpc
 
 import (
-	"encoding/json"
 	"fmt"
+	"strconv"
+
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
-	"strconv"
 )
 
 func (c *Client) CreateVPC(args *CreateVPCArgs) (*CreateVPCResult, error) {
-	b, err := json.Marshal(args)
-	if err != nil {
-		return nil, err
-	}
-
 	result := &CreateVPCResult{}
-	err = bce.NewRequestBuilder(c).
+
+	err := bce.NewRequestBuilder(c).
 		WithURL(getURLForVPC()).
 		WithMethod(http.POST).
-		WithBodyBytes(b).
+		WithBody(args).
 		WithResult(result).
 		Do()
 
@@ -64,15 +60,11 @@ func (c *Client) GetVPCDetail(vpcId string) (*GetVPCDetailResult, error) {
 }
 
 func (c *Client) UpdateVPC(vpcId string, updateVPCArgs *UpdateVPCArgs) error {
-	b, err := json.Marshal(updateVPCArgs)
-	if err != nil {
-		return err
-	}
 	return bce.NewRequestBuilder(c).
 		WithURL(getURLForVPCId(vpcId)).
 		WithMethod(http.PUT).
 		WithQueryParam("modifyAttribute", "").
-		WithBodyBytes(b).
+		WithBody(updateVPCArgs).
 		Do()
 }
 
