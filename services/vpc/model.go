@@ -4,6 +4,10 @@ const (
 	SUBNET_TYPE_BCC    = "BCC"
 	SUBNET_TYPE_BCCNAT = "BCC_NAT"
 	SUBNET_TYPE_BBC    = "BBC"
+
+	NEXTHOP_TYPE_CUSTOM = "custom"
+	NEXTHOP_TYPE_VPN    = "vpn"
+	NEXTHOP_TYPE_NAT    = "nat"
 )
 
 type CreateVPCArgs struct {
@@ -109,4 +113,35 @@ type UpdateSubnetArgs struct {
 	ClientToken string
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
+}
+
+type RouteRule struct {
+	RouteRuleId        string `json:"routeRuleId"`
+	RouteTableId       string `json:"routeTableId"`
+	SourceAddress      string `json:"sourceAddress"`
+	DestinationAddress string `json:"destinationAddress"`
+	NexthopId          string `json:"nexthopId"`
+	NexthopType        string `json:"nexthopType"`
+	Description        string `json:"description"`
+}
+
+type GetRouteTableResult struct {
+	RouteTableId string      `json:"routeTableId"`
+	VpcId        string      `json:"vpcId"`
+	RouteRules   []RouteRule `json:"routeRules"`
+}
+
+type CreateRouteRuleArgs struct {
+	ClientToken        string
+	RouteRuleId        string `json:"routeRuleId"`
+	RouteTableId       string `json:"routeTableId"`
+	SourceAddress      string `json:"sourceAddress"`
+	DestinationAddress string `json:"destinationAddress"`
+	NexthopId          string `json:"nexthopId,omitempty"`
+	NexthopType        string `json:"nexthopType"`
+	Description        string `json:"description"`
+}
+
+type CreateRouteRuleResult struct {
+	RouteRuleId string `json:"routeRuleId"`
 }
