@@ -1,5 +1,11 @@
 package vpc
 
+const (
+	SUBNET_TYPE_BCC    = "BCC"
+	SUBNET_TYPE_BCCNAT = "BCC_NAT"
+	SUBNET_TYPE_BBC    = "BBC"
+)
+
 type CreateVPCArgs struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
@@ -11,8 +17,8 @@ type CreateVPCResult struct {
 }
 
 type ListVPCArgs struct {
-	Marker    string
-	MaxKeys   int
+	Marker  string
+	MaxKeys int
 
 	// IsDefault is a string type,
 	// so we can identify if it has been setted when the value is false.
@@ -63,4 +69,44 @@ type Subnet struct {
 type UpdateVPCArgs struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+}
+
+type CreateSubnetArgs struct {
+	ClientToken string
+	Name        string `json:"name"`
+	ZoneName    string `json:"zoneName"`
+	Cidr        string `json:"cidr"`
+	VpcId       string `json:"vpcId"`
+	SubnetType  string `json:"subnetType,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+type CreateSubnetResult struct {
+	SubnetId string `json:"subnetId"`
+}
+
+type ListSubnetArgs struct {
+	Marker     string
+	MaxKeys    int
+	VpcId      string
+	ZoneName   string
+	SubnetType string
+}
+
+type ListSubnetResult struct {
+	Marker      string   `json:"marker"`
+	IsTruncated bool     `json:"isTruncated"`
+	NextMarker  string   `json:"nextMarker"`
+	MaxKeys     int      `json:"maxKeys"`
+	Subnets     []Subnet `json:"subnets"`
+}
+
+type GetSubnetDetailResult struct {
+	Subnet Subnet `json:"subnet"`
+}
+
+type UpdateSubnetArgs struct {
+	ClientToken string
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
 }

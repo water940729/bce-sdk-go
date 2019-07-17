@@ -6,6 +6,9 @@ import (
 
 const (
 	URI_PREFIX = bce.URI_PREFIX + "v1"
+
+	REQUEST_VPC_URL    = "/vpc"
+	REQUEST_SUBNET_URL = "/subnet"
 )
 
 // Client of VPC service is a kind of BceClient, so derived from BceClient
@@ -22,9 +25,17 @@ func NewClient(ak, sk, endPoint string) (*Client, error) {
 }
 
 func getURLForVPC() string {
-	return URI_PREFIX + "/vpc"
+	return URI_PREFIX + REQUEST_VPC_URL
 }
 
 func getURLForVPCId(vpcId string) string {
 	return getURLForVPC() + "/" + vpcId
+}
+
+func getURLForSubnet() string {
+	return URI_PREFIX + REQUEST_SUBNET_URL
+}
+
+func getURLForSubnetId(subnetId string) string {
+	return getURLForSubnet() + "/" + subnetId
 }
