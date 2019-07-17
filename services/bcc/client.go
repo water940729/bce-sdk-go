@@ -316,3 +316,44 @@ func (c *Client) RevokeSecurityGroupRule(securityGroupId string, args *api.Revok
 func (c *Client) DeleteSecurityGroupRule(securityGroupId string) error {
 	return api.DeleteSecurityGroupRule(c, securityGroupId)
 }
+
+//image sdk
+func (c *Client) CreateImage(args *api.CreateImageArgs) (*api.CreateImageResult, error) {
+	return api.CreateImage(c, args)
+}
+
+func (c *Client) ListImage(queryArgs *api.ListImageArgs) (*api.ListImageResult, error) {
+	return api.ListImage(c, queryArgs)
+}
+
+func (c *Client) GetImageDetail(imageId string) (*api.GetImageDetailResult, error) {
+	return api.GetImageDetail(c, imageId)
+}
+
+func (c *Client) DeleteImage(imageId string) error {
+	return api.DeleteImage(c, imageId)
+}
+
+func (c *Client) RemoteCopyImage(imageId string, args *api.RemoteCopyImageArgs) error {
+	return api.RemoteCopyImage(c, imageId, args)
+}
+
+func (c *Client) CancelRemoteCopyImage(imageId string) error {
+	return api.CancelRemoteCopyImage(c, imageId)
+}
+
+func (c *Client) ShareImage(imageId string, args *api.SharedUser) error {
+	return api.ShareImage(c, imageId, args)
+}
+
+func (c *Client) UnShareImage(imageId string, args *api.SharedUser) error {
+	return api.UnShareImage(c, imageId, args)
+}
+
+func (c *Client) GetImageSharedUser(imageId string) (*api.GetImageSharedUserResult, error) {
+	return api.GetImageSharedUser(c, imageId)
+}
+
+func (c *Client) GetImageOS(args *api.GetImageOsArgs) (*api.GetImageOsResult, error) {
+	return api.GetImageOS(c, args)
+}
