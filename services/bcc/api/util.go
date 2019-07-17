@@ -14,8 +14,11 @@ const (
 	REQUEST_INSTANCE_URI = "/instance"
 	REQUEST_VNC_SUFFIX   = "/vnc"
 
-	REQUEST_VOLUME_URI        = "/volume"
-	REQUEST_SECURITYGROUP_URI = "/securityGroup"
+	REQUEST_VOLUME_URI           = "/volume"
+	REQUEST_SECURITYGROUP_URI    = "/securityGroup"
+	REQUEST_IMAGE_URI            = "/image"
+	REQUEST_IMAGE_SHAREDUSER_URI = "/sharedUsers"
+	REQUEST_IMAGE_OS_URI         = "/os"
 )
 
 func getInstanceUri() string {
@@ -57,4 +60,20 @@ func getSecurityGroupUri() string {
 
 func getSecurityGroupUriWithId(id string) string {
 	return URI_PREFIX + REQUEST_SECURITYGROUP_URI + "/" + id
+}
+
+func getImageUri() string {
+	return URI_PREFIX + REQUEST_IMAGE_URI
+}
+
+func getImageUriWithId(id string) string {
+	return URI_PREFIX + REQUEST_IMAGE_URI + "/" + id
+}
+
+func getImageSharedUserUri(id string) string {
+	return URI_PREFIX + REQUEST_IMAGE_URI + "/" + id + REQUEST_IMAGE_SHAREDUSER_URI
+}
+
+func getImageOsUri() string {
+	return URI_PREFIX + REQUEST_IMAGE_URI + REQUEST_IMAGE_OS_URI
 }

@@ -17,6 +17,7 @@ var (
 	BCC_TestCdsId           string
 	BCC_TestBccId           string
 	BCC_TestSecurityGroupId string
+	BCC_TestImageId         string
 )
 
 // For security reason, ak/sk should not hard write here.
@@ -115,6 +116,16 @@ func TestCreateSecurityGroup(t *testing.T) {
 	result, err := BCC_CLIENT.CreateSecurityGroup(args)
 	ExpectEqual(t.Errorf, err, nil)
 	BCC_TestSecurityGroupId = result.SecurityGroupId
+}
+
+func TestCreateImage(t *testing.T) {
+	args := &api.CreateImageArgs{
+		ImageName:  "testImageName",
+		InstanceId: BCC_TestBccId,
+	}
+	result, err := BCC_CLIENT.CreateImage(args)
+	ExpectEqual(t.Errorf, err, nil)
+	BCC_TestImageId = result.ImageId
 }
 
 func TestListInstances(t *testing.T) {
@@ -305,11 +316,6 @@ func TestDeleteCDSVolume(t *testing.T) {
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-func TestDeleteInstance(t *testing.T) {
-	err := BCC_CLIENT.DeleteInstance(BCC_TestBccId)
-	ExpectEqual(t.Errorf, err, nil)
-}
-
 func TestListSecurityGroup(t *testing.T) {
 	queryArgs := &api.ListSecurityGroupArgs{}
 	_, err := BCC_CLIENT.ListSecurityGroup(queryArgs)
@@ -348,5 +354,67 @@ func TestRevokeSecurityGroupRule(t *testing.T) {
 
 func TestDeleteSecurityGroupRule(t *testing.T) {
 	err := BCC_CLIENT.DeleteSecurityGroupRule(BCC_TestSecurityGroupId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestListImage(t *testing.T) {
+	queryArgs := &api.ListImageArgs{}
+	_, err := BCC_CLIENT.ListImage(queryArgs)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestGetImageDetail(t *testing.T) {
+	_, err := BCC_CLIENT.GetImageDetail(BCC_TestImageId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestRemoteCopyImage(t *testing.T) {
+	args := &api.RemoteCopyImageArgs{
+		Name:       "testRemoteCopy",
+		DestRegion: []string{"bj"},
+	}
+	err := BCC_CLIENT.RemoteCopyImage(BCC_TestImageId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestCancelRemoteCopyImage(t *testing.T) {
+	err := BCC_CLIENT.CancelRemoteCopyImage(BCC_TestImageId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestShareImage(t *testing.T) {
+	args := &api.SharedUser{
+		AccountId: "id",
+	}
+	err := BCC_CLIENT.ShareImage(BCC_TestImageId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestUnShareImage(t *testing.T) {
+	args := &api.SharedUser{
+		AccountId: "id",
+	}
+	err := BCC_CLIENT.UnShareImage(BCC_TestImageId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestGetImageSharedUser(t *testing.T) {
+	_, err := BCC_CLIENT.GetImageSharedUser(BCC_TestImageId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestGetImageOS(t *testing.T) {
+	args := &api.GetImageOsArgs{}
+	_, err := BCC_CLIENT.GetImageOS(args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestDeleteImage(t *testing.T) {
+	err := BCC_CLIENT.DeleteImage(BCC_TestImageId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestDeleteInstance(t *testing.T) {
+	err := BCC_CLIENT.DeleteInstance(BCC_TestBccId)
 	ExpectEqual(t.Errorf, err, nil)
 }

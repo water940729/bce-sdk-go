@@ -382,3 +382,93 @@ type AuthorizeSecurityGroupArgs struct {
 type RevokeSecurityGroupArgs struct {
 	Rule *SecurityGroupRuleModel `json:"rule"`
 }
+
+type ImageType string
+
+const (
+	ImageTypeIntegration ImageType = "Integration"
+	ImageTypeSystem      ImageType = "System"
+	ImageTypeCustom      ImageType = "Custom"
+)
+
+type ImageStatus string
+
+const (
+	ImageStatusCreating     ImageStatus = "Creating"
+	ImageStatusCreateFailed ImageStatus = "CreateFailed"
+	ImageStatusAvailable    ImageStatus = "Available"
+	ImageStatusNotAvailable ImageStatus = "NotAvailable"
+	ImageStatusError        ImageStatus = "Error"
+)
+
+type SharedUser struct {
+	AccountId string `json:"accountId,omitempty"`
+	Account   string `json:"account,omitempty"`
+}
+
+type GetImageSharedUserResult struct {
+	Users []SharedUser `json:"users"`
+}
+
+type GetImageOsResult struct {
+	OsInfo []OsModel `json:"osInfo"`
+}
+
+type CreateImageResult struct {
+	ImageId string `json:"imageId"`
+}
+
+type ListImageResult struct {
+	Marker      string       `json:"marker"`
+	IsTruncated bool         `json:"isTruncated"`
+	NextMarker  string       `json:"nextMarker"`
+	MaxKeys     int          `json:"maxKeys"`
+	Images      []ImageModel `json:"images"`
+}
+
+type ImageModel struct {
+	OsVersion  string      `json:"osVersion"`
+	OsArch     string      `json:"osArch"`
+	Status     ImageStatus `json:"status"`
+	Desc       string      `json:"desc"`
+	Id         string      `json:"id"`
+	Name       string      `json:"name"`
+	OsName     string      `json:"osName"`
+	OsBuild    string      `json:"osBuild"`
+	CreateTime string      `json:"createTime"`
+	Type       ImageType   `json:"type"`
+	OsType     string      `json:"osType"`
+}
+
+type GetImageDetailResult struct {
+	Image *ImageModel `json:"image"`
+}
+
+type RemoteCopyImageArgs struct {
+	Name       string   `json:"name,omitempty"`
+	DestRegion []string `json:"destRegion"`
+}
+
+type CreateImageArgs struct {
+	InstanceId string `json:"instanceId,omitempty"`
+	SnapshotId string `json:"snapshotId,omitempty"`
+	ImageName  string `json:"imageName"`
+}
+
+type ListImageArgs struct {
+	Marker    string
+	MaxKeys   int
+	ImageType string
+}
+
+type OsModel struct {
+	OsVersion  string `json:"osVersion"`
+	OsType     string `json:"osType"`
+	InstanceId string `json:"instanceId"`
+	OsArch     string `json:"osArch"`
+	OsName     string `json:"osName"`
+}
+
+type GetImageOsArgs struct {
+	InstanceIds []string `json:"instanceIds"`
+}
