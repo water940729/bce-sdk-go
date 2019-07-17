@@ -26,7 +26,7 @@ func main() {
 
 	createArgs := &api.CreateSecurityGroupArgs{
 		Name: "sdk-create",
-		Rules: &[]api.SecurityGroupRuleModel{
+		Rules: []api.SecurityGroupRuleModel{
 			{
 				Remark:        "备注",
 				Protocol:      "tcp",

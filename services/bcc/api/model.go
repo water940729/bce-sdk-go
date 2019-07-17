@@ -353,7 +353,7 @@ type SecurityGroupModel struct {
 type CreateSecurityGroupArgs struct {
 	Name  string                    `json:"name"`
 	Desc  string                    `json:"desc,omitempty"`
-	Rules *[]SecurityGroupRuleModel `json:"rules"`
+	Rules []SecurityGroupRuleModel `json:"rules"`
 }
 
 type ListSecurityGroupArgs struct {
