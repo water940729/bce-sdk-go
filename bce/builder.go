@@ -9,9 +9,10 @@ import (
 // Some of fields are required and the others are optional.
 // The builder pattern can simplify the execution of requests.
 type RequestBuilder struct {
+	client Client
+
 	url         string            // required
 	method      string            // required
-	client      Client            // required
 	queryParams map[string]string // optional
 	headers     map[string]string // optional
 	body        interface{}       // optional
@@ -53,7 +54,13 @@ func (b *RequestBuilder) WithQueryParamFilter(key, value string) *RequestBuilder
 }
 
 func (b *RequestBuilder) WithQueryParams(params map[string]string) *RequestBuilder {
-	b.queryParams = params
+	if b.queryParams == nil {
+		b.queryParams = params
+	} else {
+		for key, value := range params {
+			b.queryParams[key] = value
+		}
+	}
 	return b
 }
 
@@ -66,7 +73,13 @@ func (b *RequestBuilder) WithHeader(key, value string) *RequestBuilder {
 }
 
 func (b *RequestBuilder) WithHeaders(headers map[string]string) *RequestBuilder {
-	b.headers = headers
+	if b.headers == nil {
+		b.headers = headers
+	} else {
+		for key, value := range headers {
+			b.headers[key] = value
+		}
+	}
 	return b
 }
 

@@ -351,8 +351,8 @@ type SecurityGroupModel struct {
 }
 
 type CreateSecurityGroupArgs struct {
-	Name  string                    `json:"name"`
-	Desc  string                    `json:"desc,omitempty"`
+	Name  string                   `json:"name"`
+	Desc  string                   `json:"desc,omitempty"`
 	Rules []SecurityGroupRuleModel `json:"rules"`
 }
 
