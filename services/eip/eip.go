@@ -91,20 +91,16 @@ func (c *Client) ListEip(args *ListEipArgs) (*ListEipResult, error) {
 		args.MaxKeys = 1000
 	}
 
-	queryMap := map[string]string{
-		"eip":          args.Eip,
-		"instanceType": args.InstanceType,
-		"instanceId":   args.InstanceId,
-		"marker":       args.Marker,
-		"maxKeys":      strconv.Itoa(args.MaxKeys),
-		"status":       args.Status,
-	}
-
 	result := &ListEipResult{}
 	err := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getEipUri()).
-		WithQueryParams(queryMap).
+		WithQueryParamFilter("eip", args.Eip).
+		WithQueryParamFilter("instanceType", args.InstanceType).
+		WithQueryParamFilter("instanceId", args.InstanceId).
+		WithQueryParamFilter("marker", args.Marker).
+		WithQueryParamFilter("maxKeys", strconv.Itoa(args.MaxKeys)).
+		WithQueryParamFilter("status", args.Status).
 		WithResult(result).
 		Do()
 
