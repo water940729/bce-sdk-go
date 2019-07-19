@@ -9,12 +9,16 @@ import (
 )
 
 func (c *Client) CreateVPC(args *CreateVPCArgs) (*CreateVPCResult, error) {
-	result := &CreateVPCResult{}
+	if args == nil {
+		return nil, fmt.Errorf("The createVPCArgs cannot be nil.")
+	}
 
+	result := &CreateVPCResult{}
 	err := bce.NewRequestBuilder(c).
 		WithURL(getURLForVPC()).
 		WithMethod(http.POST).
 		WithBody(args).
+		WithQueryParamFilter("clientToken", args.ClientToken).
 		WithResult(result).
 		Do()
 
@@ -60,17 +64,23 @@ func (c *Client) GetVPCDetail(vpcId string) (*GetVPCDetailResult, error) {
 }
 
 func (c *Client) UpdateVPC(vpcId string, updateVPCArgs *UpdateVPCArgs) error {
+	if updateVPCArgs == nil {
+		return fmt.Errorf("The updateVPCArgs cannot be nil.")
+	}
+
 	return bce.NewRequestBuilder(c).
 		WithURL(getURLForVPCId(vpcId)).
 		WithMethod(http.PUT).
 		WithQueryParam("modifyAttribute", "").
 		WithBody(updateVPCArgs).
+		WithQueryParamFilter("clientToken", updateVPCArgs.ClientToken).
 		Do()
 }
 
-func (c *Client) DeleteVPC(vpcId string) error {
+func (c *Client) DeleteVPC(vpcId, clientToken string) error {
 	return bce.NewRequestBuilder(c).
 		WithURL(getURLForVPCId(vpcId)).
 		WithMethod(http.DELETE).
+		WithQueryParamFilter("clientToken", clientToken).
 		Do()
 }
