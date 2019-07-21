@@ -11,6 +11,7 @@ const (
 )
 
 type CreateVPCArgs struct {
+	ClientToken string `json:"-"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	Cidr        string `json:"cidr"`
@@ -71,12 +72,13 @@ type Subnet struct {
 }
 
 type UpdateVPCArgs struct {
+	ClientToken string `json:"-"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
 type CreateSubnetArgs struct {
-	ClientToken string
+	ClientToken string `json:"-"`
 	Name        string `json:"name"`
 	ZoneName    string `json:"zoneName"`
 	Cidr        string `json:"cidr"`
@@ -110,7 +112,7 @@ type GetSubnetDetailResult struct {
 }
 
 type UpdateSubnetArgs struct {
-	ClientToken string
+	ClientToken string `json:"-"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 }
@@ -133,7 +135,6 @@ type GetRouteTableResult struct {
 
 type CreateRouteRuleArgs struct {
 	ClientToken        string
-	RouteRuleId        string `json:"routeRuleId"`
 	RouteTableId       string `json:"routeTableId"`
 	SourceAddress      string `json:"sourceAddress"`
 	DestinationAddress string `json:"destinationAddress"`

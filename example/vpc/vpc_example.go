@@ -117,7 +117,7 @@ func updateVPC(client *vpc.Client, vpcId string) error {
 func deleteVPC(client *vpc.Client, vpcId string) error {
 	log.Info("delete vpc...")
 
-	if err := client.DeleteVPC(vpcId); err != nil {
+	if err := client.DeleteVPC(vpcId, ""); err != nil {
 		log.Errorf("delete vpc %s error: %v", vpcId, err)
 		return err
 	}

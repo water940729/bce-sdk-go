@@ -18,6 +18,7 @@ func (c *Client) CreateSubnet(args *CreateSubnetArgs) (*CreateSubnetResult, erro
 		WithURL(getURLForSubnet()).
 		WithMethod(http.POST).
 		WithBody(args).
+		WithQueryParamFilter("clientToken", args.ClientToken).
 		WithResult(result).
 		Do()
 
