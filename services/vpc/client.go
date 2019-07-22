@@ -7,11 +7,13 @@ import (
 const (
 	URI_PREFIX = bce.URI_PREFIX + "v1"
 
-	REQUEST_VPC_URL    = "/vpc"
-	REQUEST_SUBNET_URL = "/subnet"
-	REQUEST_ROUTE_URL  = "/route"
-	REQUEST_RULE_URL   = "/rule"
-	REQUEST_ACL_URL    = "/acl"
+	REQUEST_VPC_URL      = "/vpc"
+	REQUEST_SUBNET_URL   = "/subnet"
+	REQUEST_ROUTE_URL    = "/route"
+	REQUEST_RULE_URL     = "/rule"
+	REQUEST_ACL_URL      = "/acl"
+	REQUEST_NAT_URL      = "/nat"
+	REQUEST_PEERCONN_URL = "/peerconn"
 )
 
 // Client of VPC service is a kind of BceClient, so derived from BceClient
@@ -65,4 +67,20 @@ func getURLForAclRule() string {
 
 func getURLForAclRuleId(aclRuleId string) string {
 	return URI_PREFIX + REQUEST_ACL_URL + REQUEST_RULE_URL + "/" + aclRuleId
+}
+
+func getURLForNat() string {
+	return URI_PREFIX + REQUEST_NAT_URL
+}
+
+func getURLForNatId(natId string) string {
+	return getURLForNat() + "/" + natId
+}
+
+func getURLForPeerConn() string {
+	return URI_PREFIX + REQUEST_PEERCONN_URL
+}
+
+func getURLForPeerConnId(peerConnId string) string {
+	return getURLForPeerConn() + "/" + peerConnId
 }

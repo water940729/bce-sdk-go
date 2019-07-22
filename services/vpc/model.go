@@ -1,25 +1,43 @@
 package vpc
 
+type (
+	SubnetType           string
+	NexthopType          string
+	AclRuleProtocolType  string
+	AclRuleDirectionType string
+	AclRuleActionType    string
+	AclRulePortType      string
+	NatGatewaySpecType   string
+	PaymentTimingType    string
+)
+
 const (
-	SUBNET_TYPE_BCC    = "BCC"
-	SUBNET_TYPE_BCCNAT = "BCC_NAT"
-	SUBNET_TYPE_BBC    = "BBC"
+	SUBNET_TYPE_BCC    SubnetType = "BCC"
+	SUBNET_TYPE_BCCNAT SubnetType = "BCC_NAT"
+	SUBNET_TYPE_BBC    SubnetType = "BBC"
 
-	NEXTHOP_TYPE_CUSTOM = "custom"
-	NEXTHOP_TYPE_VPN    = "vpn"
-	NEXTHOP_TYPE_NAT    = "nat"
+	NEXTHOP_TYPE_CUSTOM NexthopType = "custom"
+	NEXTHOP_TYPE_VPN    NexthopType = "vpn"
+	NEXTHOP_TYPE_NAT    NexthopType = "nat"
 
-	ACL_RULE_PROTOCOL_TCP  = "tcp"
-	ACL_RULE_PROTOCOL_UDP  = "udp"
-	ACL_RULE_PROTOCOL_ICMP = "icmp"
+	ACL_RULE_PROTOCOL_TCP  AclRuleProtocolType = "tcp"
+	ACL_RULE_PROTOCOL_UDP  AclRuleProtocolType = "udp"
+	ACL_RULE_PROTOCOL_ICMP AclRuleProtocolType = "icmp"
 
-	ACL_RULE_DIRECTION_INGRESS = "ingress"
-	ACL_RULE_DIRECTION_EGRESS  = "egress"
+	ACL_RULE_DIRECTION_INGRESS AclRuleDirectionType = "ingress"
+	ACL_RULE_DIRECTION_EGRESS  AclRuleDirectionType = "egress"
 
-	ACL_RULE_ACTION_ALLOW = "allow"
-	ACL_RULE_ACTION_DENY  = "deny"
+	ACL_RULE_ACTION_ALLOW AclRuleActionType = "allow"
+	ACL_RULE_ACTION_DENY  AclRuleActionType = "deny"
 
-	ACL_RULE_PORT_ALL = "all"
+	ACL_RULE_PORT_ALL AclRulePortType = "all"
+
+	NAT_GATEWAY_SPEC_SMALL  NatGatewaySpecType = "small"
+	NAT_GATEWAY_SPEC_MEDIUM NatGatewaySpecType = "medium"
+	NAT_GATEWAY_SPEC_LARGE  NatGatewaySpecType = "large"
+
+	PAYMENT_TIMING_PREPAID  PaymentTimingType = "Prepaid"
+	PAYMENT_TIMING_POSTPAID PaymentTimingType = "Postpaid"
 )
 
 type CreateVPCArgs struct {
@@ -73,14 +91,14 @@ type ShowVPCModel struct {
 }
 
 type Subnet struct {
-	SubnetId    string `json:"subnetId"`
-	Name        string `json:"name"`
-	ZoneName    string `json:"zoneName"`
-	Cidr        string `json:"cidr"`
-	VPCId       string `json:"vpcId"`
-	SubnetType  string `json:"subnetType"`
-	Description string `json:"description"`
-	AvailableIp int    `json:"availableIp"`
+	SubnetId    string     `json:"subnetId"`
+	Name        string     `json:"name"`
+	ZoneName    string     `json:"zoneName"`
+	Cidr        string     `json:"cidr"`
+	VPCId       string     `json:"vpcId"`
+	SubnetType  SubnetType `json:"subnetType"`
+	Description string     `json:"description"`
+	AvailableIp int        `json:"availableIp"`
 }
 
 type UpdateVPCArgs struct {
@@ -90,13 +108,13 @@ type UpdateVPCArgs struct {
 }
 
 type CreateSubnetArgs struct {
-	ClientToken string `json:"-"`
-	Name        string `json:"name"`
-	ZoneName    string `json:"zoneName"`
-	Cidr        string `json:"cidr"`
-	VpcId       string `json:"vpcId"`
-	SubnetType  string `json:"subnetType,omitempty"`
-	Description string `json:"description,omitempty"`
+	ClientToken string     `json:"-"`
+	Name        string     `json:"name"`
+	ZoneName    string     `json:"zoneName"`
+	Cidr        string     `json:"cidr"`
+	VpcId       string     `json:"vpcId"`
+	SubnetType  SubnetType `json:"subnetType,omitempty"`
+	Description string     `json:"description,omitempty"`
 }
 
 type CreateSubnetResult struct {
@@ -108,7 +126,7 @@ type ListSubnetArgs struct {
 	MaxKeys    int
 	VpcId      string
 	ZoneName   string
-	SubnetType string
+	SubnetType SubnetType
 }
 
 type ListSubnetResult struct {
@@ -130,13 +148,13 @@ type UpdateSubnetArgs struct {
 }
 
 type RouteRule struct {
-	RouteRuleId        string `json:"routeRuleId"`
-	RouteTableId       string `json:"routeTableId"`
-	SourceAddress      string `json:"sourceAddress"`
-	DestinationAddress string `json:"destinationAddress"`
-	NexthopId          string `json:"nexthopId"`
-	NexthopType        string `json:"nexthopType"`
-	Description        string `json:"description"`
+	RouteRuleId        string      `json:"routeRuleId"`
+	RouteTableId       string      `json:"routeTableId"`
+	SourceAddress      string      `json:"sourceAddress"`
+	DestinationAddress string      `json:"destinationAddress"`
+	NexthopId          string      `json:"nexthopId"`
+	NexthopType        NexthopType `json:"nexthopType"`
+	Description        string      `json:"description"`
 }
 
 type GetRouteTableResult struct {
@@ -147,12 +165,12 @@ type GetRouteTableResult struct {
 
 type CreateRouteRuleArgs struct {
 	ClientToken        string
-	RouteTableId       string `json:"routeTableId"`
-	SourceAddress      string `json:"sourceAddress"`
-	DestinationAddress string `json:"destinationAddress"`
-	NexthopId          string `json:"nexthopId,omitempty"`
-	NexthopType        string `json:"nexthopType"`
-	Description        string `json:"description"`
+	RouteTableId       string      `json:"routeTableId"`
+	SourceAddress      string      `json:"sourceAddress"`
+	DestinationAddress string      `json:"destinationAddress"`
+	NexthopId          string      `json:"nexthopId,omitempty"`
+	NexthopType        NexthopType `json:"nexthopType"`
+	Description        string      `json:"description"`
 }
 
 type CreateRouteRuleResult struct {
@@ -174,17 +192,17 @@ type AclEntry struct {
 }
 
 type AclRule struct {
-	Id                   string `json:"id"`
-	SubnetId             string `json:"subnetId"`
-	Description          string `json:"description"`
-	Protocol             string `json:"protocol"`
-	SourceIpAddress      string `json:"sourceIpAddress"`
-	DestinationIpAddress string `json:"destinationIpAddress"`
-	SourcePort           string `json:"sourcePort"`
-	DestinationPort      string `json:"destinationPort"`
-	Position             int    `json:"position"`
-	Direction            string `json:"direction"`
-	Action               string `json:"action"`
+	Id                   string               `json:"id"`
+	SubnetId             string               `json:"subnetId"`
+	Description          string               `json:"description"`
+	Protocol             AclRuleProtocolType  `json:"protocol"`
+	SourceIpAddress      string               `json:"sourceIpAddress"`
+	DestinationIpAddress string               `json:"destinationIpAddress"`
+	SourcePort           string               `json:"sourcePort"`
+	DestinationPort      string               `json:"destinationPort"`
+	Position             int                  `json:"position"`
+	Direction            AclRuleDirectionType `json:"direction"`
+	Action               AclRuleActionType    `json:"action"`
 }
 
 type CreateAclRuleArgs struct {
@@ -192,16 +210,16 @@ type CreateAclRuleArgs struct {
 }
 
 type AclRuleRequest struct {
-	SubnetId             string `json:"subnetId"`
-	Description          string `json:"description"`
-	Protocol             string `json:"protocol"`
-	SourceIpAddress      string `json:"sourceIpAddress"`
-	DestinationIpAddress string `json:"destinationIpAddress"`
-	SourcePort           string `json:"sourcePort"`
-	DestinationPort      string `json:"destinationPort"`
-	Position             int    `json:"position"`
-	Direction            string `json:"direction"`
-	Action               string `json:"action"`
+	SubnetId             string               `json:"subnetId"`
+	Description          string               `json:"description"`
+	Protocol             AclRuleProtocolType  `json:"protocol"`
+	SourceIpAddress      string               `json:"sourceIpAddress"`
+	DestinationIpAddress string               `json:"destinationIpAddress"`
+	SourcePort           string               `json:"sourcePort"`
+	DestinationPort      string               `json:"destinationPort"`
+	Position             int                  `json:"position"`
+	Direction            AclRuleDirectionType `json:"direction"`
+	Action               AclRuleActionType    `json:"action"`
 }
 
 type ListAclRulesArgs struct {
@@ -228,4 +246,76 @@ type UpdateAclRuleArgs struct {
 	DestinationPort      string `json:"destinationPort"`
 	Position             int    `json:"position"`
 	Action               string `json:"action"`
+}
+
+type CreateNatGatewayArgs struct {
+	ClientToken string   `json:"-"`
+	Name        string   `json:"name"`
+	VpcId       string   `json:"vpcId"`
+	Spec        NatGatewaySpecType   `json:"spec"`
+	Eips        []string `json:"eips"`
+	Billing     *Billing `json:"billing"`
+}
+
+type Reservation struct {
+	ReservationLength   int    `json:"reservationLength"`
+	ReservationTimeUnit string `json:"reservationTimeUnit"`
+}
+
+type Billing struct {
+	PaymentTiming PaymentTimingType `json:"paymentTiming,omitempty"`
+	Reservation   *Reservation      `json:"reservation,omitempty"`
+}
+
+type CreateNatGatewayResult struct {
+	NatId string `json:"natId"`
+}
+
+type ListNatGatewayArgs struct {
+	VpcId   string
+	NatId   string
+	Name    string
+	Ip      string
+	Marker  string
+	MaxKeys int
+}
+
+type ListNatGatewayResult struct {
+	Nats        []NAT  `json:"nats"`
+	Marker      string `json:"marker"`
+	IsTruncated bool   `json:"isTruncated"`
+	NextMarker  string `json:"nextMarker"`
+	MaxKeys     int    `json:"maxKeys"`
+}
+
+// NAT is the result for getNatGatewayDetail api.
+type NAT struct {
+	Id            string   `json:"id"`
+	Name          string   `json:"name"`
+	VpcId         string   `json:"vpcId"`
+	Spec          string   `json:"spec"`
+	Status        string   `json:"status"`
+	Eips          []string `json:"eips"`
+	PaymentTiming string   `json:"paymentTiming"`
+	ExpiredTime   string   `json:"expiredTime"`
+}
+
+type UpdateNatGatewayArgs struct {
+	ClientToken string `json:"-"`
+	Name        string `json:"name"`
+}
+
+type BindEipsArgs struct {
+	ClientToken string   `json:"-"`
+	Eips        []string `json:"eips"`
+}
+
+type UnBindEipsArgs struct {
+	ClientToken string   `json:"-"`
+	Eips        []string `json:"eips"`
+}
+
+type RenewNatGatewayArgs struct {
+	ClientToken string   `json:"-"`
+	Billing     *Billing `json:"billing"`
 }
