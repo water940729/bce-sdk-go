@@ -8,6 +8,18 @@ const (
 	NEXTHOP_TYPE_CUSTOM = "custom"
 	NEXTHOP_TYPE_VPN    = "vpn"
 	NEXTHOP_TYPE_NAT    = "nat"
+
+	ACL_RULE_PROTOCOL_TCP  = "tcp"
+	ACL_RULE_PROTOCOL_UDP  = "udp"
+	ACL_RULE_PROTOCOL_ICMP = "icmp"
+
+	ACL_RULE_DIRECTION_INGRESS = "ingress"
+	ACL_RULE_DIRECTION_EGRESS  = "egress"
+
+	ACL_RULE_ACTION_ALLOW = "allow"
+	ACL_RULE_ACTION_DENY  = "deny"
+
+	ACL_RULE_PORT_ALL = "all"
 )
 
 type CreateVPCArgs struct {
@@ -145,4 +157,75 @@ type CreateRouteRuleArgs struct {
 
 type CreateRouteRuleResult struct {
 	RouteRuleId string `json:"routeRuleId"`
+}
+
+type ListAclEntrysResult struct {
+	VpcId     string     `json:"vpcId"`
+	VpcName   string     `json:"vpcName"`
+	VpcCidr   string     `json:"vpcCidr"`
+	AclEntrys []AclEntry `json:"aclEntrys"`
+}
+
+type AclEntry struct {
+	SubnetId   string    `json:"subnetId"`
+	SubnetName string    `json:"subnetName"`
+	SubnetCidr string    `json:"subnetCidr"`
+	AclRules   []AclRule `json:"aclRules"`
+}
+
+type AclRule struct {
+	Id                   string `json:"id"`
+	SubnetId             string `json:"subnetId"`
+	Description          string `json:"description"`
+	Protocol             string `json:"protocol"`
+	SourceIpAddress      string `json:"sourceIpAddress"`
+	DestinationIpAddress string `json:"destinationIpAddress"`
+	SourcePort           string `json:"sourcePort"`
+	DestinationPort      string `json:"destinationPort"`
+	Position             int    `json:"position"`
+	Direction            string `json:"direction"`
+	Action               string `json:"action"`
+}
+
+type CreateAclRuleArgs struct {
+	AclRules []AclRuleRequest `json:"aclRules"`
+}
+
+type AclRuleRequest struct {
+	SubnetId             string `json:"subnetId"`
+	Description          string `json:"description"`
+	Protocol             string `json:"protocol"`
+	SourceIpAddress      string `json:"sourceIpAddress"`
+	DestinationIpAddress string `json:"destinationIpAddress"`
+	SourcePort           string `json:"sourcePort"`
+	DestinationPort      string `json:"destinationPort"`
+	Position             int    `json:"position"`
+	Direction            string `json:"direction"`
+	Action               string `json:"action"`
+}
+
+type ListAclRulesArgs struct {
+	Marker   string `json:"marker"`
+	MaxKeys  int    `json:"maxKeys"`
+	SubnetId string `json:"subnetId"`
+}
+
+type ListAclRulesResult struct {
+	Marker      string    `json:"marker"`
+	IsTruncated bool      `json:"isTruncated"`
+	NextMarker  string    `json:"nextMarker"`
+	MaxKeys     int       `json:"maxKeys"`
+	AclRules    []AclRule `json:"aclRules"`
+}
+
+type UpdateAclRuleArgs struct {
+	ClientToken          string `json:"-"`
+	Description          string `json:"description"`
+	Protocol             string `json:"protocol"`
+	SourceIpAddress      string `json:"sourceIpAddress"`
+	DestinationIpAddress string `json:"destinationIpAddress"`
+	SourcePort           string `json:"sourcePort"`
+	DestinationPort      string `json:"destinationPort"`
+	Position             int    `json:"position"`
+	Action               string `json:"action"`
 }
