@@ -1,14 +1,15 @@
 package vpc
 
 type (
-	SubnetType           string
-	NexthopType          string
-	AclRuleProtocolType  string
-	AclRuleDirectionType string
-	AclRuleActionType    string
-	AclRulePortType      string
-	NatGatewaySpecType   string
-	PaymentTimingType    string
+	SubnetType               string
+	NexthopType              string
+	AclRuleProtocolType      string
+	AclRuleDirectionType     string
+	AclRuleActionType        string
+	AclRulePortType          string
+	NatGatewaySpecType       string
+	PaymentTimingType        string
+	PeerConnRoleType         string
 )
 
 const (
@@ -38,6 +39,9 @@ const (
 
 	PAYMENT_TIMING_PREPAID  PaymentTimingType = "Prepaid"
 	PAYMENT_TIMING_POSTPAID PaymentTimingType = "Postpaid"
+
+	PEERCONN_ROLE_INITIATOR PeerConnRoleType = "initiator"
+	PEERCONN_ROLE_ACCEPTOR  PeerConnRoleType = "acceptor"
 )
 
 type CreateVPCArgs struct {
@@ -249,12 +253,12 @@ type UpdateAclRuleArgs struct {
 }
 
 type CreateNatGatewayArgs struct {
-	ClientToken string   `json:"-"`
-	Name        string   `json:"name"`
-	VpcId       string   `json:"vpcId"`
-	Spec        NatGatewaySpecType   `json:"spec"`
-	Eips        []string `json:"eips"`
-	Billing     *Billing `json:"billing"`
+	ClientToken string             `json:"-"`
+	Name        string             `json:"name"`
+	VpcId       string             `json:"vpcId"`
+	Spec        NatGatewaySpecType `json:"spec"`
+	Eips        []string           `json:"eips"`
+	Billing     *Billing           `json:"billing"`
 }
 
 type Reservation struct {
@@ -318,4 +322,75 @@ type UnBindEipsArgs struct {
 type RenewNatGatewayArgs struct {
 	ClientToken string   `json:"-"`
 	Billing     *Billing `json:"billing"`
+}
+
+type CreatePeerConnArgs struct {
+	ClientToken     string   `json:"-"`
+	BandwidthInMbps int      `json:"bandwidthInMbps"`
+	Description     string   `json:"description"`
+	LocalIfName     string   `json:"localIfName"`
+	LocalVpcId      string   `json:"localVpcId"`
+	PeerAccountId   string   `json:"peerAccountId"`
+	PeerVpcId       string   `json:"peerVpcId"`
+	PeerRegion      string   `json:"peerRegion"`
+	PeerIfName      string   `json:"peerIfName"`
+	Billing         *Billing `json:"billing"`
+}
+
+type CreatePeerConnResult struct {
+	PeerConnId string `json:"peerConnId"`
+}
+
+type ListPeerConnsArgs struct {
+	VpcId   string
+	Marker  string
+	MaxKeys int
+}
+
+type ListPeerConnsResult struct {
+	PeerConns   []PeerConn `json:"peerConns"`
+	Marker      string     `json:"marker"`
+	IsTruncated bool       `json:"isTruncated"`
+	NextMarker  string     `json:"nextMarker"`
+	MaxKeys     int        `json:"maxKeys"`
+}
+
+type PeerConn struct {
+	PeerConnId    string           `json:"peerConnId"`
+	Role          PeerConnRoleType `json:"role"`
+	Status        string           `json:"status"`
+	BandwithInMbp string           `json:"bandwithInMbp"`
+	Description   string           `json:"description"`
+	LocalIfId     string           `json:"localIfId"`
+	LocalIfName   string           `json:"localIfName"`
+	LocalVpcId    string           `json:"localVpcId"`
+	LocalRegion   string           `json:"localRegion"`
+	PeerVpcId     string           `json:"peerVpcId"`
+	PeerRegion    string           `json:"peerRegion"`
+	PeerAccountId string           `json:"peerAccountId"`
+	PaymentTiming string           `json:"paymentTiming"`
+	DnsStatus     string           `json:"dnsStatus"`
+	CreatedTime   string           `json:"createdTime"`
+	ExpiredTime   string           `json:"expiredTime"`
+}
+
+type UpdatePeerConnArgs struct {
+	LocalIfId   string `json:"localIfId"`
+	Description string `json:"description"`
+	LocalIfName string `json:"localIfName"`
+}
+
+type ResizePeerConnArgs struct {
+	NewBandwidthInMbps int    `json:"newBandwidthInMbps"`
+	ClientToken        string `json:"-"`
+}
+
+type RenewPeerConnArgs struct {
+	Billing     *Billing `json:"billing"`
+	ClientToken string   `json:"-"`
+}
+
+type PeerConnSyncDNSArgs struct {
+	Role        PeerConnRoleType `json:"role"`
+	ClientToken string           `json:"-"`
 }
