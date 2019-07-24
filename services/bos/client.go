@@ -1686,7 +1686,7 @@ func (c *Client) RestoreObject(bucket string, object string, restoreDays int, re
 		return errors.New("invalid restore tier")
 	}
 
-	if restoreDays < 0 {
+	if restoreDays <= 0 {
 		return errors.New("invalid restore days")
 	}
 

@@ -470,6 +470,6 @@ type ListMultipartUploadsResult struct {
 }
 
 type ArchiveRestoreArgs struct {
-	RestoreTier string `json:"restore_tier"`
-	RestoreDays int    `json:"restore_days"`
+	RestoreTier string
+	RestoreDays int
 }
