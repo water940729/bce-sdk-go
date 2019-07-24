@@ -1,15 +1,18 @@
 package vpc
 
 type (
-	SubnetType               string
-	NexthopType              string
-	AclRuleProtocolType      string
-	AclRuleDirectionType     string
-	AclRuleActionType        string
-	AclRulePortType          string
-	NatGatewaySpecType       string
-	PaymentTimingType        string
-	PeerConnRoleType         string
+	SubnetType           string
+	NexthopType          string
+	AclRuleProtocolType  string
+	AclRuleDirectionType string
+	AclRuleActionType    string
+	AclRulePortType      string
+	NatGatewaySpecType   string
+	PaymentTimingType    string
+	PeerConnRoleType     string
+	NatStatusType        string
+	PeerConnStatusType   string
+	DnsStatusType        string
 )
 
 const (
@@ -42,6 +45,35 @@ const (
 
 	PEERCONN_ROLE_INITIATOR PeerConnRoleType = "initiator"
 	PEERCONN_ROLE_ACCEPTOR  PeerConnRoleType = "acceptor"
+
+	NAT_STATUS_BUILDING     NatStatusType = "building"
+	NAT_STATUS_UNCONFIGURED NatStatusType = "unconfigured"
+	NAT_STATUS_CONFIGURING  NatStatusType = "configuring"
+	NAT_STATUS_ACTIVE       NatStatusType = "active"
+	NAT_STATUS_STOPPING     NatStatusType = "stopping"
+	NAT_STATUS_DOWN         NatStatusType = "down"
+	NAT_STATUS_STARTING     NatStatusType = "starting"
+	NAT_STATUS_DELETING     NatStatusType = "deleting"
+	NAT_STATUS_DELETED      NatStatusType = "deleted"
+
+	PEERCONN_STATUS_CREATING       PeerConnStatusType = "creating"
+	PEERCONN_STATUS_CONSULTING     PeerConnStatusType = "consulting"
+	PEERCONN_STATUS_CONSULT_FAILED PeerConnStatusType = "consult_failed"
+	PEERCONN_STATUS_ACTIVE         PeerConnStatusType = "active"
+	PEERCONN_STATUS_DOWN           PeerConnStatusType = "down"
+	PEERCONN_STATUS_STARTING       PeerConnStatusType = "starting"
+	PEERCONN_STATUS_STOPPING       PeerConnStatusType = "stopping"
+	PEERCONN_STATUS_DELETING       PeerConnStatusType = "deleting"
+	PEERCONN_STATUS_DELETED        PeerConnStatusType = "deleted"
+	PEERCONN_STATUS_EXPIRED        PeerConnStatusType = "expired"
+	PEERCONN_STATUS_ERROR          PeerConnStatusType = "error"
+	PEERCONN_STATUS_UPDATING       PeerConnStatusType = "updating"
+
+	DNS_STATUS_CLOSE   DnsStatusType = "close"
+	DNS_STATUS_WAIT    DnsStatusType = "wait"
+	DNS_STATUS_SYNCING DnsStatusType = "syncing"
+	DNS_STATUS_OPEN    DnsStatusType = "open"
+	DNS_STATUS_CLOSING DnsStatusType = "closing"
 )
 
 type CreateVPCArgs struct {
@@ -242,14 +274,14 @@ type ListAclRulesResult struct {
 
 type UpdateAclRuleArgs struct {
 	ClientToken          string `json:"-"`
-	Description          string `json:"description"`
-	Protocol             string `json:"protocol"`
-	SourceIpAddress      string `json:"sourceIpAddress"`
-	DestinationIpAddress string `json:"destinationIpAddress"`
-	SourcePort           string `json:"sourcePort"`
-	DestinationPort      string `json:"destinationPort"`
-	Position             int    `json:"position"`
-	Action               string `json:"action"`
+	Description          string `json:"description,omitempty"`
+	Protocol             string `json:"protocol,omitempty"`
+	SourceIpAddress      string `json:"sourceIpAddress,omitempty"`
+	DestinationIpAddress string `json:"destinationIpAddress,omitempty"`
+	SourcePort           string `json:"sourcePort,omitempty"`
+	DestinationPort      string `json:"destinationPort,omitempty"`
+	Position             int    `json:"position,omitempty"`
+	Action               string `json:"action,omitempty"`
 }
 
 type CreateNatGatewayArgs struct {
@@ -294,14 +326,14 @@ type ListNatGatewayResult struct {
 
 // NAT is the result for getNatGatewayDetail api.
 type NAT struct {
-	Id            string   `json:"id"`
-	Name          string   `json:"name"`
-	VpcId         string   `json:"vpcId"`
-	Spec          string   `json:"spec"`
-	Status        string   `json:"status"`
-	Eips          []string `json:"eips"`
-	PaymentTiming string   `json:"paymentTiming"`
-	ExpiredTime   string   `json:"expiredTime"`
+	Id            string        `json:"id"`
+	Name          string        `json:"name"`
+	VpcId         string        `json:"vpcId"`
+	Spec          string        `json:"spec"`
+	Status        NatStatusType `json:"status"`
+	Eips          []string      `json:"eips"`
+	PaymentTiming string        `json:"paymentTiming"`
+	ExpiredTime   string        `json:"expiredTime"`
 }
 
 type UpdateNatGatewayArgs struct {
@@ -356,22 +388,22 @@ type ListPeerConnsResult struct {
 }
 
 type PeerConn struct {
-	PeerConnId    string           `json:"peerConnId"`
-	Role          PeerConnRoleType `json:"role"`
-	Status        string           `json:"status"`
-	BandwithInMbp string           `json:"bandwithInMbp"`
-	Description   string           `json:"description"`
-	LocalIfId     string           `json:"localIfId"`
-	LocalIfName   string           `json:"localIfName"`
-	LocalVpcId    string           `json:"localVpcId"`
-	LocalRegion   string           `json:"localRegion"`
-	PeerVpcId     string           `json:"peerVpcId"`
-	PeerRegion    string           `json:"peerRegion"`
-	PeerAccountId string           `json:"peerAccountId"`
-	PaymentTiming string           `json:"paymentTiming"`
-	DnsStatus     string           `json:"dnsStatus"`
-	CreatedTime   string           `json:"createdTime"`
-	ExpiredTime   string           `json:"expiredTime"`
+	PeerConnId    string             `json:"peerConnId"`
+	Role          PeerConnRoleType   `json:"role"`
+	Status        PeerConnStatusType `json:"status"`
+	BandwithInMbp string             `json:"bandwithInMbp"`
+	Description   string             `json:"description"`
+	LocalIfId     string             `json:"localIfId"`
+	LocalIfName   string             `json:"localIfName"`
+	LocalVpcId    string             `json:"localVpcId"`
+	LocalRegion   string             `json:"localRegion"`
+	PeerVpcId     string             `json:"peerVpcId"`
+	PeerRegion    string             `json:"peerRegion"`
+	PeerAccountId string             `json:"peerAccountId"`
+	PaymentTiming string             `json:"paymentTiming"`
+	DnsStatus     DnsStatusType      `json:"dnsStatus"`
+	CreatedTime   string             `json:"createdTime"`
+	ExpiredTime   string             `json:"expiredTime"`
 }
 
 type UpdatePeerConnArgs struct {
