@@ -468,3 +468,8 @@ type ListMultipartUploadsResult struct {
 	NextKeyMarker  string                     `json:"nextKeyMarker"`
 	Uploads        []ListMultipartUploadsType `json:"uploads"`
 }
+
+type ArchiveRestoreArgs struct {
+	RestoreTier string `json:"restore_tier"`
+	RestoreDays int    `json:"restore_days"`
+}
