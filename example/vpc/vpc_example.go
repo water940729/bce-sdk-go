@@ -16,7 +16,6 @@ const (
 func main() {
 	log.SetLogLevel(log.INFO)
 	log.SetLogHandler(log.STDOUT)
-	log.SetLogDir(LogDir)
 
 	client, err := vpc.NewClient(AK, SK, EndPoint)
 	if err != nil {
