@@ -15,8 +15,7 @@ const (
 
 func main() {
 	log.SetLogLevel(log.DEBUG)
-	log.SetLogHandler(log.FILE)
-	log.SetLogDir(LogDir)
+	log.SetLogHandler(log.STDOUT)
 
 	client, err := bcc.NewClient(AK, SK, EndPoint)
 	if err != nil {
