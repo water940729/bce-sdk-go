@@ -88,7 +88,7 @@ type AppServerGroup struct {
 
 type DescribeAppServerGroupResult struct {
 	DescribeResultMeta
-	ListenerList []AppServerGroup `json:"appServerGroupList"`
+	AppServerGroupList []AppServerGroup `json:"appServerGroupList"`
 }
 
 type DeleteAppServerGroupArgs struct {

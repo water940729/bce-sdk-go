@@ -26,8 +26,8 @@ func main() {
 	createArgs := &appblb.CreateLoadBalancerArgs{
 		ClientToken: getClientToken(),
 		Name:        "sdk-blb",
-		VpcId:       "vpc-9bb226wx0d1s",
-		SubnetId:    "sbn-ky8v3smkzbe5",
+		VpcId:       "",
+		SubnetId:    "",
 	}
 
 	createResult, err := client.CreateLoadBalancer(createArgs)
