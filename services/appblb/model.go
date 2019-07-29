@@ -109,6 +109,7 @@ type CreateAppServerGroupPortArgs struct {
 	HealthCheckUpRetry          int    `json:"healthCheckUpRetry,omitempty"`
 	HealthCheckNormalStatus     string `json:"healthCheckNormalStatus,omitempty"`
 	HealthCheckUrlPath          string `json:"healthCheckUrlPath,omitempty"`
+	UdpHealthCheckString        string `json:"udpHealthCheckString,omitempty"`
 }
 
 type CreateAppServerGroupPortResult struct {
@@ -130,6 +131,7 @@ type UpdateAppServerGroupPortArgs struct {
 	HealthCheckDownRetry        int    `json:"healthCheckDownRetry,omitempty"`
 	HealthCheckUpRetry          int    `json:"healthCheckUpRetry,omitempty"`
 	HealthCheckNormalStatus     string `json:"healthCheckNormalStatus,omitempty"`
+	UdpHealthCheckString        string `json:"udpHealthCheckString,omitempty"`
 }
 
 type DeleteAppServerGroupPortArgs struct {

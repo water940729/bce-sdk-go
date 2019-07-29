@@ -84,6 +84,10 @@ func (c *Client) CreateAppServerGroupPort(blbId string, args *CreateAppServerGro
 		return nil, fmt.Errorf("unset type")
 	}
 
+	if args.Type == "UDP" && len(args.UdpHealthCheckString) == 0 {
+		return nil, fmt.Errorf("unset udpHealthCheckString")
+	}
+
 	result := &CreateAppServerGroupPortResult{}
 	err := bce.NewRequestBuilder(c).
 		WithMethod(http.POST).
