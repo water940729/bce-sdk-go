@@ -270,7 +270,7 @@ type CreateAppHTTPListenerArgs struct {
 	KeepSessionTimeout    int    `json:"keepSessionTimeout,omitempty"`
 	KeepSessionCookieName string `json:"keepSessionCookieName,omitempty"`
 	XForwardedFor         bool   `json:"xForwardedFor,omitempty"`
-	ServerTimeout         bool   `json:"serverTimeout,omitempty"`
+	ServerTimeout         int    `json:"serverTimeout,omitempty"`
 	RedirectPort          uint16 `json:"redirectPort,omitempty"`
 }
 
@@ -283,7 +283,7 @@ type CreateAppHTTPSListenerArgs struct {
 	KeepSessionTimeout    int      `json:"keepSessionTimeout,omitempty"`
 	KeepSessionCookieName string   `json:"keepSessionCookieName,omitempty"`
 	XForwardedFor         bool     `json:"xForwardedFor,omitempty"`
-	ServerTimeout         bool     `json:"serverTimeout,omitempty"`
+	ServerTimeout         int      `json:"serverTimeout,omitempty"`
 	CertIds               []string `json:"certIds"`
 	Ie6Compatible         bool     `json:"ie6Compatible,omitempty"`
 	EncryptionType        string   `json:"encryptionType,omitempty"`
@@ -327,7 +327,7 @@ type UpdateAppHTTPListenerArgs struct {
 	KeepSessionTimeout    int    `json:"keepSessionTimeout,omitempty"`
 	KeepSessionCookieName string `json:"keepSessionCookieName,omitempty"`
 	XForwardedFor         bool   `json:"xForwardedFor,omitempty"`
-	ServerTimeout         bool   `json:"serverTimeout,omitempty"`
+	ServerTimeout         int    `json:"serverTimeout,omitempty"`
 	RedirectPort          uint16 `json:"redirectPort,omitempty"`
 }
 
@@ -340,7 +340,7 @@ type UpdateAppHTTPSListenerArgs struct {
 	KeepSessionTimeout    int      `json:"keepSessionTimeout,omitempty"`
 	KeepSessionCookieName string   `json:"keepSessionCookieName,omitempty"`
 	XForwardedFor         bool     `json:"xForwardedFor,omitempty"`
-	ServerTimeout         bool     `json:"serverTimeout,omitempty"`
+	ServerTimeout         int      `json:"serverTimeout,omitempty"`
 	CertIds               []string `json:"certIds"`
 	Ie6Compatible         bool     `json:"ie6Compatible,omitempty"`
 	EncryptionType        string   `json:"encryptionType,omitempty"`
