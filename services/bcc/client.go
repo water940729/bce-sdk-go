@@ -373,3 +373,35 @@ func (c *Client) GetSnapshotDetail(snapshotId string) (*api.GetSnapshotDetailRes
 func (c *Client) DeleteSnapshot(snapshotId string) error {
 	return api.DeleteSnapshot(c, snapshotId)
 }
+
+func (c *Client) CreateAutoSnapshotPolicy(args *api.CreateASPArgs) (*api.CreateASPResult, error) {
+	return api.CreateAutoSnapshotPolicy(c, args)
+}
+
+func (c *Client) AttachAutoSnapshotPolicy(aspId string, args *api.AttachASPArgs) error {
+	return api.AttachAutoSnapshotPolicy(c, aspId, args)
+}
+
+func (c *Client) DetachAutoSnapshotPolicy(aspId string, args *api.DetachASPArgs) error {
+	return api.DetachAutoSnapshotPolicy(c, aspId, args)
+}
+
+func (c *Client) DeleteAutoSnapshotPolicy(aspId string) error {
+	return api.DeleteAutoSnapshotPolicy(c, aspId)
+}
+
+func (c *Client) ListAutoSnapshotPolicy(args *api.ListASPArgs) (*api.ListASPResult, error) {
+	return api.ListAutoSnapshotPolicy(c, args)
+}
+
+func (c *Client) GetAutoSnapshotPolicy(aspId string) (*api.GetASPDetailResult, error) {
+	return api.GetAutoSnapshotPolicyDetail(c, aspId)
+}
+
+func (c *Client) ListInstanceType() (*api.ListInstanceTypeResult, error) {
+	return api.ListInstanceType(c)
+}
+
+func (c *Client) ListZone() (*api.ListZoneResult, error) {
+	return api.ListZone(c)
+}

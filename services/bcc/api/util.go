@@ -21,6 +21,9 @@ const (
 	REQUEST_IMAGE_OS_URI         = "/os"
 
 	REQUEST_SNAPSHOT_URI = "/snapshot"
+	REQUEST_ASP_URI = "/asp"
+	REQUEST_INSTANCE_TYPE_URI = "/instance/spec"
+	REQUEST_ZONE_URI = "/zone"
 )
 
 func getInstanceUri() string {
@@ -86,4 +89,20 @@ func getSnapshotUri() string {
 
 func getSnapshotUriWithId(id string) string {
 	return URI_PREFIX + REQUEST_SNAPSHOT_URI + "/" + id
+}
+
+func getASPUri() string {
+	return URI_PREFIX + REQUEST_ASP_URI
+}
+
+func getASPUriWithId(id string) string {
+	return URI_PREFIX + REQUEST_ASP_URI + "/" + id
+}
+
+func getInstanceTypeUri() string {
+	return URI_PREFIX + REQUEST_INSTANCE_TYPE_URI
+}
+
+func getZoneUri() string {
+	return URI_PREFIX + REQUEST_ZONE_URI
 }
