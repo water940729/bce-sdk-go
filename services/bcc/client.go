@@ -357,3 +357,19 @@ func (c *Client) GetImageSharedUser(imageId string) (*api.GetImageSharedUserResu
 func (c *Client) GetImageOS(args *api.GetImageOsArgs) (*api.GetImageOsResult, error) {
 	return api.GetImageOS(c, args)
 }
+
+func (c *Client) CreateSnapshot(args *api.CreateSnapshotArgs) (*api.CreateSnapshotResult, error) {
+	return api.CreateSnapshot(c, args)
+}
+
+func (c *Client) ListSnapshot(args *api.ListSnapshotArgs) (*api.ListSnapshotResult, error) {
+	return api.ListSnapshot(c, args)
+}
+
+func (c *Client) GetSnapshotDetail(snapshotId string) (*api.GetSnapshotDetailResult, error) {
+	return api.GetSnapshotDetail(c, snapshotId)
+}
+
+func (c *Client) DeleteSnapshot(snapshotId string) error {
+	return api.DeleteSnapshot(c, snapshotId)
+}

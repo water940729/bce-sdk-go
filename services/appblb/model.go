@@ -344,7 +344,7 @@ type UpdateAppHTTPSListenerArgs struct {
 	CertIds               []string `json:"certIds"`
 	Ie6Compatible         bool     `json:"ie6Compatible,omitempty"`
 	EncryptionType        string   `json:"encryptionType,omitempty"`
-	EncryptionProtocols   []string   `json:"encryptionProtocols,omitempty"`
+	EncryptionProtocols   []string `json:"encryptionProtocols,omitempty"`
 	DualAuth              bool     `json:"dualAuth,omitempty"`
 	ClientCertIds         []string `json:"clientCertIds,omitempty"`
 }
@@ -356,7 +356,7 @@ type UpdateAppSSLListenerArgs struct {
 	CertIds             []string `json:"certIds"`
 	Ie6Compatible       bool     `json:"ie6Compatible,omitempty"`
 	EncryptionType      string   `json:"encryptionType,omitempty"`
-	EncryptionProtocols []string   `json:"encryptionProtocols,omitempty"`
+	EncryptionProtocols []string `json:"encryptionProtocols,omitempty"`
 	DualAuth            bool     `json:"dualAuth,omitempty"`
 	ClientCertIds       []string `json:"clientCertIds,omitempty"`
 }

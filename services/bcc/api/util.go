@@ -19,6 +19,8 @@ const (
 	REQUEST_IMAGE_URI            = "/image"
 	REQUEST_IMAGE_SHAREDUSER_URI = "/sharedUsers"
 	REQUEST_IMAGE_OS_URI         = "/os"
+
+	REQUEST_SNAPSHOT_URI = "/snapshot"
 )
 
 func getInstanceUri() string {
@@ -76,4 +78,12 @@ func getImageSharedUserUri(id string) string {
 
 func getImageOsUri() string {
 	return URI_PREFIX + REQUEST_IMAGE_URI + REQUEST_IMAGE_OS_URI
+}
+
+func getSnapshotUri() string {
+	return URI_PREFIX + REQUEST_SNAPSHOT_URI
+}
+
+func getSnapshotUriWithId(id string) string {
+	return URI_PREFIX + REQUEST_SNAPSHOT_URI + "/" + id
 }

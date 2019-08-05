@@ -472,3 +472,52 @@ type OsModel struct {
 type GetImageOsArgs struct {
 	InstanceIds []string `json:"instanceIds"`
 }
+
+type CreateSnapshotArgs struct {
+	ClientToken  string `json:"-"`
+	VolumeId     string `json:"volumeId"`
+	SnapshotName string `json:"snapshotName"`
+	Description  string `json:"desc"`
+}
+
+type CreateSnapshotResult struct {
+	SnapshotId string `json:"snapshotId"`
+}
+
+type ListSnapshotArgs struct {
+	Marker   string
+	MaxKeys  int
+	VolumeId string
+}
+
+type SnapshotStatus string
+
+const (
+	SnapshotStatusCreating      SnapshotStatus = "Creating"
+	SnapshotStatusCreatedFailed SnapshotStatus = "CreatedFailed"
+	SnapshotStatusAvailable     SnapshotStatus = "Available"
+	SnapshotStatusNotAvailable  SnapshotStatus = "NotAvailable"
+)
+
+type SnapshotModel struct {
+	Id           string         `json:"id"`
+	Name         string         `json:"name"`
+	SizeInGB     int            `json:"sizeInGB"`
+	CreateTime   string         `json:"createTime"`
+	Status       SnapshotStatus `json:"status"`
+	CreateMethod string         `json:"createMethod"`
+	VolumeId     string         `json:"volumeId"`
+	Description  string         `json:"desc"`
+}
+
+type ListSnapshotResult struct {
+	Marker      string          `json:"marker"`
+	IsTruncated bool            `json:"isTruncated"`
+	NextMarker  string          `json:"nextMarker"`
+	MaxKeys     int             `json:"maxKeys"`
+	Snapshots   []SnapshotModel `json:"snapshots"`
+}
+
+type GetSnapshotDetailResult struct {
+	Snapshot SnapshotModel `json:"snapshot"`
+}
