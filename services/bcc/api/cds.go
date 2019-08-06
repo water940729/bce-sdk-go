@@ -187,7 +187,7 @@ func DeleteCDSVolume(cli bce.Client, volumeId string) error {
 	return nil
 }
 
-func DeleteCDSVolumeNew(cli bce.Client, volumeId string, args *DeleteCSDVolumeArgs) error {
+func DeleteCDSVolumeNew(cli bce.Client, volumeId string, args *DeleteCDSVolumeArgs) error {
 	// Build the request
 	req := &bce.BceRequest{}
 	req.SetUri(getVolumeUriWithId(volumeId))

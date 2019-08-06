@@ -235,7 +235,7 @@ type PurchaseReservedCSDVolumeArgs struct {
 	Billing *Billing `json:"billing"`
 }
 
-type DeleteCSDVolumeArgs struct {
+type DeleteCDSVolumeArgs struct {
 	ManualSnapshot string `json:"manualSnapshot,omitempty"`
 	AutoSnapshot   string `json:"autoSnapshot,omitempty"`
 }

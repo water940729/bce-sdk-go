@@ -268,7 +268,7 @@ func (c *Client) DeleteCDSVolume(volumeId string) error {
 	return api.DeleteCDSVolume(c, volumeId)
 }
 
-func (c *Client) DeleteCDSVolumeNew(volumeId string, args *api.DeleteCSDVolumeArgs) error {
+func (c *Client) DeleteCDSVolumeNew(volumeId string, args *api.DeleteCDSVolumeArgs) error {
 	return api.DeleteCDSVolumeNew(c, volumeId, args)
 }
 
