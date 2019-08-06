@@ -118,7 +118,7 @@ type CreateInstanceArgs struct {
 	RootDiskStorageType   StorageType      `json:"rootDiskStorageType,omitempty"`
 	LocalDiskSizeInGB     int              `json:"localDiskSizeInGB,omitempty"`
 	EphemeralDisks        []EphemeralDisk  `json:"ephemeralDisks,omitempty"`
-	CreateCdsList         []CreateCdsModel `json:"creatCdsList,omitempty"`
+	CreateCdsList         []CreateCdsModel `json:"createCdsList,omitempty"`
 	NetWorkCapacityInMbps int              `json:"networkCapacityInMbps,omitempty"`
 	DedicateHostId        int              `json:"dedicatedHostId,omitempty"`
 	PurchaseCount         int              `json:"purchaseCount,omitempty"`

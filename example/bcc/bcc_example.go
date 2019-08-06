@@ -37,7 +37,7 @@ func main() {
 		CreateCdsList: []api.CreateCdsModel{
 			{
 				StorageType: api.StorageTypeSSD,
-				CdsSizeInGB: 0,
+				CdsSizeInGB: 100,
 			},
 		},
 		AdminPass: "123qaz!@#",
