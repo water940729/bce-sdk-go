@@ -388,28 +388,28 @@ type ListPeerConnsResult struct {
 }
 
 type PeerConn struct {
-	PeerConnId    string             `json:"peerConnId"`
-	Role          PeerConnRoleType   `json:"role"`
-	Status        PeerConnStatusType `json:"status"`
-	BandwithInMbp string             `json:"bandwithInMbp"`
-	Description   string             `json:"description"`
-	LocalIfId     string             `json:"localIfId"`
-	LocalIfName   string             `json:"localIfName"`
-	LocalVpcId    string             `json:"localVpcId"`
-	LocalRegion   string             `json:"localRegion"`
-	PeerVpcId     string             `json:"peerVpcId"`
-	PeerRegion    string             `json:"peerRegion"`
-	PeerAccountId string             `json:"peerAccountId"`
-	PaymentTiming string             `json:"paymentTiming"`
-	DnsStatus     DnsStatusType      `json:"dnsStatus"`
-	CreatedTime   string             `json:"createdTime"`
-	ExpiredTime   string             `json:"expiredTime"`
+	PeerConnId      string             `json:"peerConnId"`
+	Role            PeerConnRoleType   `json:"role"`
+	Status          PeerConnStatusType `json:"status"`
+	BandwidthInMbps int                `json:"bandwidthInMbps"`
+	Description     string             `json:"description"`
+	LocalIfId       string             `json:"localIfId"`
+	LocalIfName     string             `json:"localIfName"`
+	LocalVpcId      string             `json:"localVpcId"`
+	LocalRegion     string             `json:"localRegion"`
+	PeerVpcId       string             `json:"peerVpcId"`
+	PeerRegion      string             `json:"peerRegion"`
+	PeerAccountId   string             `json:"peerAccountId"`
+	PaymentTiming   string             `json:"paymentTiming"`
+	DnsStatus       DnsStatusType      `json:"dnsStatus"`
+	CreatedTime     string             `json:"createdTime"`
+	ExpiredTime     string             `json:"expiredTime"`
 }
 
 type UpdatePeerConnArgs struct {
 	LocalIfId   string `json:"localIfId"`
-	Description string `json:"description"`
-	LocalIfName string `json:"localIfName"`
+	Description string `json:"description,omitempty"`
+	LocalIfName string `json:"localIfName,omitempty"`
 }
 
 type ResizePeerConnArgs struct {
