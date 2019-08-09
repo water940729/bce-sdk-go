@@ -225,15 +225,18 @@ func (c *Client) DescribeAppTCPListeners(blbId string, args *DescribeAppListener
 	}
 
 	result := &DescribeAppTCPListenersResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppTCPListenerUri(blbId)).
-		WithQueryParamFilter("listenerPort", strconv.Itoa(int(args.ListenerPort))).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParam("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ListenerPort != 0 {
+		request.WithQueryParam("listenerPort", strconv.Itoa(int(args.ListenerPort)))
+	}
+
+	err := request.Do()
 	return result, err
 }
 
@@ -247,15 +250,18 @@ func (c *Client) DescribeAppUDPListeners(blbId string, args *DescribeAppListener
 	}
 
 	result := &DescribeAppUDPListenersResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppUDPListenerUri(blbId)).
-		WithQueryParamFilter("listenerPort", strconv.Itoa(int(args.ListenerPort))).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParam("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ListenerPort != 0 {
+		request.WithQueryParam("listenerPort", strconv.Itoa(int(args.ListenerPort)))
+	}
+
+	err := request.Do()
 	return result, err
 }
 
@@ -269,15 +275,18 @@ func (c *Client) DescribeAppHTTPListeners(blbId string, args *DescribeAppListene
 	}
 
 	result := &DescribeAppHTTPListenersResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppHTTPListenerUri(blbId)).
-		WithQueryParamFilter("listenerPort", strconv.Itoa(int(args.ListenerPort))).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParam("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ListenerPort != 0 {
+		request.WithQueryParam("listenerPort", strconv.Itoa(int(args.ListenerPort)))
+	}
+
+	err := request.Do()
 	return result, err
 }
 
@@ -291,15 +300,18 @@ func (c *Client) DescribeAppHTTPSListeners(blbId string, args *DescribeAppListen
 	}
 
 	result := &DescribeAppHTTPSListenersResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppHTTPSListenerUri(blbId)).
-		WithQueryParamFilter("listenerPort", strconv.Itoa(int(args.ListenerPort))).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParam("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ListenerPort != 0 {
+		request.WithQueryParam("listenerPort", strconv.Itoa(int(args.ListenerPort)))
+	}
+
+	err := request.Do()
 	return result, err
 }
 
@@ -313,15 +325,18 @@ func (c *Client) DescribeAppSSLListeners(blbId string, args *DescribeAppListener
 	}
 
 	result := &DescribeAppSSLListenersResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppSSLListenerUri(blbId)).
-		WithQueryParamFilter("listenerPort", strconv.Itoa(int(args.ListenerPort))).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParam("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ListenerPort != 0 {
+		request.WithQueryParam("listenerPort", strconv.Itoa(int(args.ListenerPort)))
+	}
+
+	err := request.Do()
 	return result, err
 }
 
