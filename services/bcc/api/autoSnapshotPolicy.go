@@ -141,7 +141,7 @@ func ListAutoSnapshotPolicy(cli bce.Client, queryArgs *ListASPArgs) (*ListASPRes
 		if len(queryArgs.AspName) != 0 {
 			req.SetParam("aspName", queryArgs.AspName)
 		}
-		if len(queryArgs.VolumeName)!= 0 {
+		if len(queryArgs.VolumeName) != 0 {
 			req.SetParam("volumeName", queryArgs.VolumeName)
 		}
 	}

@@ -25,10 +25,10 @@ func main() {
 	}
 
 	createArgs := &api.CreateASPArgs{
-		Name:"sdk-create",
-		TimePoints:[]string{"20"},
-		RepeatWeekdays:[]string{"1", "5"},
-		RetentionDays:"7",
+		Name:           "sdk-create",
+		TimePoints:     []string{"20"},
+		RepeatWeekdays: []string{"1", "5"},
+		RetentionDays:  "7",
 	}
 	createResult, err := client.CreateAutoSnapshotPolicy(createArgs)
 	if err != nil {
@@ -53,7 +53,7 @@ func main() {
 	log.Info("get ASP detail success: %+v\n", getDetailResult)
 
 	attachArgs := &api.AttachASPArgs{
-		VolumeIds:[]string{"v-Trb3rQXa"},
+		VolumeIds: []string{"v-Trb3rQXa"},
 	}
 	err = client.AttachAutoSnapshotPolicy(createResult.AspId, attachArgs)
 	if err != nil {
@@ -63,7 +63,7 @@ func main() {
 	log.Info("attach ASP success\n")
 
 	detachArgs := &api.DetachASPArgs{
-		VolumeIds:[]string{"v-Trb3rQXa"},
+		VolumeIds: []string{"v-Trb3rQXa"},
 	}
 	err = client.DetachAutoSnapshotPolicy(createResult.AspId, detachArgs)
 	if err != nil {

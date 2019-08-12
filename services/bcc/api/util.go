@@ -20,10 +20,10 @@ const (
 	REQUEST_IMAGE_SHAREDUSER_URI = "/sharedUsers"
 	REQUEST_IMAGE_OS_URI         = "/os"
 
-	REQUEST_SNAPSHOT_URI = "/snapshot"
-	REQUEST_ASP_URI = "/asp"
+	REQUEST_SNAPSHOT_URI      = "/snapshot"
+	REQUEST_ASP_URI           = "/asp"
 	REQUEST_INSTANCE_TYPE_URI = "/instance/spec"
-	REQUEST_ZONE_URI = "/zone"
+	REQUEST_ZONE_URI          = "/zone"
 )
 
 func getInstanceUri() string {

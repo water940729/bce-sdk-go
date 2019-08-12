@@ -12,7 +12,7 @@ const (
 
 type AppRsPortModel struct {
 	ListenerPort        int    `json:"listenerPort"`
-	BackendPort         int    `json:"backendPort"`
+	BackendPort         string `json:"backendPort"`
 	PortType            string `json:"portType"`
 	HealthCheckPortType string `json:"healthCheckPortType"`
 	Status              string `json:"status"`
