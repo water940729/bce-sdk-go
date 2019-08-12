@@ -57,7 +57,7 @@ type UpdateAppServerGroupArgs struct {
 
 type DescribeAppServerGroupArgs struct {
 	Name         string
-	ExactlyMatch string
+	ExactlyMatch bool
 	Marker       string
 	MaxKeys      int
 }
@@ -207,7 +207,7 @@ type DescribeLoadBalancersArgs struct {
 	Name         string
 	BlbId        string
 	BccId        string
-	ExactlyMatch string
+	ExactlyMatch bool
 	Marker       string
 	MaxKeys      int
 }

@@ -52,19 +52,22 @@ func (c *Client) DescribeLoadBalancers(args *DescribeLoadBalancersArgs) (*Descri
 	}
 
 	result := &DescribeLoadBalancersResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppBlbUri()).
 		WithQueryParamFilter("address", args.Address).
 		WithQueryParamFilter("name", args.Name).
 		WithQueryParamFilter("blbId", args.BlbId).
 		WithQueryParamFilter("bccId", args.BccId).
-		WithQueryParamFilter("exactlyMatch", args.ExactlyMatch).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParamFilter("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ExactlyMatch {
+		request.WithQueryParam("exactlyMatch", "true")
+	}
+
+	err := request.Do()
 	return result, err
 }
 

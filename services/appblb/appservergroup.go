@@ -48,16 +48,19 @@ func (c *Client) DescribeAppServerGroup(blbId string, args *DescribeAppServerGro
 	}
 
 	result := &DescribeAppServerGroupResult{}
-	err := bce.NewRequestBuilder(c).
+	request := bce.NewRequestBuilder(c).
 		WithMethod(http.GET).
 		WithURL(getAppServerGroupUri(blbId)).
 		WithQueryParamFilter("name", args.Name).
-		WithQueryParamFilter("exactlyMatch", args.ExactlyMatch).
 		WithQueryParamFilter("marker", args.Marker).
 		WithQueryParamFilter("maxKeys", strconv.Itoa(args.MaxKeys)).
-		WithResult(result).
-		Do()
+		WithResult(result)
 
+	if args.ExactlyMatch {
+		request.WithQueryParam("exactlyMatch", "true")
+	}
+
+	err := request.Do()
 	return result, err
 }
 
