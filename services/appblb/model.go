@@ -362,7 +362,7 @@ type UpdateAppSSLListenerArgs struct {
 }
 
 type AppListenerModel struct {
-	Port      int    `json:"listenerPort"`
+	Port      uint16 `json:"listenerPort"`
 	Scheduler string `json:"scheduler"`
 }
 
@@ -375,7 +375,7 @@ type AppUDPListenerModel struct {
 }
 
 type AppHTTPListenerModel struct {
-	ListenerPort          int    `json:"listenerPort"`
+	ListenerPort          uint16 `json:"listenerPort"`
 	Scheduler             string `json:"scheduler"`
 	KeepSession           bool   `json:"keepSession"`
 	KeepSessionType       string `json:"keepSessionType"`
@@ -387,7 +387,7 @@ type AppHTTPListenerModel struct {
 }
 
 type AppHTTPSListenerModel struct {
-	ListenerPort          uint16   `json:"port"`
+	ListenerPort          uint16   `json:"listenerPort"`
 	Scheduler             string   `json:"scheduler"`
 	KeepSession           bool     `json:"keepSession"`
 	KeepSessionType       string   `json:"keepSessionType"`
@@ -404,7 +404,7 @@ type AppHTTPSListenerModel struct {
 }
 
 type AppSSLListenerModel struct {
-	ListenerPort        uint16   `json:"port"`
+	ListenerPort        uint16   `json:"listenerPort"`
 	Scheduler           string   `json:"scheduler"`
 	CertIds             []string `json:"certIds"`
 	Ie6Compatible       bool     `json:"ie6Compatible"`
