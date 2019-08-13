@@ -22,7 +22,7 @@ const (
 	POLICYS_URL = "/policys"
 )
 
-// Client of EIP service is a kind of BceClient, so derived from BceClient
+// Client of APPBLB service is a kind of BceClient, so derived from BceClient
 type Client struct {
 	*bce.BceClient
 }
