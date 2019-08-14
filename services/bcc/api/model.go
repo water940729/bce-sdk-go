@@ -122,7 +122,7 @@ type InstanceModel struct {
 	ZoneName              string         `json:"zoneName"`
 	SubnetId              string         `json:"subnetId"`
 	VpcId                 string         `json:"vpcId"`
-	NicInfo               NicInfoModel   `json:"nicInfo"`
+	NicInfo               *NicInfoModel  `json:"nicInfo"`
 	EniNum                string         `json:"eniNum"`
 	Tags                  []Tags         `json:"tags"`
 }
@@ -307,6 +307,10 @@ type VolumeModel struct {
 	ZoneName           string                   `json:"zoneName"`
 	AutoSnapshotPolicy *AutoSnapshotPolicyModel `json:"autoSnapshotPolicy"`
 	CreateTime         string                   `json:"createTime"`
+	IsSystemVolume     bool                     `json:"isSystemVolume"`
+	RegionId           string                   `json:"regionId"`
+	SourceSnapshotId   string                   `json:"sourceSnapshotId"`
+	SnapshotNum        string                   `json:"snapshotNum"`
 	Tags               []Tags                   `json:"tags"`
 }
 
