@@ -219,6 +219,7 @@ type AppBLBModel struct {
 	Address     string     `json:"address"`
 	Status      BLBStatus  `json:"status"`
 	VpcId       string     `json:"vpcId"`
+	SubnetId    string     `json:"subnetId"`
 	PublicIp    string     `json:"publicIp"`
 	Tags        []TagModel `json:"tags"`
 }
