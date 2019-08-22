@@ -5,10 +5,10 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
-func ListInstanceType(cli bce.Client) (*ListInstanceTypeResult, error) {
+func ListSpec(cli bce.Client) (*ListSpecResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
-	req.SetUri(getInstanceTypeUri())
+	req.SetUri(getSpecUri())
 	req.SetMethod(http.GET)
 
 	// Send request and get response
@@ -20,7 +20,7 @@ func ListInstanceType(cli bce.Client) (*ListInstanceTypeResult, error) {
 		return nil, resp.ServiceError()
 	}
 
-	jsonBody := &ListInstanceTypeResult{}
+	jsonBody := &ListSpecResult{}
 	if err := resp.ParseJsonBody(jsonBody); err != nil {
 		return nil, err
 	}

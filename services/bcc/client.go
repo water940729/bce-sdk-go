@@ -398,8 +398,8 @@ func (c *Client) GetAutoSnapshotPolicy(aspId string) (*api.GetASPDetailResult, e
 	return api.GetAutoSnapshotPolicyDetail(c, aspId)
 }
 
-func (c *Client) ListInstanceType() (*api.ListInstanceTypeResult, error) {
-	return api.ListInstanceType(c)
+func (c *Client) ListSpec() (*api.ListSpecResult, error) {
+	return api.ListSpec(c)
 }
 
 func (c *Client) ListZone() (*api.ListZoneResult, error) {

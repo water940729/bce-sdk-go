@@ -20,10 +20,10 @@ const (
 	REQUEST_IMAGE_SHAREDUSER_URI = "/sharedUsers"
 	REQUEST_IMAGE_OS_URI         = "/os"
 
-	REQUEST_SNAPSHOT_URI      = "/snapshot"
-	REQUEST_ASP_URI           = "/asp"
-	REQUEST_INSTANCE_TYPE_URI = "/instance/spec"
-	REQUEST_ZONE_URI          = "/zone"
+	REQUEST_SNAPSHOT_URI = "/snapshot"
+	REQUEST_ASP_URI      = "/asp"
+	REQUEST_SPEC_URI     = "/instance/spec"
+	REQUEST_ZONE_URI     = "/zone"
 )
 
 func getInstanceUri() string {
@@ -99,8 +99,8 @@ func getASPUriWithId(id string) string {
 	return URI_PREFIX + REQUEST_ASP_URI + "/" + id
 }
 
-func getInstanceTypeUri() string {
-	return URI_PREFIX + REQUEST_INSTANCE_TYPE_URI
+func getSpecUri() string {
+	return URI_PREFIX + REQUEST_SPEC_URI
 }
 
 func getZoneUri() string {

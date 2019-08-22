@@ -631,7 +631,7 @@ type InstanceTypeModel struct {
 	LocalDiskSizeInGB int    `json:"localDiskSizeInGB"`
 }
 
-type ListInstanceTypeResult struct {
+type ListSpecResult struct {
 	InstanceTypes []InstanceTypeModel `json:"instanceTypes"`
 }
 

@@ -23,9 +23,9 @@ func main() {
 		return
 	}
 
-	listInstanceTypeResult, err := client.ListInstanceType()
+	listInstanceTypeResult, err := client.ListSpec()
 	if err != nil {
-		log.Errorf("list instance type error: %+v\n", err)
+		log.Errorf("list spec error: %+v\n", err)
 		return
 	}
 	log.Info("list instance type success: %+v\n", listInstanceTypeResult)
