@@ -473,17 +473,18 @@ type ListImageResult struct {
 }
 
 type ImageModel struct {
-	OsVersion  string      `json:"osVersion"`
-	OsArch     string      `json:"osArch"`
-	Status     ImageStatus `json:"status"`
-	Desc       string      `json:"desc"`
-	Id         string      `json:"id"`
-	Name       string      `json:"name"`
-	OsName     string      `json:"osName"`
-	OsBuild    string      `json:"osBuild"`
-	CreateTime string      `json:"createTime"`
-	Type       ImageType   `json:"type"`
-	OsType     string      `json:"osType"`
+	OsVersion      string      `json:"osVersion"`
+	OsArch         string      `json:"osArch"`
+	Status         ImageStatus `json:"status"`
+	Desc           string      `json:"desc"`
+	Id             string      `json:"id"`
+	Name           string      `json:"name"`
+	OsName         string      `json:"osName"`
+	OsBuild        string      `json:"osBuild"`
+	CreateTime     string      `json:"createTime"`
+	Type           ImageType   `json:"type"`
+	OsType         string      `json:"osType"`
+	SpecialVersion string      `json:"specialVersion"`
 }
 
 type GetImageDetailResult struct {
