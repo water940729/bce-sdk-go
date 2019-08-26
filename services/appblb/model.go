@@ -230,7 +230,7 @@ type DescribeLoadBalancersResult struct {
 }
 
 type ListenerModel struct {
-	Port int    `json:"port"`
+	Port string `json:"port"`
 	Type string `json:"type"`
 }
 
