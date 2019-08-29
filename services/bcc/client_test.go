@@ -102,7 +102,7 @@ func TestCreateInstance(t *testing.T) {
 func TestCreateSecurityGroup(t *testing.T) {
 	args := &api.CreateSecurityGroupArgs{
 		Name: "testSecurityGroup",
-		Rules: &[]api.SecurityGroupRuleModel{
+		Rules: []api.SecurityGroupRuleModel{
 			{
 				Remark:        "备注",
 				Protocol:      "tcp",
@@ -303,7 +303,7 @@ func TestModifyChargeTypeCDSVolume(t *testing.T) {
 }
 
 func TestDeleteCDSVolumeNew(t *testing.T) {
-	args := &api.DeleteCSDVolumeArgs{
+	args := &api.DeleteCDSVolumeArgs{
 		AutoSnapshot: "on",
 	}
 
@@ -353,7 +353,7 @@ func TestRevokeSecurityGroupRule(t *testing.T) {
 }
 
 func TestDeleteSecurityGroupRule(t *testing.T) {
-	err := BCC_CLIENT.DeleteSecurityGroupRule(BCC_TestSecurityGroupId)
+	err := BCC_CLIENT.DeleteSecurityGroup(BCC_TestSecurityGroupId)
 	ExpectEqual(t.Errorf, err, nil)
 }
 

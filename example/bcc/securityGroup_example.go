@@ -85,7 +85,7 @@ func main() {
 	}
 	log.Info("revoke sg success\n")
 
-	err = client.DeleteSecurityGroupRule(result.SecurityGroupId)
+	err = client.DeleteSecurityGroup(result.SecurityGroupId)
 	if err != nil {
 		log.Errorf("delete security group error: %+v\n", err)
 		return

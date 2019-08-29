@@ -313,8 +313,8 @@ func (c *Client) RevokeSecurityGroupRule(securityGroupId string, args *api.Revok
 	return api.RevokeSecurityGroupRule(c, securityGroupId, args)
 }
 
-func (c *Client) DeleteSecurityGroupRule(securityGroupId string) error {
-	return api.DeleteSecurityGroupRule(c, securityGroupId)
+func (c *Client) DeleteSecurityGroup(securityGroupId string) error {
+	return api.DeleteSecurityGroup(c, securityGroupId)
 }
 
 //image sdk

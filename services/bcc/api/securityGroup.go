@@ -143,7 +143,7 @@ func RevokeSecurityGroupRule(cli bce.Client, securityGroupId string, args *Revok
 	return nil
 }
 
-func DeleteSecurityGroupRule(cli bce.Client, securityGroupId string) error {
+func DeleteSecurityGroup(cli bce.Client, securityGroupId string) error {
 	// Build the request
 	req := &bce.BceRequest{}
 	req.SetUri(getSecurityGroupUriWithId(securityGroupId))
