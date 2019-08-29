@@ -385,7 +385,7 @@ type SecurityGroupRuleModel struct {
 	DestGroupId     string `json:"destGroupId,omitempty"`
 	SecurityGroupId string `json:"securityGroupId,omitempty"`
 	Remark          string `json:"remark,omitempty"`
-	Direction       string `json:"direction,omitempty"`
+	Direction       string `json:"direction"`
 }
 
 type SecurityGroupModel struct {
@@ -399,6 +399,7 @@ type SecurityGroupModel struct {
 type CreateSecurityGroupArgs struct {
 	Name  string                   `json:"name"`
 	Desc  string                   `json:"desc,omitempty"`
+	VpcId string                   `json:"vpcId,omitempty"`
 	Rules []SecurityGroupRuleModel `json:"rules"`
 }
 
