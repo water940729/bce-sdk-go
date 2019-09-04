@@ -1,5 +1,7 @@
 package appblb
 
+import "github.com/baidubce/bce-sdk-go/util"
+
 type BLBStatus string
 
 const (
@@ -175,18 +177,13 @@ type DescribeRsMountResult struct {
 	BackendServerList []AppBackendServer `json:"backendServerList"`
 }
 
-type TagModel struct {
-	TagKey   string `json:"tagKey"`
-	TagValue string `json:"tagValue"`
-}
-
 type CreateLoadBalancerArgs struct {
-	ClientToken string     `json:"-"`
-	Name        string     `json:"name,omitempty"`
-	Description string     `json:"desc,omitempty"`
-	SubnetId    string     `json:"subnetId"`
-	VpcId       string     `json:"vpcId"`
-	Tags        []TagModel `json:"tags,omitempty"`
+	ClientToken string          `json:"-"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"desc,omitempty"`
+	SubnetId    string          `json:"subnetId"`
+	VpcId       string          `json:"vpcId"`
+	Tags        []util.TagModel `json:"tags,omitempty"`
 }
 
 type CreateLoadBalanceResult struct {
@@ -213,15 +210,15 @@ type DescribeLoadBalancersArgs struct {
 }
 
 type AppBLBModel struct {
-	BlbId       string     `json:"blbId"`
-	Name        string     `json:"name"`
-	Description string     `json:"desc"`
-	Address     string     `json:"address"`
-	Status      BLBStatus  `json:"status"`
-	VpcId       string     `json:"vpcId"`
-	SubnetId    string     `json:"subnetId"`
-	PublicIp    string     `json:"publicIp"`
-	Tags        []TagModel `json:"tags"`
+	BlbId       string          `json:"blbId"`
+	Name        string          `json:"name"`
+	Description string          `json:"desc"`
+	Address     string          `json:"address"`
+	Status      BLBStatus       `json:"status"`
+	VpcId       string          `json:"vpcId"`
+	SubnetId    string          `json:"subnetId"`
+	PublicIp    string          `json:"publicIp"`
+	Tags        []util.TagModel `json:"tags"`
 }
 
 type DescribeLoadBalancersResult struct {
@@ -247,7 +244,7 @@ type DescribeLoadBalancerDetailResult struct {
 	CreateTime  string          `json:"createTime"`
 	ReleaseTime string          `json:"releaseTime"`
 	Listener    []ListenerModel `json:"listener"`
-	Tags        []TagModel      `json:"tags"`
+	Tags        []util.TagModel `json:"tags"`
 }
 
 type CreateAppTCPListenerArgs struct {

@@ -53,12 +53,10 @@ func main() {
 
 	authorArgs := &api.AuthorizeSecurityGroupArgs{
 		Rule: &api.SecurityGroupRuleModel{
-			Remark:        "备注",
-			Protocol:      "udp",
-			PortRange:     "1-65535",
-			Direction:     "ingress",
-			SourceIp:      "",
-			SourceGroupId: "",
+			Remark:    "备注",
+			Protocol:  "udp",
+			PortRange: "1-65535",
+			Direction: "ingress",
 		},
 	}
 	err = client.AuthorizeSecurityGroupRule(result.SecurityGroupId, authorArgs)

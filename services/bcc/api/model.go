@@ -16,6 +16,8 @@
 
 package api
 
+import "github.com/baidubce/bce-sdk-go/util"
+
 type InstanceStatus string
 
 const (
@@ -62,11 +64,6 @@ const (
 	PaymentTimingPostPaid PaymentTimingType = "Postpaid"
 )
 
-type Tags struct {
-	TagKey   string `json:"tagKey"`
-	TagValue string `json:"tagValue"`
-}
-
 type IpsModel struct {
 	PrivateIp       string `json:"privateIp"`
 	Eip             string `json:"eip"`
@@ -100,31 +97,31 @@ type NicInfoModel struct {
 
 // Instance define instance model
 type InstanceModel struct {
-	InstanceId            string         `json:"id"`
-	InstanceName          string         `json:"name"`
-	InstanceType          InstanceType   `json:"instanceType"`
-	Description           string         `json:"desc"`
-	Status                InstanceStatus `json:"status"`
-	PaymentTiming         string         `json:"paymentTiming"`
-	CreationTime          string         `json:"createTime"`
-	ExpireTime            string         `json:"expireTime"`
-	PublicIP              string         `json:"publicIp"`
-	InternalIP            string         `json:"internalIp"`
-	CpuCount              int            `json:"cpuCount"`
-	GpuCard               string         `json:"gpuCard"`
-	FpgaCard              string         `json:"fpgaCard"`
-	CardCount             int            `json:"cardCount"`
-	MemoryCapacityInGB    int            `json:"memoryCapacityInGB"`
-	LocalDiskSizeInGB     int            `json:"localDiskSizeInGB"`
-	ImageId               string         `json:"imageId"`
-	NetworkCapacityInMbps int            `json:"networkCapacityInMbps"`
-	PlacementPolicy       string         `json:"placementPolicy"`
-	ZoneName              string         `json:"zoneName"`
-	SubnetId              string         `json:"subnetId"`
-	VpcId                 string         `json:"vpcId"`
-	NicInfo               *NicInfoModel  `json:"nicInfo"`
-	EniNum                string         `json:"eniNum"`
-	Tags                  []Tags         `json:"tags"`
+	InstanceId            string          `json:"id"`
+	InstanceName          string          `json:"name"`
+	InstanceType          InstanceType    `json:"instanceType"`
+	Description           string          `json:"desc"`
+	Status                InstanceStatus  `json:"status"`
+	PaymentTiming         string          `json:"paymentTiming"`
+	CreationTime          string          `json:"createTime"`
+	ExpireTime            string          `json:"expireTime"`
+	PublicIP              string          `json:"publicIp"`
+	InternalIP            string          `json:"internalIp"`
+	CpuCount              int             `json:"cpuCount"`
+	GpuCard               string          `json:"gpuCard"`
+	FpgaCard              string          `json:"fpgaCard"`
+	CardCount             int             `json:"cardCount"`
+	MemoryCapacityInGB    int             `json:"memoryCapacityInGB"`
+	LocalDiskSizeInGB     int             `json:"localDiskSizeInGB"`
+	ImageId               string          `json:"imageId"`
+	NetworkCapacityInMbps int             `json:"networkCapacityInMbps"`
+	PlacementPolicy       string          `json:"placementPolicy"`
+	ZoneName              string          `json:"zoneName"`
+	SubnetId              string          `json:"subnetId"`
+	VpcId                 string          `json:"vpcId"`
+	NicInfo               *NicInfoModel   `json:"nicInfo"`
+	EniNum                string          `json:"eniNum"`
+	Tags                  []util.TagModel `json:"tags"`
 }
 
 type Reservation struct {
@@ -311,7 +308,7 @@ type VolumeModel struct {
 	RegionId           string                   `json:"regionId"`
 	SourceSnapshotId   string                   `json:"sourceSnapshotId"`
 	SnapshotNum        string                   `json:"snapshotNum"`
-	Tags               []Tags                   `json:"tags"`
+	Tags               []util.TagModel          `json:"tags"`
 }
 
 type VolumeAttachmentModel struct {
