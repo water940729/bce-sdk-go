@@ -1,5 +1,7 @@
 package vpc
 
+import "github.com/baidubce/bce-sdk-go/util"
+
 type (
 	SubnetType           string
 	NexthopType          string
@@ -77,10 +79,11 @@ const (
 )
 
 type CreateVPCArgs struct {
-	ClientToken string `json:"-"`
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	Cidr        string `json:"cidr"`
+	ClientToken string          `json:"-"`
+	Name        string          `json:"name"`
+	Description string          `json:"description,omitempty"`
+	Cidr        string          `json:"cidr"`
+	Tags        []util.TagModel `json:"tags,omitempty"`
 }
 
 type CreateVPCResult struct {
@@ -106,11 +109,12 @@ type ListVPCResult struct {
 }
 
 type VPC struct {
-	VPCID       string `json:"vpcId"`
-	Name        string `json:"name"`
-	Cidr        string `json:"cidr"`
-	Description string `json:"description"`
-	IsDefault   bool   `json:"isDefault"`
+	VPCID       string          `json:"vpcId"`
+	Name        string          `json:"name"`
+	Cidr        string          `json:"cidr"`
+	Description string          `json:"description"`
+	IsDefault   bool            `json:"isDefault"`
+	Tags        []util.TagModel `json:"tags"`
 }
 
 type GetVPCDetailResult struct {
@@ -118,23 +122,25 @@ type GetVPCDetailResult struct {
 }
 
 type ShowVPCModel struct {
-	VPCId       string   `json:"vpcId"`
-	Name        string   `json:"name"`
-	Cidr        string   `json:"cidr"`
-	Description string   `json:"description"`
-	IsDefault   bool     `json:"isDefault"`
-	Subnets     []Subnet `json:"subnets"`
+	VPCId       string          `json:"vpcId"`
+	Name        string          `json:"name"`
+	Cidr        string          `json:"cidr"`
+	Description string          `json:"description"`
+	IsDefault   bool            `json:"isDefault"`
+	Subnets     []Subnet        `json:"subnets"`
+	Tags        []util.TagModel `json:"tags"`
 }
 
 type Subnet struct {
-	SubnetId    string     `json:"subnetId"`
-	Name        string     `json:"name"`
-	ZoneName    string     `json:"zoneName"`
-	Cidr        string     `json:"cidr"`
-	VPCId       string     `json:"vpcId"`
-	SubnetType  SubnetType `json:"subnetType"`
-	Description string     `json:"description"`
-	AvailableIp int        `json:"availableIp"`
+	SubnetId    string          `json:"subnetId"`
+	Name        string          `json:"name"`
+	ZoneName    string          `json:"zoneName"`
+	Cidr        string          `json:"cidr"`
+	VPCId       string          `json:"vpcId"`
+	SubnetType  SubnetType      `json:"subnetType"`
+	Description string          `json:"description"`
+	AvailableIp int             `json:"availableIp"`
+	Tags        []util.TagModel `json:"tags"`
 }
 
 type UpdateVPCArgs struct {
@@ -144,13 +150,14 @@ type UpdateVPCArgs struct {
 }
 
 type CreateSubnetArgs struct {
-	ClientToken string     `json:"-"`
-	Name        string     `json:"name"`
-	ZoneName    string     `json:"zoneName"`
-	Cidr        string     `json:"cidr"`
-	VpcId       string     `json:"vpcId"`
-	SubnetType  SubnetType `json:"subnetType,omitempty"`
-	Description string     `json:"description,omitempty"`
+	ClientToken string          `json:"-"`
+	Name        string          `json:"name"`
+	ZoneName    string          `json:"zoneName"`
+	Cidr        string          `json:"cidr"`
+	VpcId       string          `json:"vpcId"`
+	SubnetType  SubnetType      `json:"subnetType,omitempty"`
+	Description string          `json:"description,omitempty"`
+	Tags        []util.TagModel `json:"tags,omitempty"`
 }
 
 type CreateSubnetResult struct {
@@ -273,15 +280,15 @@ type ListAclRulesResult struct {
 }
 
 type UpdateAclRuleArgs struct {
-	ClientToken          string `json:"-"`
-	Description          string `json:"description,omitempty"`
-	Protocol             string `json:"protocol,omitempty"`
-	SourceIpAddress      string `json:"sourceIpAddress,omitempty"`
-	DestinationIpAddress string `json:"destinationIpAddress,omitempty"`
-	SourcePort           string `json:"sourcePort,omitempty"`
-	DestinationPort      string `json:"destinationPort,omitempty"`
-	Position             int    `json:"position,omitempty"`
-	Action               string `json:"action,omitempty"`
+	ClientToken          string              `json:"-"`
+	Description          string              `json:"description,omitempty"`
+	Protocol             AclRuleProtocolType `json:"protocol,omitempty"`
+	SourceIpAddress      string              `json:"sourceIpAddress,omitempty"`
+	DestinationIpAddress string              `json:"destinationIpAddress,omitempty"`
+	SourcePort           string              `json:"sourcePort,omitempty"`
+	DestinationPort      string              `json:"destinationPort,omitempty"`
+	Position             int                 `json:"position,omitempty"`
+	Action               AclRuleActionType   `json:"action,omitempty"`
 }
 
 type CreateNatGatewayArgs struct {
