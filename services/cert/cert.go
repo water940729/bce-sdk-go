@@ -58,3 +58,48 @@ func (c *Client) ListCerts() (*ListCertResult, error) {
 
 	return result, err
 }
+
+func (c *Client) GetCertMeta(id string) (*CertificateMeta, error) {
+	result := &CertificateMeta{}
+	err := bce.NewRequestBuilder(c).
+		WithMethod(http.GET).
+		WithURL(getCertUriWithId(id)).
+		WithResult(result).
+		Do()
+
+	return result, err
+}
+
+func (c *Client) DeleteCert(id string) error {
+	return bce.NewRequestBuilder(c).
+		WithMethod(http.DELETE).
+		WithURL(getCertUriWithId(id)).
+		Do()
+}
+
+func (c *Client) UpdateCertData(id string, args *UpdateCertDataArgs) error {
+	if args == nil {
+		return fmt.Errorf("unset args")
+	}
+
+	if args.CertName == "" {
+		return fmt.Errorf("unset CertName")
+	}
+
+	if args.CertServerData == "" {
+		return fmt.Errorf("unset CertServerData")
+	}
+
+	if args.CertPrivateData == "" {
+		return fmt.Errorf("unset CertPrivateData")
+	}
+
+	err := bce.NewRequestBuilder(c).
+		WithMethod(http.PUT).
+		WithURL(getCertUriWithId(id)).
+		WithQueryParam("certData", "").
+		WithBody(args).
+		Do()
+
+	return err
+}

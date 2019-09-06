@@ -31,3 +31,11 @@ type CertificateMeta struct {
 type ListCertResult struct {
 	Certs []CertificateMeta `json:"certs"`
 }
+
+type UpdateCertDataArgs struct {
+	CertName        string `json:"certName"`
+	CertServerData  string `json:"certServerData"`
+	CertPrivateData string `json:"certPrivateData"`
+	CertLinkData    string `json:"certLinkData,omitempty"`
+	CertType        int    `json:"certType,omitempty"`
+}

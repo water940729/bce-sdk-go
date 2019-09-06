@@ -15,6 +15,9 @@ const (
 var (
 	testCertServerData  = ``
 	testCertPrivateData = ``
+
+	testUpdateCertServerData  = ``
+	testUpdateCertPrivateData = ``
 )
 
 func main() {
@@ -55,4 +58,30 @@ func main() {
 		return
 	}
 	log.Info("list certs success: %+v\n", listResult)
+
+	updateDataArgs := &cert.UpdateCertDataArgs{
+		CertName:"test-sdk-cert",
+		CertServerData:testUpdateCertServerData,
+		CertPrivateData:testUpdateCertPrivateData,
+	}
+	err = client.UpdateCertData(createResult.CertId, updateDataArgs)
+	if err != nil {
+		log.Errorf("update cert data error: %+v\n", err)
+		return
+	}
+	log.Info("update cert data success\n")
+
+	meta, err := client.GetCertMeta(createResult.CertId)
+	if err != nil {
+		log.Errorf("get certs meta error: %+v\n", err)
+		return
+	}
+	log.Info("get certs meta success: %+v\n", meta)
+
+	err = client.DeleteCert(createResult.CertId)
+	if err != nil {
+		log.Errorf("delete certs error: %+v\n", err)
+		return
+	}
+	log.Info("delete certs success\n")
 }
