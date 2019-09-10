@@ -18,6 +18,8 @@ var (
 	BCC_TestBccId           string
 	BCC_TestSecurityGroupId string
 	BCC_TestImageId         string
+	BCC_TestSnapshotId      string
+	BCC_TestAspId           string
 )
 
 // For security reason, ak/sk should not hard write here.
@@ -92,7 +94,7 @@ func TestCreateInstance(t *testing.T) {
 			},
 		},
 		AdminPass: "123qaz!@#",
-		Name:      "terraform_sdkTest",
+		Name:      "sdkTest",
 	}
 	createResult, err := BCC_CLIENT.CreateInstance(createInstanceArgs)
 	ExpectEqual(t.Errorf, err, nil)
@@ -135,7 +137,7 @@ func TestListInstances(t *testing.T) {
 }
 
 func TestGetInstanceDetail(t *testing.T) {
-	_, err := BCC_CLIENT.GetInstanceDetail(BCC_TestCdsId)
+	_, err := BCC_CLIENT.GetInstanceDetail(BCC_TestBccId)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
@@ -216,6 +218,77 @@ func TestCreateCDSVolume(t *testing.T) {
 	result, err := BCC_CLIENT.CreateCDSVolume(args)
 	ExpectEqual(t.Errorf, err, nil)
 	BCC_TestCdsId = result.VolumeIds[0]
+}
+
+func TestCreateSnapshot(t *testing.T) {
+	args := &api.CreateSnapshotArgs{
+		VolumeId:     BCC_TestCdsId,
+		SnapshotName: "testSnapshotName",
+	}
+	result, err := BCC_CLIENT.CreateSnapshot(args)
+	ExpectEqual(t.Errorf, err, nil)
+
+	BCC_TestSnapshotId = result.SnapshotId
+}
+
+func TestListSnapshot(t *testing.T) {
+	args := &api.ListSnapshotArgs{}
+	_, err := BCC_CLIENT.ListSnapshot(args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestGetSnapshotDetail(t *testing.T) {
+	_, err := BCC_CLIENT.GetSnapshotDetail(BCC_TestSnapshotId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestDeleteSnapshot(t *testing.T) {
+	err := BCC_CLIENT.DeleteSnapshot(BCC_TestSnapshotId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestCreateAutoSnapshotPolicy(t *testing.T) {
+	args := &api.CreateASPArgs{
+		Name:           "testAspName",
+		TimePoints:     []string{"20"},
+		RepeatWeekdays: []string{"1", "5"},
+		RetentionDays:  "7",
+	}
+	result, err := BCC_CLIENT.CreateAutoSnapshotPolicy(args)
+	ExpectEqual(t.Errorf, err, nil)
+	BCC_TestAspId = result.AspId
+}
+
+func TestAttachAutoSnapshotPolicy(t *testing.T) {
+	args := &api.AttachASPArgs{
+		VolumeIds: []string{BCC_TestCdsId},
+	}
+	err := BCC_CLIENT.AttachAutoSnapshotPolicy(BCC_TestAspId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestDetachAutoSnapshotPolicy(t *testing.T) {
+	args := &api.DetachASPArgs{
+		VolumeIds: []string{BCC_TestCdsId},
+	}
+	err := BCC_CLIENT.DetachAutoSnapshotPolicy(BCC_TestAspId, args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestListAutoSnapshotPolicy(t *testing.T) {
+	args := &api.ListASPArgs{}
+	_, err := BCC_CLIENT.ListAutoSnapshotPolicy(args)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestGetAutoSnapshotPolicy(t *testing.T) {
+	_, err := BCC_CLIENT.GetAutoSnapshotPolicy(BCC_TestAspId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestDeleteAutoSnapshotPolicy(t *testing.T) {
+	err := BCC_CLIENT.DeleteAutoSnapshotPolicy(BCC_TestAspId)
+	ExpectEqual(t.Errorf, err, nil)
 }
 
 func TestListCDSVolume(t *testing.T) {
@@ -416,5 +489,15 @@ func TestDeleteImage(t *testing.T) {
 
 func TestDeleteInstance(t *testing.T) {
 	err := BCC_CLIENT.DeleteInstance(BCC_TestBccId)
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestListSpec(t *testing.T) {
+	_, err := BCC_CLIENT.ListSpec()
+	ExpectEqual(t.Errorf, err, nil)
+}
+
+func TestListZone(t *testing.T) {
+	_, err := BCC_CLIENT.ListZone()
 	ExpectEqual(t.Errorf, err, nil)
 }

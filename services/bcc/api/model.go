@@ -522,7 +522,7 @@ type CreateSnapshotArgs struct {
 	ClientToken  string `json:"-"`
 	VolumeId     string `json:"volumeId"`
 	SnapshotName string `json:"snapshotName"`
-	Description  string `json:"desc"`
+	Description  string `json:"desc,omitempty"`
 }
 
 type CreateSnapshotResult struct {

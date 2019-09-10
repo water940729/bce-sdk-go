@@ -60,9 +60,9 @@ func main() {
 	log.Info("list certs success: %+v\n", listResult)
 
 	updateDataArgs := &cert.UpdateCertDataArgs{
-		CertName:"test-sdk-cert",
-		CertServerData:testUpdateCertServerData,
-		CertPrivateData:testUpdateCertPrivateData,
+		CertName:        "test-sdk-cert",
+		CertServerData:  testUpdateCertServerData,
+		CertPrivateData: testUpdateCertPrivateData,
 	}
 	err = client.UpdateCertData(createResult.CertId, updateDataArgs)
 	if err != nil {
