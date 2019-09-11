@@ -168,9 +168,9 @@ type DescribeBlbRsResult struct {
 }
 
 type DeleteBlbRsArgs struct {
-	SgId              string   `json:"sgId"`
-	BackendServerList []string `json:"backendServerIdList"`
-	ClientToken       string   `json:"-"`
+	SgId                string   `json:"sgId"`
+	BackendServerIdList []string `json:"backendServerIdList"`
+	ClientToken         string   `json:"-"`
 }
 
 type DescribeRsMountResult struct {

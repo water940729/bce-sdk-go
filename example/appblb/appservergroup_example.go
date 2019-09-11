@@ -209,9 +209,9 @@ func BlbRsExample(client *appblb.Client, blbId string) {
 	log.Info("describe blb rs unmount success: %+v\n", describeUnMountResult)
 
 	deleteArgs := &appblb.DeleteBlbRsArgs{
-		SgId:              createASGResult.Id,
-		BackendServerList: []string{"i-0W3dBG7G"},
-		ClientToken:       getClientToken(),
+		SgId:                createASGResult.Id,
+		BackendServerIdList: []string{"i-0W3dBG7G"},
+		ClientToken:         getClientToken(),
 	}
 	err = client.DeleteBlbRs(blbId, deleteArgs)
 	if err != nil {

@@ -15,6 +15,7 @@ var (
 	CERT_CLIENT *Client
 	CERT_ID     string
 
+	// set these values before start test
 	testCertServerData  = ``
 	testCertPrivateData = ``
 

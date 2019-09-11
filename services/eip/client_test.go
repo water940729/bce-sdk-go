@@ -16,6 +16,7 @@ var (
 	EIP_CLIENT  *Client
 	EIP_ADDRESS string
 
+	// set this value before start test
 	BCC_TEST_ID = ""
 )
 
