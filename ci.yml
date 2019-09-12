@@ -1,10 +1,10 @@
 Global:
-    tool : build_submitter
+  tool: build_submitter
 Default:
-    profile : [build]
+  profile: [build]
 Profiles:
-    - profile:
-      name : build
-      env : CENTOS6U3
-      command : sh build.sh 
-      release : False
+  - profile:
+    name: build
+    env: CENTOS6U3
+    command: sh build.sh
+    release: True
