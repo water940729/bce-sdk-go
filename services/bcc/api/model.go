@@ -611,11 +611,11 @@ type AutoSnapshotPolicyModel2 struct {
 }
 
 type ListASPResult struct {
-	Marker              string                     `json:"marker"`
-	IsTruncated         bool                       `json:"isTruncated"`
-	NextMarker          string                     `json:"nextMarker"`
-	MaxKeys             int                        `json:"maxKeys"`
-	AutoSnapshotPolicys []AutoSnapshotPolicyModel2 `json:"autoSnapshotPolicys"`
+	Marker              string                    `json:"marker"`
+	IsTruncated         bool                      `json:"isTruncated"`
+	NextMarker          string                    `json:"nextMarker"`
+	MaxKeys             int                       `json:"maxKeys"`
+	AutoSnapshotPolicys []AutoSnapshotPolicyModel `json:"autoSnapshotPolicys"`
 }
 
 type GetASPDetailResult struct {
