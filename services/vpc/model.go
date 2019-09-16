@@ -146,7 +146,7 @@ type Subnet struct {
 type UpdateVPCArgs struct {
 	ClientToken string `json:"-"`
 	Name        string `json:"name"`
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 }
 
 type CreateSubnetArgs struct {
@@ -211,9 +211,9 @@ type CreateRouteRuleArgs struct {
 	RouteTableId       string      `json:"routeTableId"`
 	SourceAddress      string      `json:"sourceAddress"`
 	DestinationAddress string      `json:"destinationAddress"`
-	NexthopId          string      `json:"nexthopId,omitempty"`
+	NexthopId          string      `json:"nexthopId"`
 	NexthopType        NexthopType `json:"nexthopType"`
-	Description        string      `json:"description"`
+	Description        string      `json:"description,omitempty"`
 }
 
 type CreateRouteRuleResult struct {
@@ -254,7 +254,7 @@ type CreateAclRuleArgs struct {
 
 type AclRuleRequest struct {
 	SubnetId             string               `json:"subnetId"`
-	Description          string               `json:"description"`
+	Description          string               `json:"description,omitempty"`
 	Protocol             AclRuleProtocolType  `json:"protocol"`
 	SourceIpAddress      string               `json:"sourceIpAddress"`
 	DestinationIpAddress string               `json:"destinationIpAddress"`
@@ -296,7 +296,7 @@ type CreateNatGatewayArgs struct {
 	Name        string             `json:"name"`
 	VpcId       string             `json:"vpcId"`
 	Spec        NatGatewaySpecType `json:"spec"`
-	Eips        []string           `json:"eips"`
+	Eips        []string           `json:"eips,omitempty"`
 	Billing     *Billing           `json:"billing"`
 }
 
@@ -366,13 +366,13 @@ type RenewNatGatewayArgs struct {
 type CreatePeerConnArgs struct {
 	ClientToken     string   `json:"-"`
 	BandwidthInMbps int      `json:"bandwidthInMbps"`
-	Description     string   `json:"description"`
-	LocalIfName     string   `json:"localIfName"`
+	Description     string   `json:"description,omitempty"`
+	LocalIfName     string   `json:"localIfName,omitempty"`
 	LocalVpcId      string   `json:"localVpcId"`
-	PeerAccountId   string   `json:"peerAccountId"`
+	PeerAccountId   string   `json:"peerAccountId,omitempty"`
 	PeerVpcId       string   `json:"peerVpcId"`
 	PeerRegion      string   `json:"peerRegion"`
-	PeerIfName      string   `json:"peerIfName"`
+	PeerIfName      string   `json:"peerIfName,omitempty"`
 	Billing         *Billing `json:"billing"`
 }
 
