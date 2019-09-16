@@ -35,7 +35,7 @@ func main() {
 func TCPListenerExample(client *appblb.Client, BLBID string) {
 	createArgs := &appblb.CreateAppTCPListenerArgs{
 		ClientToken:  getClientToken(),
-		ListenerPort: 100,
+		ListenerPort: 90,
 		Scheduler:    "RoundRobin",
 	}
 	err := client.CreateAppTCPListener(BLBID, createArgs)

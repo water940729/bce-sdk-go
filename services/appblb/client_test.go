@@ -17,11 +17,13 @@ var (
 	APPBLB_ID                 string
 	APPBLB_SERVERGROUP_ID     string
 	APPBLB_SERVERGROUPPORT_ID string
+	APPBLB_POLICY_ID          string
 
 	// set these values before start test
 	VPC_TEST_ID    = ""
 	SUBNET_TEST_ID = ""
 	INSTANCE_ID    = ""
+	CERT_ID        = ""
 )
 
 // For security reason, ak/sk should not hard write here.
@@ -240,6 +242,206 @@ func TestClient_DeleteAppServerGroup(t *testing.T) {
 		ClientToken: getClientToken(),
 	}
 	err := APPBLB_CLIENT.DeleteAppServerGroup(APPBLB_ID, deleteArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_CreateAppTCPListener(t *testing.T) {
+	createArgs := &CreateAppTCPListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 90,
+		Scheduler:    "RoundRobin",
+	}
+	err := APPBLB_CLIENT.CreateAppTCPListener(APPBLB_ID, createArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_UpdateAppTCPListener(t *testing.T) {
+	updateArgs := &UpdateAppTCPListenerArgs{
+		UpdateAppListenerArgs: UpdateAppListenerArgs{
+			ListenerPort: 90,
+			Scheduler:    "Hash",
+		},
+	}
+	err := APPBLB_CLIENT.UpdateAppTCPListener(APPBLB_ID, updateArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DescribeAppTCPListeners(t *testing.T) {
+	describeArgs := &DescribeAppListenerArgs{
+		ListenerPort: 90,
+	}
+	_, err := APPBLB_CLIENT.DescribeAppTCPListeners(APPBLB_ID, describeArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_CreateAppUDPListener(t *testing.T) {
+	createArgs := &CreateAppUDPListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 91,
+		Scheduler:    "RoundRobin",
+	}
+	err := APPBLB_CLIENT.CreateAppUDPListener(APPBLB_ID, createArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_UpdateAppUDPListener(t *testing.T) {
+	updateArgs := &UpdateAppUDPListenerArgs{
+		UpdateAppListenerArgs: UpdateAppListenerArgs{
+			ListenerPort: 91,
+			Scheduler:    "Hash",
+		},
+	}
+	err := APPBLB_CLIENT.UpdateAppUDPListener(APPBLB_ID, updateArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DescribeAppUDPListeners(t *testing.T) {
+	describeArgs := &DescribeAppListenerArgs{
+		ListenerPort: 91,
+	}
+	_, err := APPBLB_CLIENT.DescribeAppUDPListeners(APPBLB_ID, describeArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_CreateAppHTTPListener(t *testing.T) {
+	createArgs := &CreateAppHTTPListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 92,
+		Scheduler:    "RoundRobin",
+	}
+	err := APPBLB_CLIENT.CreateAppHTTPListener(APPBLB_ID, createArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_UpdateAppHTTPListener(t *testing.T) {
+	updateArgs := &UpdateAppHTTPListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 92,
+		Scheduler:    "LeastConnection",
+		KeepSession:  true,
+	}
+	err := APPBLB_CLIENT.UpdateAppHTTPListener(APPBLB_ID, updateArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_CreatePolicys(t *testing.T) {
+	createArgs := &CreatePolicysArgs{
+		ListenerPort: 92,
+		ClientToken:  getClientToken(),
+		AppPolicyVos: []AppPolicy{
+			{
+				Description:      "test policy",
+				AppServerGroupId: "",
+				BackendPort:      92,
+				Priority:         300,
+				RuleList: []AppRule{
+					{
+						Key:   "*",
+						Value: "*",
+					},
+				},
+			},
+		},
+	}
+	err := APPBLB_CLIENT.CreatePolicys(APPBLB_ID, createArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DescribePolicys(t *testing.T) {
+	describeArgs := &DescribePolicysArgs{
+		Port: 80,
+	}
+	result, err := APPBLB_CLIENT.DescribePolicys(APPBLB_ID, describeArgs)
+	ExpectEqual(t.Errorf, nil, err)
+
+	APPBLB_POLICY_ID = result.PolicyList[0].Id
+}
+
+func TestClient_DeletePolicys(t *testing.T) {
+	deleteArgs := &DeletePolicysArgs{
+		Port:         80,
+		PolicyIdList: []string{APPBLB_POLICY_ID},
+		ClientToken:  getClientToken(),
+	}
+	err := APPBLB_CLIENT.DeletePolicys(APPBLB_ID, deleteArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DescribeAppHTTPListeners(t *testing.T) {
+	describeArgs := &DescribeAppListenerArgs{
+		ListenerPort: 92,
+	}
+	_, err := APPBLB_CLIENT.DescribeAppHTTPListeners(APPBLB_ID, describeArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_CreateAppHTTPSListener(t *testing.T) {
+	createArgs := &CreateAppHTTPSListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 93,
+		Scheduler:    "RoundRobin",
+		CertIds:      []string{CERT_ID},
+	}
+	err := APPBLB_CLIENT.CreateAppHTTPSListener(APPBLB_ID, createArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_UpdateAppHTTPSListener(t *testing.T) {
+	updateArgs := &UpdateAppHTTPSListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 93,
+		Scheduler:    "LeastConnection",
+		KeepSession:  true,
+		CertIds:      []string{CERT_ID},
+	}
+	err := APPBLB_CLIENT.UpdateAppHTTPSListener(APPBLB_ID, updateArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DescribeAppHTTPSListeners(t *testing.T) {
+	describeArgs := &DescribeAppListenerArgs{
+		ListenerPort: 93,
+	}
+	_, err := APPBLB_CLIENT.DescribeAppHTTPSListeners(APPBLB_ID, describeArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_CreateAppSSLListener(t *testing.T) {
+	createArgs := &CreateAppSSLListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 94,
+		Scheduler:    "RoundRobin",
+		CertIds:      []string{CERT_ID},
+	}
+	err := APPBLB_CLIENT.CreateAppSSLListener(APPBLB_ID, createArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_UpdateAppSSLListener(t *testing.T) {
+	updateArgs := &UpdateAppSSLListenerArgs{
+		ClientToken:  getClientToken(),
+		ListenerPort: 94,
+		Scheduler:    "LeastConnection",
+		CertIds:      []string{CERT_ID},
+	}
+	err := APPBLB_CLIENT.UpdateAppSSLListener(APPBLB_ID, updateArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DescribeAppSSLListeners(t *testing.T) {
+	describeArgs := &DescribeAppListenerArgs{
+		ListenerPort: 94,
+	}
+	_, err := APPBLB_CLIENT.DescribeAppSSLListeners(APPBLB_ID, describeArgs)
+	ExpectEqual(t.Errorf, nil, err)
+}
+
+func TestClient_DeleteAppListeners(t *testing.T) {
+	deleteArgs := &DeleteAppListenersArgs{
+		PortList:    []uint16{90, 91, 92, 93, 94},
+		ClientToken: getClientToken(),
+	}
+	err := APPBLB_CLIENT.DeleteAppListeners(APPBLB_ID, deleteArgs)
 	ExpectEqual(t.Errorf, nil, err)
 }
 
