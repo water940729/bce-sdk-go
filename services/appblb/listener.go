@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Baidu, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+// listener.go - the Application BLB Listener APIs definition supported by the APPBLB service
+
 package appblb
 
 import (
@@ -8,6 +24,13 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
+// CreateAppTCPListener - create a TCP Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create TCP Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) CreateAppTCPListener(blbId string, args *CreateAppTCPListenerArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -29,6 +52,13 @@ func (c *Client) CreateAppTCPListener(blbId string, args *CreateAppTCPListenerAr
 		Do()
 }
 
+// CreateAppUDPListener - create a UDP Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create UDP Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) CreateAppUDPListener(blbId string, args *CreateAppUDPListenerArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -50,6 +80,13 @@ func (c *Client) CreateAppUDPListener(blbId string, args *CreateAppUDPListenerAr
 		Do()
 }
 
+// CreateAppHTTPListener - create a HTTP Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create HTTP Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) CreateAppHTTPListener(blbId string, args *CreateAppHTTPListenerArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -71,6 +108,13 @@ func (c *Client) CreateAppHTTPListener(blbId string, args *CreateAppHTTPListener
 		Do()
 }
 
+// CreateAppHTTPSListener - create a HTTPS Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create HTTPS Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) CreateAppHTTPSListener(blbId string, args *CreateAppHTTPSListenerArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -96,6 +140,13 @@ func (c *Client) CreateAppHTTPSListener(blbId string, args *CreateAppHTTPSListen
 		Do()
 }
 
+// CreateAppSSLListener - create a SSL Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create SSL Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) CreateAppSSLListener(blbId string, args *CreateAppSSLListenerArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -121,6 +172,13 @@ func (c *Client) CreateAppSSLListener(blbId string, args *CreateAppSSLListenerAr
 		Do()
 }
 
+// UpdateAppTCPListener - update a TCP Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to update TCP Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) UpdateAppTCPListener(blbId string, args *UpdateAppTCPListenerArgs) error {
 	if args == nil || args.ListenerPort == 0 {
 		return fmt.Errorf("unset listener port")
@@ -135,6 +193,13 @@ func (c *Client) UpdateAppTCPListener(blbId string, args *UpdateAppTCPListenerAr
 		Do()
 }
 
+// UpdateAppUDPListener - update a UDP Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to update UDP Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) UpdateAppUDPListener(blbId string, args *UpdateAppUDPListenerArgs) error {
 	if args == nil || args.ListenerPort == 0 {
 		return fmt.Errorf("unset listener port")
@@ -153,6 +218,13 @@ func (c *Client) UpdateAppUDPListener(blbId string, args *UpdateAppUDPListenerAr
 		Do()
 }
 
+// UpdateAppHTTPListener - update a HTTP Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to update HTTP Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) UpdateAppHTTPListener(blbId string, args *UpdateAppHTTPListenerArgs) error {
 	if args == nil || args.ListenerPort == 0 {
 		return fmt.Errorf("unset listener port")
@@ -171,6 +243,13 @@ func (c *Client) UpdateAppHTTPListener(blbId string, args *UpdateAppHTTPListener
 		Do()
 }
 
+// UpdateAppHTTPSListener - update a HTTPS Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to update HTTPS Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) UpdateAppHTTPSListener(blbId string, args *UpdateAppHTTPSListenerArgs) error {
 	if args == nil || args.ListenerPort == 0 {
 		return fmt.Errorf("unset listener port")
@@ -193,6 +272,13 @@ func (c *Client) UpdateAppHTTPSListener(blbId string, args *UpdateAppHTTPSListen
 		Do()
 }
 
+// UpdateAppSSLListener - update a SSL Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to update SSL Listener
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) UpdateAppSSLListener(blbId string, args *UpdateAppSSLListenerArgs) error {
 	if args == nil || args.ListenerPort == 0 {
 		return fmt.Errorf("unset listener port")
@@ -215,6 +301,14 @@ func (c *Client) UpdateAppSSLListener(blbId string, args *UpdateAppSSLListenerAr
 		Do()
 }
 
+// DescribeAppTCPListeners - describe all TCP Listeners
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to describe all TCP Listeners
+// RETURNS:
+//     - *DescribeAppTCPListenersResult: the result of describe all TCP Listeners
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppTCPListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppTCPListenersResult, error) {
 	if args == nil {
 		args = &DescribeAppListenerArgs{}
@@ -240,6 +334,14 @@ func (c *Client) DescribeAppTCPListeners(blbId string, args *DescribeAppListener
 	return result, err
 }
 
+// DescribeAppUDPListeners - describe all UDP Listeners
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to describe all UDP Listeners
+// RETURNS:
+//     - *DescribeAppTCPListenersResult: the result of describe all UDP Listeners
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppUDPListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppUDPListenersResult, error) {
 	if args == nil {
 		args = &DescribeAppListenerArgs{}
@@ -265,6 +367,14 @@ func (c *Client) DescribeAppUDPListeners(blbId string, args *DescribeAppListener
 	return result, err
 }
 
+// DescribeAppHTTPListeners - describe all HTTP Listeners
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to describe all HTTP Listeners
+// RETURNS:
+//     - *DescribeAppTCPListenersResult: the result of describe all HTTP Listeners
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppHTTPListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppHTTPListenersResult, error) {
 	if args == nil {
 		args = &DescribeAppListenerArgs{}
@@ -290,6 +400,14 @@ func (c *Client) DescribeAppHTTPListeners(blbId string, args *DescribeAppListene
 	return result, err
 }
 
+// DescribeAppHTTPSListeners - describe all HTTPS Listeners
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to describe all HTTPS Listeners
+// RETURNS:
+//     - *DescribeAppTCPListenersResult: the result of describe all HTTPS Listeners
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppHTTPSListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppHTTPSListenersResult, error) {
 	if args == nil {
 		args = &DescribeAppListenerArgs{}
@@ -315,6 +433,14 @@ func (c *Client) DescribeAppHTTPSListeners(blbId string, args *DescribeAppListen
 	return result, err
 }
 
+// DescribeAppSSLListeners - describe all SSL Listeners
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to describe all SSL Listeners
+// RETURNS:
+//     - *DescribeAppTCPListenersResult: the result of describe all SSL Listeners
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppSSLListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppSSLListenersResult, error) {
 	if args == nil {
 		args = &DescribeAppListenerArgs{}
@@ -340,6 +466,13 @@ func (c *Client) DescribeAppSSLListeners(blbId string, args *DescribeAppListener
 	return result, err
 }
 
+// DeleteAppListeners - delete Listeners
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to delete Listeners, a listener port list
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DeleteAppListeners(blbId string, args *DeleteAppListenersArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -358,6 +491,13 @@ func (c *Client) DeleteAppListeners(blbId string, args *DeleteAppListenersArgs) 
 		Do()
 }
 
+// CreatePolicys - create a policy bind with Listener
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create a policy
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) CreatePolicys(blbId string, args *CreatePolicysArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
@@ -379,6 +519,13 @@ func (c *Client) CreatePolicys(blbId string, args *CreatePolicysArgs) error {
 		Do()
 }
 
+// DescribePolicys - descirbe a policy
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to create a policy
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DescribePolicys(blbId string, args *DescribePolicysArgs) (*DescribePolicysResult, error) {
 	if args == nil {
 		return nil, fmt.Errorf("unset args")
@@ -405,6 +552,13 @@ func (c *Client) DescribePolicys(blbId string, args *DescribePolicysArgs) (*Desc
 	return result, err
 }
 
+// DeletePolicys - delete a policy
+//
+// PARAMS:
+//     - blbId: LoadBalancer's ID
+//     - args: parameters to delete a policy
+// RETURNS:
+//     - error: nil if ok otherwise the specific error
 func (c *Client) DeletePolicys(blbId string, args *DeletePolicysArgs) error {
 	if args == nil {
 		return fmt.Errorf("unset args")
