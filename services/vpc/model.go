@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Baidu, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+// model.go - definitions of the request arguments and results data structure model
+
 package vpc
 
 import "github.com/baidubce/bce-sdk-go/util"
@@ -78,6 +94,7 @@ const (
 	DNS_STATUS_CLOSING DnsStatusType = "closing"
 )
 
+// CreateVPCArgs defines the structure of the input parameters for the CreateVPC api
 type CreateVPCArgs struct {
 	ClientToken string          `json:"-"`
 	Name        string          `json:"name"`
@@ -86,10 +103,12 @@ type CreateVPCArgs struct {
 	Tags        []util.TagModel `json:"tags,omitempty"`
 }
 
+// CreateVPCResult defines the structure of the output parameters for the CreateVPC api
 type CreateVPCResult struct {
 	VPCID string `json:"vpcId"`
 }
 
+// ListVPCArgs defines the structure of the input parameters for the ListVPC api
 type ListVPCArgs struct {
 	Marker  string
 	MaxKeys int
@@ -100,6 +119,7 @@ type ListVPCArgs struct {
 	IsDefault string
 }
 
+// ListVPCResult defines the structure of the output parameters for the ListVPC api
 type ListVPCResult struct {
 	Marker      string `json:"marker"`
 	IsTruncated bool   `json:"isTruncated"`
@@ -117,6 +137,7 @@ type VPC struct {
 	Tags        []util.TagModel `json:"tags"`
 }
 
+// GetVPCDetailResult defines the structure of the output parameters for the GetVPCDetail api
 type GetVPCDetailResult struct {
 	VPC ShowVPCModel `json:"vpc"`
 }
@@ -143,12 +164,14 @@ type Subnet struct {
 	Tags        []util.TagModel `json:"tags"`
 }
 
+// UpdateVPCArgs defines the structure of the input parameters for the UpdateVPC api
 type UpdateVPCArgs struct {
 	ClientToken string `json:"-"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 }
 
+// CreateSubnetArgs defines the structure of the input parameters for the CreateSubnet api
 type CreateSubnetArgs struct {
 	ClientToken string          `json:"-"`
 	Name        string          `json:"name"`
@@ -160,10 +183,12 @@ type CreateSubnetArgs struct {
 	Tags        []util.TagModel `json:"tags,omitempty"`
 }
 
+// CreateSubnetResult defines the structure of the output parameters for the CreateSubnet api
 type CreateSubnetResult struct {
 	SubnetId string `json:"subnetId"`
 }
 
+// ListSubnetArgs defines the structure of the input parameters for the ListSubnet api
 type ListSubnetArgs struct {
 	Marker     string
 	MaxKeys    int
@@ -172,6 +197,7 @@ type ListSubnetArgs struct {
 	SubnetType SubnetType
 }
 
+// ListSubnetResult defines the structure of the output parameters for the ListSubnet api
 type ListSubnetResult struct {
 	Marker      string   `json:"marker"`
 	IsTruncated bool     `json:"isTruncated"`
@@ -180,10 +206,12 @@ type ListSubnetResult struct {
 	Subnets     []Subnet `json:"subnets"`
 }
 
+// GetSubnetDetailResult defines the structure of the output parameters for the GetSubnetDetail api
 type GetSubnetDetailResult struct {
 	Subnet Subnet `json:"subnet"`
 }
 
+// UpdateSubnetArgs defines the structure of the input parameters for the UpdateSubnet api
 type UpdateSubnetArgs struct {
 	ClientToken string `json:"-"`
 	Name        string `json:"name"`
@@ -200,12 +228,14 @@ type RouteRule struct {
 	Description        string      `json:"description"`
 }
 
+// GetRouteTableResult defines the structure of the output parameters for the GetRouteTableDetail api
 type GetRouteTableResult struct {
 	RouteTableId string      `json:"routeTableId"`
 	VpcId        string      `json:"vpcId"`
 	RouteRules   []RouteRule `json:"routeRules"`
 }
 
+// CreateRouteRuleArgs defines the structure of the input parameters for the CreateRouteRule api
 type CreateRouteRuleArgs struct {
 	ClientToken        string
 	RouteTableId       string      `json:"routeTableId"`
@@ -216,10 +246,12 @@ type CreateRouteRuleArgs struct {
 	Description        string      `json:"description,omitempty"`
 }
 
+// CreateRouteRuleResult defines the structure of the output parameters for the CreateRouteRule api
 type CreateRouteRuleResult struct {
 	RouteRuleId string `json:"routeRuleId"`
 }
 
+// ListAclEntrysResult defines the structure of the output parameters for the ListAclEntrys api
 type ListAclEntrysResult struct {
 	VpcId     string     `json:"vpcId"`
 	VpcName   string     `json:"vpcName"`
@@ -248,6 +280,7 @@ type AclRule struct {
 	Action               AclRuleActionType    `json:"action"`
 }
 
+// CreateAclRuleArgs defines the structure of the input parameters for the CreateAclRule api
 type CreateAclRuleArgs struct {
 	AclRules []AclRuleRequest `json:"aclRules"`
 }
@@ -265,12 +298,14 @@ type AclRuleRequest struct {
 	Action               AclRuleActionType    `json:"action"`
 }
 
+// ListAclRulesArgs defines the structure of the input parameters for the ListAclRules api
 type ListAclRulesArgs struct {
 	Marker   string `json:"marker"`
 	MaxKeys  int    `json:"maxKeys"`
 	SubnetId string `json:"subnetId"`
 }
 
+// ListAclRulesResult defines the structure of the output parameters for the ListAclRules api
 type ListAclRulesResult struct {
 	Marker      string    `json:"marker"`
 	IsTruncated bool      `json:"isTruncated"`
@@ -279,6 +314,7 @@ type ListAclRulesResult struct {
 	AclRules    []AclRule `json:"aclRules"`
 }
 
+// UpdateAclRuleArgs defines the structure of the input parameters for the UpdateAclRule api
 type UpdateAclRuleArgs struct {
 	ClientToken          string              `json:"-"`
 	Description          string              `json:"description,omitempty"`
@@ -291,6 +327,7 @@ type UpdateAclRuleArgs struct {
 	Action               AclRuleActionType   `json:"action,omitempty"`
 }
 
+// CreateNatGatewayArgs defines the structure of the input parameters for the CreateNatGateway api
 type CreateNatGatewayArgs struct {
 	ClientToken string             `json:"-"`
 	Name        string             `json:"name"`
@@ -310,10 +347,12 @@ type Billing struct {
 	Reservation   *Reservation      `json:"reservation,omitempty"`
 }
 
+// CreateNatGatewayResult defines the structure of the output parameters for the CreateNatGateway api
 type CreateNatGatewayResult struct {
 	NatId string `json:"natId"`
 }
 
+// ListNatGatewayArgs defines the structure of the input parameters for the ListNatGateway api
 type ListNatGatewayArgs struct {
 	VpcId   string
 	NatId   string
@@ -323,6 +362,7 @@ type ListNatGatewayArgs struct {
 	MaxKeys int
 }
 
+// ListNatGatewayResult defines the structure of the output parameters for the ListNatGateway api
 type ListNatGatewayResult struct {
 	Nats        []NAT  `json:"nats"`
 	Marker      string `json:"marker"`
@@ -343,26 +383,31 @@ type NAT struct {
 	ExpiredTime   string        `json:"expiredTime"`
 }
 
+// UpdateNatGatewayArgs defines the structure of the input parameters for the UpdateNatGateway api
 type UpdateNatGatewayArgs struct {
 	ClientToken string `json:"-"`
 	Name        string `json:"name"`
 }
 
+// BindEipsArgs defines the structure of the input parameters for the BindEips api
 type BindEipsArgs struct {
 	ClientToken string   `json:"-"`
 	Eips        []string `json:"eips"`
 }
 
+// UnBindEipsArgs defines the structure of the input parameters for the UnBindEips api
 type UnBindEipsArgs struct {
 	ClientToken string   `json:"-"`
 	Eips        []string `json:"eips"`
 }
 
+// RenewNatGatewayArgs defines the structure of the input parameters for the RenewNatGateway api
 type RenewNatGatewayArgs struct {
 	ClientToken string   `json:"-"`
 	Billing     *Billing `json:"billing"`
 }
 
+// CreatePeerConnArgs defines the structure of the input parameters for the CreatePeerConn api
 type CreatePeerConnArgs struct {
 	ClientToken     string   `json:"-"`
 	BandwidthInMbps int      `json:"bandwidthInMbps"`
@@ -376,16 +421,19 @@ type CreatePeerConnArgs struct {
 	Billing         *Billing `json:"billing"`
 }
 
+// CreatePeerConnResult defines the structure of the output parameters for the CreatePeerConn api
 type CreatePeerConnResult struct {
 	PeerConnId string `json:"peerConnId"`
 }
 
+// ListPeerConnsArgs defines the structure of the input parameters for the ListPeerConns api
 type ListPeerConnsArgs struct {
 	VpcId   string
 	Marker  string
 	MaxKeys int
 }
 
+// ListPeerConnsResult defines the structure of the output parameters for the ListPeerConns api
 type ListPeerConnsResult struct {
 	PeerConns   []PeerConn `json:"peerConns"`
 	Marker      string     `json:"marker"`
@@ -413,22 +461,26 @@ type PeerConn struct {
 	ExpiredTime     string             `json:"expiredTime"`
 }
 
+// UpdatePeerConnArgs defines the structure of the input parameters for the UpdatePeerConn api
 type UpdatePeerConnArgs struct {
 	LocalIfId   string `json:"localIfId"`
 	Description string `json:"description,omitempty"`
 	LocalIfName string `json:"localIfName,omitempty"`
 }
 
+// ResizePeerConnArgs defines the structure of the input parameters for the ResizePeerConn api
 type ResizePeerConnArgs struct {
 	NewBandwidthInMbps int    `json:"newBandwidthInMbps"`
 	ClientToken        string `json:"-"`
 }
 
+// RenewPeerConnArgs defines the structure of the input parameters for the RenewPeerConn api
 type RenewPeerConnArgs struct {
 	Billing     *Billing `json:"billing"`
 	ClientToken string   `json:"-"`
 }
 
+// PeerConnSyncDNSArgs defines the structure of the input parameters for the PeerConnSyncDNS api
 type PeerConnSyncDNSArgs struct {
 	Role        PeerConnRoleType `json:"role"`
 	ClientToken string           `json:"-"`
