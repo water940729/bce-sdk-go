@@ -23,10 +23,10 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
-// CreateEip - create a EIP with the specific parameters
+// CreateEip - create an EIP with the specific parameters
 //
 // PARAMS:
-//     - args: the arguments to create a eip
+//     - args: the arguments to create an eip
 // RETURNS:
 //     - *CreateEipResult: the result of create EIP, contains new EIP's address
 //     - error: nil if success otherwise the specific error

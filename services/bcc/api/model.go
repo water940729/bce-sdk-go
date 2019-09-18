@@ -168,6 +168,9 @@ type CreateInstanceArgs struct {
 	GpuCard               string           `json:"gpuCard,omitempty"`
 	FpgaCard              string           `json:"fpgaCard,omitempty"`
 	CardCount             string           `json:"cardCount,omitempty"`
+	AutoRenewTimeUnit     string           `json:"autoRenewTimeUnit"`
+	AutoRenewTime         int              `json:"autoRenewTime"`
+	CdsAutoRenew          bool             `json:"cdsAutoRenew"`
 }
 
 type CreateInstanceResult struct {
@@ -227,6 +230,17 @@ type GetInstanceVNCResult struct {
 
 type PurchaseReservedArgs struct {
 	Billing Billing `json:"billing"`
+}
+
+type DeleteInstanceWithRelateResourceArgs struct {
+	RelatedReleaseFlag    bool `json:"relatedReleaseFlag"`
+	DeleteCdsSnapshotFlag bool `json:"deleteCdsSnapshotFlag"`
+}
+
+type InstanceChangeSubnetArgs struct {
+	InstanceId string `json:"instanceId"`
+	SubnetId   string `json:"subnetId"`
+	Reboot     bool   `json:"reboot"`
 }
 
 type VolumeStatus string
@@ -620,6 +634,14 @@ type ListASPResult struct {
 
 type GetASPDetailResult struct {
 	AutoSnapshotPolicy AutoSnapshotPolicyModel2 `json:"autoSnapshotPolicy"`
+}
+
+type UpdateASPArgs struct {
+	Name           string   `json:"name"`
+	TimePoints     []string `json:"timePoints"`
+	RepeatWeekdays []string `json:"repeatWeekdays"`
+	RetentionDays  string   `json:"retentionDays"`
+	AspId          string   `json:"aspId"`
 }
 
 type InstanceTypeModel struct {

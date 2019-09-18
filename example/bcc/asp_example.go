@@ -25,7 +25,7 @@ func main() {
 	}
 
 	createArgs := &api.CreateASPArgs{
-		Name:           "sdk-create",
+		Name:           "sdkCreate",
 		TimePoints:     []string{"20"},
 		RepeatWeekdays: []string{"1", "5"},
 		RetentionDays:  "7",
@@ -71,6 +71,27 @@ func main() {
 		return
 	}
 	log.Info("Detach ASP success\n")
+
+	updateArgs := &api.UpdateASPArgs{
+		Name:           "testUpdate",
+		TimePoints:     []string{"10"},
+		RepeatWeekdays: []string{"0", "1", "7"},
+		RetentionDays:  "2",
+		AspId:          createResult.AspId,
+	}
+	err = client.UpdateAutoSnapshotPolicy(updateArgs)
+	if err != nil {
+		log.Errorf("Update ASP failed: %+v\n", err)
+		return
+	}
+	log.Info("Update ASP success\n")
+
+	getDetailResult, err = client.GetAutoSnapshotPolicy(createResult.AspId)
+	if err != nil {
+		log.Errorf("get ASP detail failed: %+v\n", err)
+		return
+	}
+	log.Info("get ASP detail success: %+v\n", getDetailResult)
 
 	err = client.DeleteAutoSnapshotPolicy(createResult.AspId)
 	if err != nil {
