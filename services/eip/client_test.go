@@ -128,8 +128,15 @@ func TestClient_PurchaseReservedEip(t *testing.T) {
 
 func TestClient_ListEip(t *testing.T) {
 	args := &ListEipArgs{}
-	_, err := EIP_CLIENT.ListEip(args)
+	result, err := EIP_CLIENT.ListEip(args)
 	ExpectEqual(t.Errorf, nil, err)
+	for _, e := range result.EipList {
+		if e.Eip == EIP_ADDRESS {
+			ExpectEqual(t.Errorf, "Postpaid", e.PaymentTiming)
+			ExpectEqual(t.Errorf, "ByTraffic", e.BillingMethod)
+			ExpectEqual(t.Errorf, 2, e.BandWidthInMbps)
+		}
+	}
 }
 
 func TestClient_DeleteEip(t *testing.T) {

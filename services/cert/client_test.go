@@ -94,8 +94,10 @@ func TestClient_ListCerts(t *testing.T) {
 }
 
 func TestClient_GetCertMeta(t *testing.T) {
-	_, err := CERT_CLIENT.GetCertMeta(CERT_ID)
+	result, err := CERT_CLIENT.GetCertMeta(CERT_ID)
 	ExpectEqual(t.Errorf, nil, err)
+	ExpectEqual(t.Errorf, "sdkCreateTest", result.CertName)
+	ExpectEqual(t.Errorf, 1, result.CertType)
 }
 
 func TestClient_UpdateCertName(t *testing.T) {
