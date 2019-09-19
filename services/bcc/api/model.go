@@ -337,6 +337,8 @@ type AttachVolumeResult struct {
 }
 
 type CreateCDSVolumeArgs struct {
+	Name          string      `json:"name,omitempty"`
+	Description   string      `json:"description,omitempty"`
 	SnapshotId    string      `json:"snapshotId,omitempty"`
 	ZoneName      string      `json:"zoneName,omitempty"`
 	PurchaseCount int         `json:"purchaseCount,omitempty"`

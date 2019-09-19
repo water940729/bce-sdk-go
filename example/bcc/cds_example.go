@@ -30,6 +30,8 @@ func main() {
 		Billing: &api.Billing{
 			PaymentTiming: api.PaymentTimingPostPaid,
 		},
+		Name:        "sdkCreate",
+		Description: "sdk test",
 	}
 	createResult, err := client.CreateCDSVolume(createCdsArgs)
 	if err != nil {
