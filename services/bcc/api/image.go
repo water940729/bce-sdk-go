@@ -25,6 +25,14 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
+// CreateImage - create an image
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - args: the arguments to create image
+// RETURNS:
+//     - *CreateImageResult: the result of the image newly created
+//     - error: nil if success otherwise the specific error
 func CreateImage(cli bce.Client, args *CreateImageArgs) (*CreateImageResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -57,6 +65,14 @@ func CreateImage(cli bce.Client, args *CreateImageArgs) (*CreateImageResult, err
 	return jsonBody, nil
 }
 
+// ListImage - list all images with the specified parameters
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - queryArgs: the arguments to list images
+// RETURNS:
+//     - *ListImageResult: result of the image list
+//     - error: nil if success otherwise the specific error
 func ListImage(cli bce.Client, queryArgs *ListImageArgs) (*ListImageResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -95,6 +111,14 @@ func ListImage(cli bce.Client, queryArgs *ListImageArgs) (*ListImageResult, erro
 	return jsonBody, nil
 }
 
+// GetImageDetail - get details of the specified image
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of the image
+// RETURNS:
+//     - *GetImageDetailResult: result of image details
+//     - error: nil if success otherwise the specific error
 func GetImageDetail(cli bce.Client, imageId string) (*GetImageDetailResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -117,6 +141,13 @@ func GetImageDetail(cli bce.Client, imageId string) (*GetImageDetailResult, erro
 	return jsonBody, nil
 }
 
+// DeleteImage - delete a specified image
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of image to be deleted
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func DeleteImage(cli bce.Client, imageId string) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -136,6 +167,15 @@ func DeleteImage(cli bce.Client, imageId string) error {
 	return nil
 }
 
+// RemoteCopyImage - copy custom images across regions, only custom images supported, the system \
+// and service integration images cannot be copied.
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of the image to be copied
+//     - args: the arguments to copy image
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func RemoteCopyImage(cli bce.Client, imageId string, args *RemoteCopyImageArgs) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -167,6 +207,13 @@ func RemoteCopyImage(cli bce.Client, imageId string, args *RemoteCopyImageArgs) 
 	return nil
 }
 
+// CancelRemoteCopyImage - cancel the image copy across regions
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of the image
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func CancelRemoteCopyImage(cli bce.Client, imageId string) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -188,6 +235,14 @@ func CancelRemoteCopyImage(cli bce.Client, imageId string) error {
 	return nil
 }
 
+// ShareImage - share a specified custom image
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of the image to be shared
+//     - args: the arguments to share image
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func ShareImage(cli bce.Client, imageId string, args *SharedUser) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -219,6 +274,14 @@ func ShareImage(cli bce.Client, imageId string, args *SharedUser) error {
 	return nil
 }
 
+// UnShareImage - unshare a specified image
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of the image to be unshared
+//     - args: the arguments to unshare image
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func UnShareImage(cli bce.Client, imageId string, args *SharedUser) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -250,6 +313,14 @@ func UnShareImage(cli bce.Client, imageId string, args *SharedUser) error {
 	return nil
 }
 
+// GetImageSharedUser - get the list of users that the image has been shared with
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - imageId: id of the image
+// RETURNS:
+//     - *GetImageSharedUserResult: result of the shared users
+//     - error: nil if success otherwise the specific error
 func GetImageSharedUser(cli bce.Client, imageId string) (*GetImageSharedUserResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -272,6 +343,14 @@ func GetImageSharedUser(cli bce.Client, imageId string) (*GetImageSharedUserResu
 	return jsonBody, nil
 }
 
+// GetImageOS - get the operating system information of the instance in batches according to the instance ids
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - args: the arguments of instance ids
+// RETURNS:
+//     - *GetImageOsResult: result of the operating system information
+//     - error: nil if success otherwise the specific error
 func GetImageOS(cli bce.Client, args *GetImageOsArgs) (*GetImageOsResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}

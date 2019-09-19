@@ -22,6 +22,13 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
+// ListSpec - get specification list information of the instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+// RETURNS:
+//     - *ListSpecResult: result of the specifications
+//     - error: nil if success otherwise the specific error
 func ListSpec(cli bce.Client) (*ListSpecResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -45,6 +52,13 @@ func ListSpec(cli bce.Client) (*ListSpecResult, error) {
 	return jsonBody, nil
 }
 
+// ListZone - get the available zone list in the current region
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+// RETURNS:
+//     - *ListZoneResult: result of the available zones
+//     - error: nil if success otherwise the specific error
 func ListZone(cli bce.Client) (*ListZoneResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
