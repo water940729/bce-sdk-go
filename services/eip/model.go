@@ -15,6 +15,8 @@
 // model.go - definitions of the request arguments and results data structure model
 package eip
 
+import "github.com/baidubce/bce-sdk-go/util"
+
 type Reservation struct {
 	ReservationLength   int    `json:"reservationLength,omitempty"`
 	ReservationTimeUnit string `json:"reservationTimeUnit,omitempty"`
@@ -27,10 +29,11 @@ type Billing struct {
 }
 
 type CreateEipArgs struct {
-	Name            string   `json:"name,omitempty"`
-	BandWidthInMbps int      `json:"bandwidthInMbps"`
-	Billing         *Billing `json:"billing"`
-	ClientToken     string   `json:"-"`
+	Name            string          `json:"name,omitempty"`
+	BandWidthInMbps int             `json:"bandwidthInMbps"`
+	Billing         *Billing        `json:"billing"`
+	Tags            []util.TagModel `json:"tags"`
+	ClientToken     string          `json:"-"`
 }
 
 type CreateEipResult struct {
@@ -66,18 +69,19 @@ type ListEipResult struct {
 }
 
 type EipModel struct {
-	Name            string `json:"name"`
-	Eip             string `json:"eip"`
-	Status          string `json:"status"`
-	EipInstanceType string `json:"eipInstanceType"`
-	InstanceType    string `json:"instanceType"`
-	InstanceId      string `json:"instanceId"`
-	ShareGroupId    string `json:"shareGroupId"`
-	BandWidthInMbps int    `json:"bandwidthInMbps"`
-	PaymentTiming   string `json:"paymentTiming"`
-	BillingMethod   string `json:"billingMethod"`
-	CreateTime      string `json:"createTime"`
-	ExpireTime      string `json:"expireTime"`
+	Name            string          `json:"name"`
+	Eip             string          `json:"eip"`
+	Status          string          `json:"status"`
+	EipInstanceType string          `json:"eipInstanceType"`
+	InstanceType    string          `json:"instanceType"`
+	InstanceId      string          `json:"instanceId"`
+	ShareGroupId    string          `json:"shareGroupId"`
+	BandWidthInMbps int             `json:"bandwidthInMbps"`
+	PaymentTiming   string          `json:"paymentTiming"`
+	BillingMethod   string          `json:"billingMethod"`
+	CreateTime      string          `json:"createTime"`
+	ExpireTime      string          `json:"expireTime"`
+	Tags            []util.TagModel `json:"tags"`
 }
 
 type PurchaseReservedEipArgs struct {
