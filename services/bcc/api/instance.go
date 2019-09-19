@@ -24,6 +24,14 @@ import (
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
+// CreateInstance - create an instance with specified parameters
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - reqBody: the request body to create instance
+// RETURNS:
+//     - *CreateInstanceResult: result of the instance ids newly created
+//     - error: nil if success otherwise the specific error
 func CreateInstance(cli bce.Client, reqBody *bce.Body) (*CreateInstanceResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -48,6 +56,14 @@ func CreateInstance(cli bce.Client, reqBody *bce.Body) (*CreateInstanceResult, e
 	return jsonBody, nil
 }
 
+// ListInstances - list all instances with the specified parameters
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - args: the arguments to list instances
+// RETURNS:
+//     - *ListInstanceResult: result of the instance list
+//     - error: nil if success otherwise the specific error
 func ListInstances(cli bce.Client, args *ListInstanceArgs) (*ListInstanceResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -93,6 +109,14 @@ func ListInstances(cli bce.Client, args *ListInstanceArgs) (*ListInstanceResult,
 	return jsonBody, nil
 }
 
+// GetInstanceDetail - get details of the specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance
+// RETURNS:
+//     - *GetInstanceDetailResult: result of the instance details
+//     - error: nil if success otherwise the specific error
 func GetInstanceDetail(cli bce.Client, instanceId string) (*GetInstanceDetailResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -116,6 +140,13 @@ func GetInstanceDetail(cli bce.Client, instanceId string) (*GetInstanceDetailRes
 	return jsonBody, nil
 }
 
+// DeleteInstance - delete a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be deleted
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func DeleteInstance(cli bce.Client, instanceId string) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -135,6 +166,14 @@ func DeleteInstance(cli bce.Client, instanceId string) error {
 	return nil
 }
 
+// ResizeInstance - resize a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be resized
+//     - reqBody: the request body to resize instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func ResizeInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -156,6 +195,14 @@ func ResizeInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error 
 	return nil
 }
 
+// RebuildInstance - rebuild a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be rebuilded
+//     - reqBody: the request body to rebuild instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func RebuildInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -177,6 +224,13 @@ func RebuildInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error
 	return nil
 }
 
+// StartInstance - start a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be started
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func StartInstance(cli bce.Client, instanceId string) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -197,6 +251,14 @@ func StartInstance(cli bce.Client, instanceId string) error {
 	return nil
 }
 
+// StopInstance - stop a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be stoped
+//	   - reqBody: the request body to stop instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func StopInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -218,6 +280,14 @@ func StopInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	return nil
 }
 
+// RebootInstance - reboot a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be rebooted
+//	   - reqBody: the request body to reboot instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func RebootInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -239,6 +309,14 @@ func RebootInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error 
 	return nil
 }
 
+// ChangeInstancePass - change password of specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance
+//	   - reqBody: the request body to change paasword of instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func ChangeInstancePass(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -260,6 +338,14 @@ func ChangeInstancePass(cli bce.Client, instanceId string, reqBody *bce.Body) er
 	return nil
 }
 
+// ModifyInstanceAttribute - modify attribute of a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be modified
+//	   - reqBody: the request body to modify instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func ModifyInstanceAttribute(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -281,6 +367,14 @@ func ModifyInstanceAttribute(cli bce.Client, instanceId string, reqBody *bce.Bod
 	return nil
 }
 
+// BindSecurityGroup - bind security group for a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance
+//	   - reqBody: the request body to bind security group associate to the instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func BindSecurityGroup(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -302,6 +396,14 @@ func BindSecurityGroup(cli bce.Client, instanceId string, reqBody *bce.Body) err
 	return nil
 }
 
+// UnBindSecurityGroup - unbind security group for a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance
+//	   - reqBody: the request body to unbind security group associate to the instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func UnBindSecurityGroup(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -323,6 +425,14 @@ func UnBindSecurityGroup(cli bce.Client, instanceId string, reqBody *bce.Body) e
 	return nil
 }
 
+// GetInstanceVNC - get VNC address of the specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance
+// RETURNS:
+//     - *GetInstanceVNCResult: result of the VNC address of the instance
+//     - error: nil if success otherwise the specific error
 func GetInstanceVNC(cli bce.Client, instanceId string) (*GetInstanceVNCResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -345,6 +455,14 @@ func GetInstanceVNC(cli bce.Client, instanceId string) (*GetInstanceVNCResult, e
 	return jsonBody, nil
 }
 
+// InstancePurchaseReserved - renew a specified instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be renewed
+//     - reqBody: the request body to renew instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func InstancePurchaseReserved(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -366,6 +484,14 @@ func InstancePurchaseReserved(cli bce.Client, instanceId string, reqBody *bce.Bo
 	return nil
 }
 
+// DeleteInstanceWithRelatedResource - delete an instance with related resources
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - instanceId: id of the instance to be deleted
+//     - reqBody: request body to delete instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func DeleteInstanceWithRelatedResource(cli bce.Client, instanceId string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
@@ -386,6 +512,13 @@ func DeleteInstanceWithRelatedResource(cli bce.Client, instanceId string, reqBod
 	return nil
 }
 
+// InstanceChangeSubnet - change the subnet to which the instance belongs
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - reqBody: request body to change subnet of instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func InstanceChangeSubnet(cli bce.Client, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
