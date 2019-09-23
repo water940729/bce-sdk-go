@@ -773,3 +773,22 @@ func DeleteObjectAcl(cli bce.Client, bucket, object string) error {
 	defer func() { resp.Body().Close() }()
 	return nil
 }
+
+func RestoreObject(cli bce.Client, bucket string, object string, args ArchiveRestoreArgs) error {
+	req := &bce.BceRequest{}
+	req.SetUri(getObjectUri(bucket, object))
+	req.SetParam("restore", "")
+	req.SetMethod(http.POST)
+	req.SetHeader(http.BCE_RESTORE_DAYS, strconv.Itoa(args.RestoreDays))
+	req.SetHeader(http.BCE_RESTORE_TIER, args.RestoreTier)
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return err
+	}
+	if resp.IsFail() {
+		return resp.ServiceError()
+	}
+
+	return nil
+}

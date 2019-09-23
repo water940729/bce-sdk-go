@@ -214,3 +214,5 @@ myLogger.Info("this is my own logger from the sdk")
 安全Token服务|  STS   | github.com/baidubce/bce-sdk-go/services/sts | [STS.md](./doc/STS.md)
 视频内容分析 |  VCA   | github.com/baidubce/bce-sdk-go/services/vca |
 视频内容审核 |  VCR   | github.com/baidubce/bce-sdk-go/services/vcr |
+百度边缘计算 |  BIE   | github.com/baidubce/bce-sdk-go/services/bie |
+内容分布网络 |  CDN   | github.com/baidubce/bce-sdk-go/services/cdn | [CDN.md](./doc/CDN.md)

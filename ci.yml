@@ -1,9 +1,7 @@
 Global:
   tool: build_submitter
-
 Default:
   profile: [build]
-
 Profiles:
   - profile:
     name: build
