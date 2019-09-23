@@ -1,4 +1,4 @@
-package util
+package model
 
 type TagModel struct {
 	TagKey   string `json:"tagKey"`

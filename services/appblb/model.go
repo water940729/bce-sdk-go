@@ -16,7 +16,9 @@
 
 package appblb
 
-import "github.com/baidubce/bce-sdk-go/util"
+import (
+	"github.com/baidubce/bce-sdk-go/model"
+)
 
 type BLBStatus string
 
@@ -194,12 +196,12 @@ type DescribeRsMountResult struct {
 }
 
 type CreateLoadBalancerArgs struct {
-	ClientToken string          `json:"-"`
-	Name        string          `json:"name,omitempty"`
-	Description string          `json:"desc,omitempty"`
-	SubnetId    string          `json:"subnetId"`
-	VpcId       string          `json:"vpcId"`
-	Tags        []util.TagModel `json:"tags,omitempty"`
+	ClientToken string           `json:"-"`
+	Name        string           `json:"name,omitempty"`
+	Description string           `json:"desc,omitempty"`
+	SubnetId    string           `json:"subnetId"`
+	VpcId       string           `json:"vpcId"`
+	Tags        []model.TagModel `json:"tags,omitempty"`
 }
 
 type CreateLoadBalanceResult struct {
@@ -226,15 +228,15 @@ type DescribeLoadBalancersArgs struct {
 }
 
 type AppBLBModel struct {
-	BlbId       string          `json:"blbId"`
-	Name        string          `json:"name"`
-	Description string          `json:"desc"`
-	Address     string          `json:"address"`
-	Status      BLBStatus       `json:"status"`
-	VpcId       string          `json:"vpcId"`
-	SubnetId    string          `json:"subnetId"`
-	PublicIp    string          `json:"publicIp"`
-	Tags        []util.TagModel `json:"tags"`
+	BlbId       string           `json:"blbId"`
+	Name        string           `json:"name"`
+	Description string           `json:"desc"`
+	Address     string           `json:"address"`
+	Status      BLBStatus        `json:"status"`
+	VpcId       string           `json:"vpcId"`
+	SubnetId    string           `json:"subnetId"`
+	PublicIp    string           `json:"publicIp"`
+	Tags        []model.TagModel `json:"tags"`
 }
 
 type DescribeLoadBalancersResult struct {
@@ -248,19 +250,19 @@ type ListenerModel struct {
 }
 
 type DescribeLoadBalancerDetailResult struct {
-	BlbId       string          `json:"blbId"`
-	Status      BLBStatus       `json:"status"`
-	Description string          `json:"desc"`
-	Address     string          `json:"address"`
-	PublicIp    string          `json:"publicIp"`
-	Cidr        string          `json:"cidr"`
-	VpcName     string          `json:"vpcName"`
-	SubnetCider string          `json:"subnetCider"`
-	SubnetName  string          `json:"subnetName"`
-	CreateTime  string          `json:"createTime"`
-	ReleaseTime string          `json:"releaseTime"`
-	Listener    []ListenerModel `json:"listener"`
-	Tags        []util.TagModel `json:"tags"`
+	BlbId       string           `json:"blbId"`
+	Status      BLBStatus        `json:"status"`
+	Description string           `json:"desc"`
+	Address     string           `json:"address"`
+	PublicIp    string           `json:"publicIp"`
+	Cidr        string           `json:"cidr"`
+	VpcName     string           `json:"vpcName"`
+	SubnetCider string           `json:"subnetCider"`
+	SubnetName  string           `json:"subnetName"`
+	CreateTime  string           `json:"createTime"`
+	ReleaseTime string           `json:"releaseTime"`
+	Listener    []ListenerModel  `json:"listener"`
+	Tags        []model.TagModel `json:"tags"`
 }
 
 type CreateAppTCPListenerArgs struct {

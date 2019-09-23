@@ -16,7 +16,9 @@
 
 package vpc
 
-import "github.com/baidubce/bce-sdk-go/util"
+import (
+	"github.com/baidubce/bce-sdk-go/model"
+)
 
 type (
 	SubnetType           string
@@ -96,11 +98,11 @@ const (
 
 // CreateVPCArgs defines the structure of the input parameters for the CreateVPC api
 type CreateVPCArgs struct {
-	ClientToken string          `json:"-"`
-	Name        string          `json:"name"`
-	Description string          `json:"description,omitempty"`
-	Cidr        string          `json:"cidr"`
-	Tags        []util.TagModel `json:"tags,omitempty"`
+	ClientToken string           `json:"-"`
+	Name        string           `json:"name"`
+	Description string           `json:"description,omitempty"`
+	Cidr        string           `json:"cidr"`
+	Tags        []model.TagModel `json:"tags,omitempty"`
 }
 
 // CreateVPCResult defines the structure of the output parameters for the CreateVPC api
@@ -129,12 +131,12 @@ type ListVPCResult struct {
 }
 
 type VPC struct {
-	VPCID       string          `json:"vpcId"`
-	Name        string          `json:"name"`
-	Cidr        string          `json:"cidr"`
-	Description string          `json:"description"`
-	IsDefault   bool            `json:"isDefault"`
-	Tags        []util.TagModel `json:"tags"`
+	VPCID       string           `json:"vpcId"`
+	Name        string           `json:"name"`
+	Cidr        string           `json:"cidr"`
+	Description string           `json:"description"`
+	IsDefault   bool             `json:"isDefault"`
+	Tags        []model.TagModel `json:"tags"`
 }
 
 // GetVPCDetailResult defines the structure of the output parameters for the GetVPCDetail api
@@ -143,25 +145,25 @@ type GetVPCDetailResult struct {
 }
 
 type ShowVPCModel struct {
-	VPCId       string          `json:"vpcId"`
-	Name        string          `json:"name"`
-	Cidr        string          `json:"cidr"`
-	Description string          `json:"description"`
-	IsDefault   bool            `json:"isDefault"`
-	Subnets     []Subnet        `json:"subnets"`
-	Tags        []util.TagModel `json:"tags"`
+	VPCId       string           `json:"vpcId"`
+	Name        string           `json:"name"`
+	Cidr        string           `json:"cidr"`
+	Description string           `json:"description"`
+	IsDefault   bool             `json:"isDefault"`
+	Subnets     []Subnet         `json:"subnets"`
+	Tags        []model.TagModel `json:"tags"`
 }
 
 type Subnet struct {
-	SubnetId    string          `json:"subnetId"`
-	Name        string          `json:"name"`
-	ZoneName    string          `json:"zoneName"`
-	Cidr        string          `json:"cidr"`
-	VPCId       string          `json:"vpcId"`
-	SubnetType  SubnetType      `json:"subnetType"`
-	Description string          `json:"description"`
-	AvailableIp int             `json:"availableIp"`
-	Tags        []util.TagModel `json:"tags"`
+	SubnetId    string           `json:"subnetId"`
+	Name        string           `json:"name"`
+	ZoneName    string           `json:"zoneName"`
+	Cidr        string           `json:"cidr"`
+	VPCId       string           `json:"vpcId"`
+	SubnetType  SubnetType       `json:"subnetType"`
+	Description string           `json:"description"`
+	AvailableIp int              `json:"availableIp"`
+	Tags        []model.TagModel `json:"tags"`
 }
 
 // UpdateVPCArgs defines the structure of the input parameters for the UpdateVPC api
@@ -173,14 +175,14 @@ type UpdateVPCArgs struct {
 
 // CreateSubnetArgs defines the structure of the input parameters for the CreateSubnet api
 type CreateSubnetArgs struct {
-	ClientToken string          `json:"-"`
-	Name        string          `json:"name"`
-	ZoneName    string          `json:"zoneName"`
-	Cidr        string          `json:"cidr"`
-	VpcId       string          `json:"vpcId"`
-	SubnetType  SubnetType      `json:"subnetType,omitempty"`
-	Description string          `json:"description,omitempty"`
-	Tags        []util.TagModel `json:"tags,omitempty"`
+	ClientToken string           `json:"-"`
+	Name        string           `json:"name"`
+	ZoneName    string           `json:"zoneName"`
+	Cidr        string           `json:"cidr"`
+	VpcId       string           `json:"vpcId"`
+	SubnetType  SubnetType       `json:"subnetType,omitempty"`
+	Description string           `json:"description,omitempty"`
+	Tags        []model.TagModel `json:"tags,omitempty"`
 }
 
 // CreateSubnetResult defines the structure of the output parameters for the CreateSubnet api

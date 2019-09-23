@@ -22,9 +22,9 @@ import (
 	_ "github.com/baidubce/bce-sdk-go/auth"
 	_ "github.com/baidubce/bce-sdk-go/bce"
 	_ "github.com/baidubce/bce-sdk-go/http"
+	_ "github.com/baidubce/bce-sdk-go/services/bie"
 	_ "github.com/baidubce/bce-sdk-go/services/bos"
 	_ "github.com/baidubce/bce-sdk-go/services/sts"
-	_ "github.com/baidubce/bce-sdk-go/services/bie"
 	_ "github.com/baidubce/bce-sdk-go/util"
 	_ "github.com/baidubce/bce-sdk-go/util/log"
 )

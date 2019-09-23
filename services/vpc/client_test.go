@@ -13,8 +13,8 @@ import (
 
 	"github.com/gofrs/uuid"
 
+	"github.com/baidubce/bce-sdk-go/model"
 	"github.com/baidubce/bce-sdk-go/services/eip"
-	"github.com/baidubce/bce-sdk-go/util"
 	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
@@ -99,7 +99,7 @@ func TestCreateVPC(t *testing.T) {
 		Name:        "TestSDK-VPC",
 		Description: "vpc test",
 		Cidr:        "192.168.0.0/16",
-		Tags: []util.TagModel{
+		Tags: []model.TagModel{
 			{
 				TagKey:   "tagK",
 				TagValue: "tagV",
@@ -156,7 +156,7 @@ func TestCreateSubnet(t *testing.T) {
 		VpcId:       VPCID,
 		SubnetType:  SUBNET_TYPE_BCC,
 		Description: "test subnet",
-		Tags: []util.TagModel{
+		Tags: []model.TagModel{
 			{
 				TagKey:   "tagK",
 				TagValue: "tagV",
