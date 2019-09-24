@@ -11,10 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
-
 	"github.com/baidubce/bce-sdk-go/model"
 	"github.com/baidubce/bce-sdk-go/services/eip"
+	"github.com/baidubce/bce-sdk-go/util"
 	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
@@ -632,8 +631,7 @@ func TestDeleteVPC(t *testing.T) {
 }
 
 func getClientToken() string {
-	u, _ := uuid.NewV4()
-	return u.String()
+	return util.NewUUID()
 }
 
 func waitStateForNatGateway(natID string, status NatStatusType) error {

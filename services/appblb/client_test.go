@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/baidubce/bce-sdk-go/util"
 	"github.com/baidubce/bce-sdk-go/util/log"
-	"github.com/gofrs/uuid"
 )
 
 var (
@@ -451,6 +451,5 @@ func TestClient_DeleteLoadBalancer(t *testing.T) {
 }
 
 func getClientToken() string {
-	u, _ := uuid.NewV4()
-	return u.String()
+	return util.NewUUID()
 }
