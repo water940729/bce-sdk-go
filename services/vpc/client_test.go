@@ -11,10 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
-
 	"github.com/baidubce/bce-sdk-go/model"
 	"github.com/baidubce/bce-sdk-go/services/eip"
+	"github.com/baidubce/bce-sdk-go/util"
 	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
@@ -222,6 +221,7 @@ func TestListAclEntrys(t *testing.T) {
 
 func TestCreateAclRule(t *testing.T) {
 	args := &CreateAclRuleArgs{
+		ClientToken: getClientToken(),
 		AclRules: []AclRuleRequest{
 			{
 				SubnetId:             SubnetID,
@@ -237,7 +237,7 @@ func TestCreateAclRule(t *testing.T) {
 			},
 		},
 	}
-	err := VPC_CLIENT.CreateAclRule(args, getClientToken())
+	err := VPC_CLIENT.CreateAclRule(args)
 	ExpectEqual(t.Errorf, nil, err)
 }
 
@@ -632,8 +632,7 @@ func TestDeleteVPC(t *testing.T) {
 }
 
 func getClientToken() string {
-	u, _ := uuid.NewV4()
-	return u.String()
+	return util.NewUUID()
 }
 
 func waitStateForNatGateway(natID string, status NatStatusType) error {

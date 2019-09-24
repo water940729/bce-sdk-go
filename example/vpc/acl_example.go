@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/baidubce/bce-sdk-go/services/vpc"
+	"github.com/baidubce/bce-sdk-go/util"
 	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
@@ -82,10 +83,11 @@ func createAclRules() error {
 		},
 	}
 	args := &vpc.CreateAclRuleArgs{
-		AclRules: requests,
+		ClientToken: getClientToken(),
+		AclRules:    requests,
 	}
 
-	if err := client.CreateAclRule(args, ""); err != nil {
+	if err := client.CreateAclRule(args); err != nil {
 		fmt.Errorf("create acl rule error: %v", err)
 		return err
 	}
@@ -138,4 +140,8 @@ func deleteAclRule(aclRuleId string) error {
 
 	log.Infof("delete acl rule %s success.", aclRuleId)
 	return nil
+}
+
+func getClientToken() string {
+	return util.NewUUID()
 }

@@ -131,12 +131,13 @@ type ListVPCResult struct {
 }
 
 type VPC struct {
-	VPCID       string           `json:"vpcId"`
-	Name        string           `json:"name"`
-	Cidr        string           `json:"cidr"`
-	Description string           `json:"description"`
-	IsDefault   bool             `json:"isDefault"`
-	Tags        []model.TagModel `json:"tags"`
+	VPCID         string           `json:"vpcId"`
+	Name          string           `json:"name"`
+	Cidr          string           `json:"cidr"`
+	Description   string           `json:"description"`
+	IsDefault     bool             `json:"isDefault"`
+	SecondaryCidr []string         `json:"secondaryCidr"`
+	Tags          []model.TagModel `json:"tags"`
 }
 
 // GetVPCDetailResult defines the structure of the output parameters for the GetVPCDetail api
@@ -145,13 +146,14 @@ type GetVPCDetailResult struct {
 }
 
 type ShowVPCModel struct {
-	VPCId       string           `json:"vpcId"`
-	Name        string           `json:"name"`
-	Cidr        string           `json:"cidr"`
-	Description string           `json:"description"`
-	IsDefault   bool             `json:"isDefault"`
-	Subnets     []Subnet         `json:"subnets"`
-	Tags        []model.TagModel `json:"tags"`
+	VPCId         string           `json:"vpcId"`
+	Name          string           `json:"name"`
+	Cidr          string           `json:"cidr"`
+	Description   string           `json:"description"`
+	IsDefault     bool             `json:"isDefault"`
+	Subnets       []Subnet         `json:"subnets"`
+	SecondaryCidr []string         `json:"secondaryCidr"`
+	Tags          []model.TagModel `json:"tags"`
 }
 
 type Subnet struct {
@@ -239,7 +241,7 @@ type GetRouteTableResult struct {
 
 // CreateRouteRuleArgs defines the structure of the input parameters for the CreateRouteRule api
 type CreateRouteRuleArgs struct {
-	ClientToken        string
+	ClientToken        string      `json:"-"`
 	RouteTableId       string      `json:"routeTableId"`
 	SourceAddress      string      `json:"sourceAddress"`
 	DestinationAddress string      `json:"destinationAddress"`
@@ -284,7 +286,8 @@ type AclRule struct {
 
 // CreateAclRuleArgs defines the structure of the input parameters for the CreateAclRule api
 type CreateAclRuleArgs struct {
-	AclRules []AclRuleRequest `json:"aclRules"`
+	ClientToken string           `json:"-"`
+	AclRules    []AclRuleRequest `json:"aclRules"`
 }
 
 type AclRuleRequest struct {
