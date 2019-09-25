@@ -921,6 +921,19 @@ func (c *Client) GetObjectMeta(bucket, object string) (*api.GetObjectMetaResult,
 	return api.GetObjectMeta(c, bucket, object)
 }
 
+// SelectObject - select the object content
+//
+// PARAMS:
+//     - bucket: the name of the bucket
+//     - object: the name of the object
+//     - args: the optional arguments to select the object
+// RETURNS:
+//     - *api.SelectObjectResult: select object result
+//     - error: any error if it occurs
+func (c *Client) SelectObject(bucket, object string, args *api.SelectObjectArgs) (*api.SelectObjectResult, error) {
+	return api.SelectObject(c, bucket, object, args)
+}
+
 // FetchObject - fetch the object content from the given source and store
 //
 // PARAMS:
