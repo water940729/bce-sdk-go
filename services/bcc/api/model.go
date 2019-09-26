@@ -173,6 +173,7 @@ type CreateInstanceArgs struct {
 	AutoRenewTimeUnit     string           `json:"autoRenewTimeUnit"`
 	AutoRenewTime         int              `json:"autoRenewTime"`
 	CdsAutoRenew          bool             `json:"cdsAutoRenew"`
+	ClientToken           string           `json:"-"`
 }
 
 type CreateInstanceResult struct {
@@ -203,6 +204,7 @@ type ResizeInstanceArgs struct {
 	CpuCount           int             `json:"cpuCount"`
 	MemoryCapacityInGB int             `json:"memoryCapacityInGB"`
 	EphemeralDisks     []EphemeralDisk `json:"ephemeralDisks,omitempty"`
+	ClientToken        string          `json:"-"`
 }
 
 type RebuildInstanceArgs struct {
@@ -231,7 +233,8 @@ type GetInstanceVNCResult struct {
 }
 
 type PurchaseReservedArgs struct {
-	Billing Billing `json:"billing"`
+	Billing     Billing `json:"billing"`
+	ClientToken string  `json:"-"`
 }
 
 type DeleteInstanceWithRelateResourceArgs struct {
@@ -286,7 +289,8 @@ type DetachVolumeArgs struct {
 }
 
 type PurchaseReservedCSDVolumeArgs struct {
-	Billing *Billing `json:"billing"`
+	Billing     *Billing `json:"billing"`
+	ClientToken string   `json:"-"`
 }
 
 type DeleteCDSVolumeArgs struct {
@@ -347,6 +351,7 @@ type CreateCDSVolumeArgs struct {
 	CdsSizeInGB   int         `json:"cdsSizeInGB,omitempty"`
 	StorageType   StorageType `json:"storageType,omitempty"`
 	Billing       *Billing    `json:"billing"`
+	ClientToken   string      `json:"-"`
 }
 
 type CreateCDSVolumeResult struct {
@@ -362,7 +367,8 @@ type AttachVolumeArgs struct {
 }
 
 type ResizeCSDVolumeArgs struct {
-	NewCdsSizeInGB int `json:"newCdsSizeInGB"`
+	NewCdsSizeInGB int    `json:"newCdsSizeInGB"`
+	ClientToken    string `json:"-"`
 }
 
 type RollbackCSDVolumeArgs struct {
@@ -412,10 +418,11 @@ type SecurityGroupModel struct {
 }
 
 type CreateSecurityGroupArgs struct {
-	Name  string                   `json:"name"`
-	Desc  string                   `json:"desc,omitempty"`
-	VpcId string                   `json:"vpcId,omitempty"`
-	Rules []SecurityGroupRuleModel `json:"rules"`
+	ClientToken string                   `json:"-"`
+	Name        string                   `json:"name"`
+	Desc        string                   `json:"desc,omitempty"`
+	VpcId       string                   `json:"vpcId,omitempty"`
+	Rules       []SecurityGroupRuleModel `json:"rules"`
 }
 
 type ListSecurityGroupArgs struct {
@@ -438,7 +445,8 @@ type ListSecurityGroupResult struct {
 }
 
 type AuthorizeSecurityGroupArgs struct {
-	Rule *SecurityGroupRuleModel `json:"rule"`
+	ClientToken string                  `json:"-"`
+	Rule        *SecurityGroupRuleModel `json:"rule"`
 }
 
 type RevokeSecurityGroupArgs struct {
@@ -513,9 +521,10 @@ type RemoteCopyImageArgs struct {
 }
 
 type CreateImageArgs struct {
-	InstanceId string `json:"instanceId,omitempty"`
-	SnapshotId string `json:"snapshotId,omitempty"`
-	ImageName  string `json:"imageName"`
+	InstanceId  string `json:"instanceId,omitempty"`
+	SnapshotId  string `json:"snapshotId,omitempty"`
+	ImageName   string `json:"imageName"`
+	ClientToken string `json:"-"`
 }
 
 type ListImageArgs struct {

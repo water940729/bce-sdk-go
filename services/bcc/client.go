@@ -26,6 +26,8 @@ import (
 	"github.com/baidubce/bce-sdk-go/services/bcc/api"
 )
 
+const DEFAULT_SERVICE_DOMAIN = "bcc." + bce.DEFAULT_REGION + ".baidubce.com"
+
 // Client of BCC service is a kind of BceClient, so derived from BceClient
 type Client struct {
 	*bce.BceClient
@@ -37,6 +39,9 @@ func NewClient(ak, sk, endPoint string) (*Client, error) {
 	credentials, err := auth.NewBceCredentials(ak, sk)
 	if err != nil {
 		return nil, err
+	}
+	if endPoint == "" {
+		endPoint = DEFAULT_SERVICE_DOMAIN
 	}
 	defaultSignOptions := &auth.SignOptions{
 		HeadersToSign: auth.DEFAULT_HEADERS_TO_SIGN,
@@ -81,7 +86,7 @@ func (c *Client) CreateInstance(args *api.CreateInstanceArgs) (*api.CreateInstan
 		return nil, err
 	}
 
-	return api.CreateInstance(c, body)
+	return api.CreateInstance(c, args.ClientToken, body)
 }
 
 // ListInstances - list all instance with the specific parameters
@@ -133,7 +138,7 @@ func (c *Client) ResizeInstance(instanceId string, args *api.ResizeInstanceArgs)
 		return err
 	}
 
-	return api.ResizeInstance(c, instanceId, body)
+	return api.ResizeInstance(c, instanceId, args.ClientToken, body)
 }
 
 // RebuildInstance - rebuild an instance
@@ -345,7 +350,7 @@ func (c *Client) InstancePurchaseReserved(instanceId string, args *api.PurchaseR
 		return err
 	}
 
-	return api.InstancePurchaseReserved(c, instanceId, body)
+	return api.InstancePurchaseReserved(c, instanceId, args.ClientToken, body)
 }
 
 // DeleteInstanceWithRelateResource - delete an instance and all eip/cds relate it

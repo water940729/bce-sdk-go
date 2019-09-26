@@ -39,6 +39,10 @@ func CreateImage(cli bce.Client, args *CreateImageArgs) (*CreateImageResult, err
 	req.SetUri(getImageUri())
 	req.SetMethod(http.POST)
 
+	if args.ClientToken != "" {
+		req.SetParam("clientToken", args.ClientToken)
+	}
+
 	jsonBytes, err := json.Marshal(args)
 	if err != nil {
 		return nil, err

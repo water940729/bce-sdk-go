@@ -40,6 +40,10 @@ func CreateSecurityGroup(cli bce.Client, args *CreateSecurityGroupArgs) (*Create
 	req.SetUri(getSecurityGroupUri())
 	req.SetMethod(http.POST)
 
+	if args.ClientToken != "" {
+		req.SetParam("clientToken", args.ClientToken)
+	}
+
 	jsonBytes, err := json.Marshal(args)
 	if err != nil {
 		return nil, err
@@ -129,6 +133,9 @@ func AuthorizeSecurityGroupRule(cli bce.Client, securityGroupId string, args *Au
 	req.SetUri(getSecurityGroupUriWithId(securityGroupId))
 	req.SetMethod(http.PUT)
 
+	if args.ClientToken != "" {
+		req.SetParam("clientToken", args.ClientToken)
+	}
 	req.SetParam("authorizeRule", "")
 
 	jsonBytes, err := json.Marshal(args)

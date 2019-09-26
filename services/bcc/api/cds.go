@@ -39,6 +39,10 @@ func CreateCDSVolume(cli bce.Client, args *CreateCDSVolumeArgs) (*CreateCDSVolum
 	req.SetUri(getVolumeUri())
 	req.SetMethod(http.POST)
 
+	if args.ClientToken != "" {
+		req.SetParam("clientToken", args.ClientToken)
+	}
+
 	jsonBytes, err := json.Marshal(args)
 	if err != nil {
 		return nil, err
@@ -305,6 +309,9 @@ func ResizeCDSVolume(cli bce.Client, volumeId string, args *ResizeCSDVolumeArgs)
 	req.SetUri(getVolumeUriWithId(volumeId))
 	req.SetMethod(http.PUT)
 
+	if args.ClientToken != "" {
+		req.SetParam("clientToken", args.ClientToken)
+	}
 	req.SetParam("resize", "")
 
 	jsonBytes, err := json.Marshal(args)
@@ -383,6 +390,9 @@ func PurchaseReservedCDSVolume(cli bce.Client, volumeId string, args *PurchaseRe
 	req.SetUri(getVolumeUriWithId(volumeId))
 	req.SetMethod(http.PUT)
 
+	if args.ClientToken != "" {
+		req.SetParam("clientToken", args.ClientToken)
+	}
 	req.SetParam("purchaseReserved", "")
 
 	jsonBytes, err := json.Marshal(args)
