@@ -32,12 +32,16 @@ import (
 // RETURNS:
 //     - *CreateInstanceResult: result of the instance ids newly created
 //     - error: nil if success otherwise the specific error
-func CreateInstance(cli bce.Client, reqBody *bce.Body) (*CreateInstanceResult, error) {
+func CreateInstance(cli bce.Client, clientToken string, reqBody *bce.Body) (*CreateInstanceResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
 	req.SetUri(getInstanceUri())
 	req.SetMethod(http.POST)
 	req.SetBody(reqBody)
+
+	if clientToken != "" {
+		req.SetParam("clientToken", clientToken)
+	}
 
 	// Send request and get response
 	resp := &bce.BceResponse{}
@@ -174,13 +178,17 @@ func DeleteInstance(cli bce.Client, instanceId string) error {
 //     - reqBody: the request body to resize instance
 // RETURNS:
 //     - error: nil if success otherwise the specific error
-func ResizeInstance(cli bce.Client, instanceId string, reqBody *bce.Body) error {
+func ResizeInstance(cli bce.Client, instanceId, clientToken string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
 	req.SetUri(getInstanceUriWithId(instanceId))
 	req.SetMethod(http.PUT)
 	req.SetParam("resize", "")
 	req.SetBody(reqBody)
+
+	if clientToken != "" {
+		req.SetParam("clientToken", clientToken)
+	}
 
 	// Send request and get response
 	resp := &bce.BceResponse{}
@@ -463,13 +471,17 @@ func GetInstanceVNC(cli bce.Client, instanceId string) (*GetInstanceVNCResult, e
 //     - reqBody: the request body to renew instance
 // RETURNS:
 //     - error: nil if success otherwise the specific error
-func InstancePurchaseReserved(cli bce.Client, instanceId string, reqBody *bce.Body) error {
+func InstancePurchaseReserved(cli bce.Client, instanceId, clientToken string, reqBody *bce.Body) error {
 	// Build the request
 	req := &bce.BceRequest{}
 	req.SetUri(getInstanceUriWithId(instanceId))
 	req.SetMethod(http.PUT)
 	req.SetParam("purchaseReserved", "")
 	req.SetBody(reqBody)
+
+	if clientToken != "" {
+		req.SetParam("clientToken", clientToken)
+	}
 
 	// Send request and get response
 	resp := &bce.BceResponse{}

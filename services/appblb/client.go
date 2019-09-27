@@ -20,6 +20,7 @@ package appblb
 import "github.com/baidubce/bce-sdk-go/bce"
 
 const (
+	DEFAULT_SERVICE_DOMAIN = "blb." + bce.DEFAULT_REGION + ".baidubce.com"
 	URI_PREFIX         = bce.URI_PREFIX + "v1"
 	REQUEST_APPBLB_URL = "/appblb"
 
@@ -45,6 +46,9 @@ type Client struct {
 }
 
 func NewClient(ak, sk, endPoint string) (*Client, error) {
+	if endPoint == "" {
+		endPoint = DEFAULT_SERVICE_DOMAIN
+	}
 	client, err := bce.NewBceClientWithAkSk(ak, sk, endPoint)
 	if err != nil {
 		return nil, err

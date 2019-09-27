@@ -266,9 +266,10 @@ type DescribeLoadBalancerDetailResult struct {
 }
 
 type CreateAppTCPListenerArgs struct {
-	ListenerPort uint16 `json:"listenerPort"`
-	Scheduler    string `json:"scheduler"`
-	ClientToken  string `json:"-"`
+	TcpSessionTimeout int    `json:"tcpSessionTimeout,omitempty"`
+	ListenerPort      uint16 `json:"listenerPort"`
+	Scheduler         string `json:"scheduler"`
+	ClientToken       string `json:"-"`
 }
 
 type CreateAppUDPListenerArgs struct {
@@ -321,9 +322,10 @@ type CreateAppSSLListenerArgs struct {
 }
 
 type UpdateAppListenerArgs struct {
-	ClientToken  string `json:"-"`
-	ListenerPort uint16 `json:"-"`
-	Scheduler    string `json:"scheduler,omitempty"`
+	ClientToken       string `json:"-"`
+	ListenerPort      uint16 `json:"-"`
+	Scheduler         string `json:"scheduler,omitempty"`
+	TcpSessionTimeout int    `json:"tcpSessionTimeout,omitempty"`
 }
 
 type UpdateAppTCPListenerArgs struct {
