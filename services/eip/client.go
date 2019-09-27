@@ -22,6 +22,8 @@ import "github.com/baidubce/bce-sdk-go/bce"
 const (
 	URI_PREFIX = bce.URI_PREFIX + "v1"
 
+	DEFAULT_ENDPOINT = "eip." + bce.DEFAULT_REGION + ".baidubce.com"
+
 	REQUEST_EIP_URL = "/eip"
 )
 
@@ -31,6 +33,9 @@ type Client struct {
 }
 
 func NewClient(ak, sk, endPoint string) (*Client, error) {
+	if len(endPoint) == 0 {
+		endPoint = DEFAULT_ENDPOINT
+	}
 	client, err := bce.NewBceClientWithAkSk(ak, sk, endPoint)
 	if err != nil {
 		return nil, err

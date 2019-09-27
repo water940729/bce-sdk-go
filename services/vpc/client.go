@@ -25,6 +25,8 @@ import (
 const (
 	URI_PREFIX = bce.URI_PREFIX + "v1"
 
+	DEFAULT_ENDPOINT = "bcc." + bce.DEFAULT_REGION + ".baidubce.com"
+
 	REQUEST_VPC_URL      = "/vpc"
 	REQUEST_SUBNET_URL   = "/subnet"
 	REQUEST_ROUTE_URL    = "/route"
@@ -41,17 +43,13 @@ type Client struct {
 
 func NewClient(ak, sk, endPoint string) (*Client, error) {
 	if len(endPoint) == 0 {
-		endPoint = getDefaultEndpoint()
+		endPoint = DEFAULT_ENDPOINT
 	}
 	client, err := bce.NewBceClientWithAkSk(ak, sk, endPoint)
 	if err != nil {
 		return nil, err
 	}
 	return &Client{client}, nil
-}
-
-func getDefaultEndpoint() string {
-	return "bcc." + bce.DEFAULT_REGION + ".baidubce.com"
 }
 
 func getURLForVPC() string {
