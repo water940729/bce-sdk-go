@@ -21,8 +21,8 @@ import "github.com/baidubce/bce-sdk-go/bce"
 
 const (
 	DEFAULT_SERVICE_DOMAIN = "blb." + bce.DEFAULT_REGION + ".baidubce.com"
-	URI_PREFIX         = bce.URI_PREFIX + "v1"
-	REQUEST_APPBLB_URL = "/appblb"
+	URI_PREFIX             = bce.URI_PREFIX + "v1"
+	REQUEST_APPBLB_URL     = "/appblb"
 
 	APP_SERVER_GROUP_URL      = "/appservergroup"
 	APP_SERVER_GROUP_PORT_URL = "/appservergroupport"

@@ -380,8 +380,9 @@ type UpdateAppSSLListenerArgs struct {
 }
 
 type AppListenerModel struct {
-	Port      uint16 `json:"listenerPort"`
-	Scheduler string `json:"scheduler"`
+	Port              uint16 `json:"listenerPort"`
+	Scheduler         string `json:"scheduler"`
+	TcpSessionTimeout int    `json:"tcpSessionTimeout"`
 }
 
 type AppTCPListenerModel struct {
