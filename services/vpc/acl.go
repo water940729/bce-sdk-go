@@ -47,15 +47,14 @@ func (c *Client) ListAclEntrys(vpcId string) (*ListAclEntrysResult, error) {
 //
 // PARAMS:
 //     - args: the arguments to create acl rule
-//     - clientToken: the idempotent token
 // RETURNS:
 //     - error: nil if success otherwise the specific error
-func (c *Client) CreateAclRule(args *CreateAclRuleArgs, clientToken string) error {
+func (c *Client) CreateAclRule(args *CreateAclRuleArgs) error {
 	return bce.NewRequestBuilder(c).
 		WithURL(getURLForAclRule()).
 		WithMethod(http.POST).
 		WithBody(args).
-		WithQueryParamFilter("clientToken", clientToken).
+		WithQueryParamFilter("clientToken", args.ClientToken).
 		Do()
 }
 

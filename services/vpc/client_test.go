@@ -221,6 +221,7 @@ func TestListAclEntrys(t *testing.T) {
 
 func TestCreateAclRule(t *testing.T) {
 	args := &CreateAclRuleArgs{
+		ClientToken: getClientToken(),
 		AclRules: []AclRuleRequest{
 			{
 				SubnetId:             SubnetID,
@@ -236,7 +237,7 @@ func TestCreateAclRule(t *testing.T) {
 			},
 		},
 	}
-	err := VPC_CLIENT.CreateAclRule(args, getClientToken())
+	err := VPC_CLIENT.CreateAclRule(args)
 	ExpectEqual(t.Errorf, nil, err)
 }
 
