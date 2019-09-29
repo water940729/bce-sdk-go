@@ -340,7 +340,7 @@ func (c *Client) DescribeAppTCPListeners(blbId string, args *DescribeAppListener
 //     - blbId: LoadBalancer's ID
 //     - args: parameters to describe all UDP Listeners
 // RETURNS:
-//     - *DescribeAppTCPListenersResult: the result of describe all UDP Listeners
+//     - *DescribeAppUDPListenersResult: the result of describe all UDP Listeners
 //     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppUDPListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppUDPListenersResult, error) {
 	if args == nil {
@@ -373,7 +373,7 @@ func (c *Client) DescribeAppUDPListeners(blbId string, args *DescribeAppListener
 //     - blbId: LoadBalancer's ID
 //     - args: parameters to describe all HTTP Listeners
 // RETURNS:
-//     - *DescribeAppTCPListenersResult: the result of describe all HTTP Listeners
+//     - *DescribeAppHTTPListenersResult: the result of describe all HTTP Listeners
 //     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppHTTPListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppHTTPListenersResult, error) {
 	if args == nil {
@@ -406,7 +406,7 @@ func (c *Client) DescribeAppHTTPListeners(blbId string, args *DescribeAppListene
 //     - blbId: LoadBalancer's ID
 //     - args: parameters to describe all HTTPS Listeners
 // RETURNS:
-//     - *DescribeAppTCPListenersResult: the result of describe all HTTPS Listeners
+//     - *DescribeAppHTTPSListenersResult: the result of describe all HTTPS Listeners
 //     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppHTTPSListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppHTTPSListenersResult, error) {
 	if args == nil {
@@ -439,7 +439,7 @@ func (c *Client) DescribeAppHTTPSListeners(blbId string, args *DescribeAppListen
 //     - blbId: LoadBalancer's ID
 //     - args: parameters to describe all SSL Listeners
 // RETURNS:
-//     - *DescribeAppTCPListenersResult: the result of describe all SSL Listeners
+//     - *DescribeAppSSLListenersResult: the result of describe all SSL Listeners
 //     - error: nil if ok otherwise the specific error
 func (c *Client) DescribeAppSSLListeners(blbId string, args *DescribeAppListenerArgs) (*DescribeAppSSLListenersResult, error) {
 	if args == nil {
