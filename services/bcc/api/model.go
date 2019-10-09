@@ -123,6 +123,10 @@ type InstanceModel struct {
 	VpcId                 string           `json:"vpcId"`
 	NicInfo               *NicInfoModel    `json:"nicInfo"`
 	EniNum                string           `json:"eniNum"`
+	AutoRenew             bool             `json:"autoRenew"`
+	KeypairId             string           `json:"keypairId"`
+	KeypairName           string           `json:"keypairName"`
+	DedicatedHostId       string           `json:"dedicatedHostId"`
 	Tags                  []model.TagModel `json:"tags"`
 }
 
@@ -160,7 +164,7 @@ type CreateInstanceArgs struct {
 	EphemeralDisks        []EphemeralDisk  `json:"ephemeralDisks,omitempty"`
 	CreateCdsList         []CreateCdsModel `json:"createCdsList,omitempty"`
 	NetWorkCapacityInMbps int              `json:"networkCapacityInMbps,omitempty"`
-	DedicateHostId        int              `json:"dedicatedHostId,omitempty"`
+	DedicateHostId        string           `json:"dedicatedHostId,omitempty"`
 	PurchaseCount         int              `json:"purchaseCount,omitempty"`
 	Name                  string           `json:"name,omitempty"`
 	AdminPass             string           `json:"adminPass,omitempty"`
