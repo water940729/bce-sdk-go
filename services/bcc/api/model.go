@@ -177,6 +177,8 @@ type CreateInstanceArgs struct {
 	AutoRenewTimeUnit     string           `json:"autoRenewTimeUnit"`
 	AutoRenewTime         int              `json:"autoRenewTime"`
 	CdsAutoRenew          bool             `json:"cdsAutoRenew"`
+	RelationTag           bool             `json:"relationTag,omitempty"`
+	Tags                  []model.TagModel `json:"tags,omitempty"`
 	ClientToken           string           `json:"-"`
 }
 
