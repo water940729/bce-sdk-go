@@ -419,6 +419,7 @@ type SecurityGroupModel struct {
 	Desc  string                   `json:"desc"`
 	VpcId string                   `json:"vpcId"`
 	Rules []SecurityGroupRuleModel `json:"rules"`
+	Tags  []model.TagModel         `json:"tags"`
 }
 
 type CreateSecurityGroupArgs struct {
@@ -427,6 +428,7 @@ type CreateSecurityGroupArgs struct {
 	Desc        string                   `json:"desc,omitempty"`
 	VpcId       string                   `json:"vpcId,omitempty"`
 	Rules       []SecurityGroupRuleModel `json:"rules"`
+	Tags        []model.TagModel         `json:"tags,omitempty"`
 }
 
 type ListSecurityGroupArgs struct {
