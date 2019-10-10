@@ -177,6 +177,8 @@ type CreateInstanceArgs struct {
 	AutoRenewTimeUnit     string           `json:"autoRenewTimeUnit"`
 	AutoRenewTime         int              `json:"autoRenewTime"`
 	CdsAutoRenew          bool             `json:"cdsAutoRenew"`
+	RelationTag           bool             `json:"relationTag,omitempty"`
+	Tags                  []model.TagModel `json:"tags,omitempty"`
 	ClientToken           string           `json:"-"`
 }
 
@@ -419,6 +421,7 @@ type SecurityGroupModel struct {
 	Desc  string                   `json:"desc"`
 	VpcId string                   `json:"vpcId"`
 	Rules []SecurityGroupRuleModel `json:"rules"`
+	Tags  []model.TagModel         `json:"tags"`
 }
 
 type CreateSecurityGroupArgs struct {
@@ -427,6 +430,7 @@ type CreateSecurityGroupArgs struct {
 	Desc        string                   `json:"desc,omitempty"`
 	VpcId       string                   `json:"vpcId,omitempty"`
 	Rules       []SecurityGroupRuleModel `json:"rules"`
+	Tags        []model.TagModel         `json:"tags,omitempty"`
 }
 
 type ListSecurityGroupArgs struct {
