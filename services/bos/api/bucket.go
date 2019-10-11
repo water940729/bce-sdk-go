@@ -18,7 +18,6 @@
 package api
 
 import (
-	"baidu/bce-sdk/cmd/go/src/log"
 	"encoding/json"
 	"strconv"
 
@@ -995,7 +994,6 @@ func PutBucketNotification(cli bce.Client, bucket string, putBucketNotificationR
 	req.SetMethod(http.PUT)
 	req.SetParam("notification", "")
 	reqByte, _ := json.Marshal(putBucketNotificationReq)
-	log.Println(string(reqByte))
 	body, err := bce.NewBodyFromString(string(reqByte))
 	if err != nil {
 		return err

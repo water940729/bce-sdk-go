@@ -37,7 +37,7 @@ const (
 	DEFAULT_MAX_PARALLEL   = 10
 	MULTIPART_ALIGN        = 1 << 20        // 1MB
 	MIN_MULTIPART_SIZE     = 1 << 20        // 1MB
-	DEFAULT_MULTIPART_SIZE = 10 * (1 << 20) // 10MB
+	DEFAULT_MULTIPART_SIZE = 12 * (1 << 20) // 12MB
 
 	MAX_PART_NUMBER        = 10000
 	MAX_SINGLE_PART_SIZE   = 5 * (1 << 30) // 5GB
@@ -1871,7 +1871,7 @@ func (c *Client) parallelPartUpload(bucket string, object string, filename strin
 			case err = <-errChan:
 				return nil, err
 			case parallelChan <- 1:
-				go c.singlePartUpload(parallelChan, errChan, resultChan, bucket, object, uploadId, int(i), partBody)
+				go c.singlePartUpload(bucket, object, uploadId, int(i), partBody, parallelChan, errChan, resultChan)
 			}
 
 		}
@@ -1901,16 +1901,17 @@ func (c *Client) parallelPartUpload(bucket string, object string, filename strin
 //     - uploadId: the uploadId
 //     - partNumber: the part number of the object
 //     - content: the content of current part
-func (c *Client) singlePartUpload(pararelChan chan int, errChan chan error, result chan api.UploadInfoType,
+func (c *Client) singlePartUpload(
 	bucket string, object string, uploadId string,
-	partNumber int, content *bce.Body) {
+	partNumber int, content *bce.Body,
+	parallelChan chan int, errChan chan error, result chan api.UploadInfoType) {
 
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatal("parallelPartUpload recovered in f:", r)
 			errChan <- errors.New("parallelPartUpload panic")
 		}
-		<-pararelChan
+		<-parallelChan
 	}()
 
 	var args api.UploadPartArgs
@@ -1991,7 +1992,6 @@ func (c *Client) ParallelCopy(srcBucketName string, srcObjectName string,
 func (c *Client) parallelPartCopy(srcMeta api.GetObjectMetaResult, source string, bucket string, object string, uploadId string) ([]api.UploadInfoType, error) {
 	var err error
 	size := srcMeta.ContentLength
-	// 分块大小按MULTIPART_ALIGN=1MB对齐
 	partSize := int64(DEFAULT_MULTIPART_SIZE)
 
 	partNum := (size + partSize - 1) / partSize
@@ -2024,7 +2024,7 @@ func (c *Client) parallelPartCopy(srcMeta api.GetObjectMetaResult, source string
 			case err = <-errChan:
 				return nil, err
 			case parallelChan <- 1:
-				go c.singlePartCopy(parallelChan, errChan, resultChan, source, bucket, object, uploadId, int(i), &partCopyArgs)
+				go c.singlePartCopy(source, bucket, object, uploadId, int(i), &partCopyArgs, parallelChan, errChan, resultChan)
 			}
 
 		}
@@ -2055,9 +2055,9 @@ func (c *Client) parallelPartCopy(srcMeta api.GetObjectMetaResult, source string
 //     - uploadId: the uploadId
 //     - partNumber: the part number of the object
 //     - args: the copy args
-func (c *Client) singlePartCopy(parallelChan chan int, errChan chan error, result chan api.UploadInfoType,
-	source string, bucket string, object string, uploadId string,
-	partNumber int, args *api.UploadPartCopyArgs) {
+func (c *Client) singlePartCopy(source string, bucket string, object string, uploadId string,
+	partNumber int, args *api.UploadPartCopyArgs,
+	parallelChan chan int, errChan chan error, result chan api.UploadInfoType) {
 
 	defer func() {
 		if r := recover(); r != nil {
