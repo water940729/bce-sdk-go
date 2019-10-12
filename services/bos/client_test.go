@@ -869,14 +869,14 @@ func TestBasicListMultipartUploads(t *testing.T) {
 	t.Logf("%+v", res)
 }
 func TestUploadSuperFile(t *testing.T) {
-	err := BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "super-object", "/tmp/super-file", "")
+	err := BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "super-object", "/home/users/wangchangshui/ral-worker.log.2019041611", "")
 	ExpectEqual(t.Errorf, err, nil)
 	err = BOS_CLIENT.UploadSuperFile(EXISTS_BUCKET, "not-exist", "not-exist", "")
 	ExpectEqual(t.Errorf, err != nil, true)
 	t.Logf("%+v", err)
 }
 func TestDownloadSuperFile(t *testing.T) {
-	err := BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "super-object", "/tmp/download-super-file")
+	err := BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "super-object", "/home/users/wangchangshui/ral-worker.log.2019041611")
 	ExpectEqual(t.Errorf, err, nil)
 	err = BOS_CLIENT.DownloadSuperFile(EXISTS_BUCKET, "not-exist", "/tmp/not-exist")
 	ExpectEqual(t.Errorf, err != nil, true)
@@ -1014,4 +1014,77 @@ func TestDeleteObjectAcl(t *testing.T) {
 	res, err := BOS_CLIENT.GetObjectAcl(EXISTS_BUCKET, "glog.go")
 	ExpectEqual(t.Errorf, err != nil, true)
 	t.Logf("%v, %v", res, err)
+}
+
+func TestPutBucketTrash(t *testing.T) {
+	args := api.PutBucketTrashReq{
+		TrashDir: ".trash",
+	}
+
+	err := BOS_CLIENT.PutBucketTrash(EXISTS_BUCKET, args)
+	ExpectEqual(t.Errorf, err, nil)
+
+	res, err := BOS_CLIENT.GetBucketTrash(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, false)
+	t.Logf("%v, %v", res, err)
+}
+
+func TestDeleteBucketTrash(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketTrash(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+
+	res, err := BOS_CLIENT.GetBucketTrash(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v, %v", res, err)
+}
+
+func TestPutBucketNotification(t *testing.T) {
+	notificationReq := api.PutBucketNotificationReq{
+		Notifications: []api.PutBucketNotificationSt{
+			{
+				Id:        "water-test-1",
+				Name:      "water-rule-1",
+				AppId:     "water-app-id-1",
+				Status:    "enabled",
+				Resources: []string{EXISTS_BUCKET + "/path1", "/path2"},
+				Events:    []string{"PutObject"},
+				Apps: []api.PutBucketNotificationAppsSt{
+					{
+						Id:       "app-id-1",
+						EventUrl: "http://xxx.com/event",
+						XVars:    "",
+					},
+				},
+			},
+		},
+	}
+
+	err := BOS_CLIENT.PutBucketNotification(EXISTS_BUCKET, notificationReq)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketNotification(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, false)
+	t.Logf("%v, %v", res, err)
+}
+
+func TestDeleteBucketNotification(t *testing.T) {
+	err := BOS_CLIENT.DeleteBucketNotification(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err, nil)
+	res, err := BOS_CLIENT.GetBucketNotification(EXISTS_BUCKET)
+	ExpectEqual(t.Errorf, err != nil, true)
+	t.Logf("%v, %v", res, err)
+}
+
+func TestParallelUpload(t *testing.T) {
+	res, err := BOS_CLIENT.ParallelUpload(EXISTS_BUCKET, "test_multiupload", "/home/users/wangchangshui/new_bos/rd/bos_env/nginx/logs/error.log", "", nil)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v,%v", res, err)
+}
+
+func TestParallelCopy(t *testing.T) {
+	args := api.MultiCopyObjectArgs{
+		StorageClass: api.STORAGE_CLASS_COLD,
+	}
+	res, err := BOS_CLIENT.ParallelCopy(EXISTS_BUCKET, "test_multiupload", EXISTS_BUCKET, "test_multiupload_copy", &args)
+	ExpectEqual(t.Errorf, err, nil)
+	t.Logf("%v,%v", res, err)
 }
