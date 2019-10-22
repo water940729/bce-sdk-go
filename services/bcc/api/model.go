@@ -629,22 +629,6 @@ type ListASPArgs struct {
 	VolumeName string
 }
 
-// TODO: This structure may be wrong, it should has same structure with AutoSnapshotPolicyModel,
-//  remove it when this wrong be fixed in the future
-type AutoSnapshotPolicyModel2 struct {
-	CreatedTime     string   `json:"createdTime"`
-	Id              string   `json:"id"`
-	Status          string   `json:"status"`
-	RetentionDays   string   `json:"retentionDays"`
-	UpdatedTime     string   `json:"updatedTime"`
-	DeletedTime     string   `json:"deletedTime"`
-	LastExecuteTime string   `json:"lastExecuteTime"`
-	VolumeCount     string   `json:"volumeCount"`
-	Name            string   `json:"name"`
-	TimePoints      []string `json:"timePoints"`
-	RepeatWeekdays  []string `json:"repeatWeekdays"`
-}
-
 type ListASPResult struct {
 	Marker              string                    `json:"marker"`
 	IsTruncated         bool                      `json:"isTruncated"`
@@ -654,7 +638,7 @@ type ListASPResult struct {
 }
 
 type GetASPDetailResult struct {
-	AutoSnapshotPolicy AutoSnapshotPolicyModel2 `json:"autoSnapshotPolicy"`
+	AutoSnapshotPolicy AutoSnapshotPolicyModel `json:"autoSnapshotPolicy"`
 }
 
 type UpdateASPArgs struct {
