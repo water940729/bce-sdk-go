@@ -230,6 +230,10 @@ type ModifyInstanceAttributeArgs struct {
 	Name string `json:"name"`
 }
 
+type ModifyInstanceDescArgs struct {
+	Description string `json:"desc"`
+}
+
 type BindSecurityGroupArgs struct {
 	SecurityGroupId string `json:"securityGroupId"`
 }
