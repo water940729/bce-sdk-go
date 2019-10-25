@@ -66,37 +66,6 @@ const (
 	PaymentTimingPostPaid PaymentTimingType = "Postpaid"
 )
 
-type IpsModel struct {
-	PrivateIp       string `json:"privateIp"`
-	Eip             string `json:"eip"`
-	Primary         string `json:"primary"`
-	EipId           string `json:"eipId"`
-	EipAllocationId string `json:"eipAllocationId"`
-	EipSize         string `json:"eipSize"`
-	EipStatus       string `json:"eipStatus"`
-	EipGroupId      string `json:"eipGroupId"`
-	EipType         string `json:"eipType"`
-}
-
-type NicInfoModel struct {
-	EniId          string               `json:"eniId"`
-	EniUuid        string               `json:"eniUuid"`
-	Name           string               `json:"name"`
-	Type           string               `json:"type"`
-	SubnetId       string               `json:"subnetId"`
-	SubnetType     string               `json:"subnetType"`
-	Az             string               `json:"az"`
-	Description    string               `json:"description"`
-	DeviceId       string               `json:"deviceId"`
-	Status         string               `json:"status"`
-	MacAddress     string               `json:"macAddress"`
-	VpcId          string               `json:"vpcId"`
-	CreateTime     string               `json:"createTime"`
-	Ips            []IpsModel           `json:"ips"`
-	SecurityGroups []SecurityGroupModel `json:"securityGroups"`
-	EniNum         int                  `json:"eniNum"`
-}
-
 // Instance define instance model
 type InstanceModel struct {
 	InstanceId            string           `json:"id"`
@@ -121,8 +90,6 @@ type InstanceModel struct {
 	ZoneName              string           `json:"zoneName"`
 	SubnetId              string           `json:"subnetId"`
 	VpcId                 string           `json:"vpcId"`
-	NicInfo               *NicInfoModel    `json:"nicInfo"`
-	EniNum                string           `json:"eniNum"`
 	AutoRenew             bool             `json:"autoRenew"`
 	KeypairId             string           `json:"keypairId"`
 	KeypairName           string           `json:"keypairName"`
