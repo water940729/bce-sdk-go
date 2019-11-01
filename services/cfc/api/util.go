@@ -15,35 +15,17 @@
 package api
 
 import (
-	"encoding/base64"
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"regexp"
 )
 
 const (
 	RegularFunctionName = `^[a-zA-Z0-9-_:]+|\$LATEST$`
-)
+	RegularAliasName    = `^[a-zA-Z0-9-_]+$`
+	RegularFunctionBRN  = `^(brn:(bce[a-zA-Z-]*):cfc:)([a-z]{2,5}[0-9]*:)([0-9a-z]{32}:)(function:)([a-zA-Z0-9-_]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?$`
+	RegularVersion      = `^\$LATEST|([0-9]+)$`
 
-const (
-	functionNameInvalid = "the function name of %s Must Match " + RegularFunctionName
-	strLenIllegal       = "the length of %s is illegal, must in %d~%d"
-	intLenIllegal       = "the size of %d is illegal, must in %d~%d"
-)
-
-const (
-	memoryError = "memory size of %d must be a multiple of 64 MB"
-)
-
-// The limit of memory, in MB, your cfc function is given. cfc uses this memory size to
-// infer the amount of CPU and memory allocated to your function. Your function use-case
-// determines your CPU and memory requirements. For example, a database operation might
-// need less memory compared to an image processing function. The default value is 128 MB.
-// The value must be a multiple of 64 MB.
-// Valid Range: Minimum value of 128. Maximum value of 3008.
-const (
+	MemoryBase     = 128
 	minMemoryLimit = 128
 	maxMemoryLimit = 3008
 )
@@ -60,66 +42,84 @@ func getFunctionUri(functionName string) string {
 	return fmt.Sprintf("/v1/functions/%s", functionName)
 }
 
-func matches(str, pattern string) bool {
-	match, _ := regexp.MatchString(pattern, str)
-	return match
+func getFunctionCodeUri(functionName string) string {
+	return fmt.Sprintf("/v1/functions/%s/code", functionName)
 }
 
-func checkCreateFunctionArgs(args *FunctionArgs) error {
-	if err := checkFunctionName(args.FunctionName); err != nil {
-		return err
-	} else if err = checkPtrString(args.Description, 0, 255); err != nil {
-		return err
-	} else if err = checkPtrIntSize(args.Timeout, 1, 300); err != nil {
-		return err
-	} else if err = checkMemorySize(args.MemorySize); err != nil {
-		return err
-	}
-	return nil
+func getFunctionConfigurationUri(functionName string) string {
+	return fmt.Sprintf("/v1/functions/%s/configuration", functionName)
 }
 
-func checkFunctionName(functionName string) error {
-	if !matches(functionName, RegularFunctionName) {
-		return fmt.Errorf(functionNameInvalid, functionName)
-	}
-	return nil
+func getFunctionVersionsUri(functionName string) string {
+	return fmt.Sprintf("/v1/functions/%s/versions", functionName)
 }
 
-func checkPtrString(s string, min, max int) error {
-	l := len(s)
-	if l < min || l > max {
-		errStr := fmt.Sprintf(strLenIllegal, s, min, max)
-		return errors.New(errStr)
-	}
-	return nil
+func getFunctionAliasesUri(functionName string) string {
+	return fmt.Sprintf("/v1/functions/%s/aliases", functionName)
 }
 
-func checkPtrIntSize(s int, min, max int) error {
-	if s < min || s > max {
-		errStr := fmt.Sprintf(intLenIllegal, s, min, max)
-		return errors.New(errStr)
-	}
-	return nil
+func getFunctionAliasUri(functionName string, aliasName string) string {
+	return fmt.Sprintf("/v1/functions/%s/aliases/%s", functionName, aliasName)
 }
 
-func checkMemorySize(size int) error {
-	if err := checkPtrIntSize(size, minMemoryLimit, maxMemoryLimit); err != nil {
-		return err
-	}
-	if size%64 != 0 {
-		return fmt.Errorf(memoryError, size)
-	}
-	return nil
+func getTriggerUri() string {
+	return fmt.Sprintf("/v1/console/relation")
 }
 
-func ReadBase64FromFile(filePath string) (string, error) {
-	f, err := os.Open(filePath)
+func validateFunctionName(name string) bool {
+	res, err := regexp.MatchString(RegularFunctionName, name)
 	if err != nil {
-		return "", err
+		return false
 	}
-	b, err := ioutil.ReadAll(f)
+	return res
+}
+
+func validateAliasName(name string) bool {
+	res, err := regexp.MatchString(RegularAliasName, name)
 	if err != nil {
-		return "", err
+		return false
 	}
-	return base64.StdEncoding.EncodeToString(b), nil
+	return res
+}
+
+func validateMemorySize(size int) error {
+	if size%MemoryBase != 0 {
+		return fmt.Errorf(memorySizeIllegal, size, MemoryBase)
+	}
+	if size > maxMemoryLimit {
+		return fmt.Errorf(memoryRangeIllegal, size, minMemoryLimit, maxMemoryLimit)
+	}
+	if size < minMemoryLimit {
+		return fmt.Errorf(memoryRangeIllegal, size, minMemoryLimit, maxMemoryLimit)
+	}
+	return nil
+}
+
+func validateFunctionBRN(brn string) bool {
+	res, err := regexp.MatchString(RegularFunctionBRN, brn)
+	if err != nil {
+		return false
+	}
+	return res
+}
+
+func validateVersion(version string) bool {
+	res, err := regexp.MatchString(RegularVersion, version)
+	if err != nil {
+		return false
+	}
+	return res
+}
+
+func validateQualifier(qualifier string) bool {
+	var res bool
+	res, err := regexp.MatchString(RegularAliasName, qualifier)
+	if err == nil && res == true {
+		return true
+	}
+	res, err = regexp.MatchString(RegularVersion, qualifier)
+	if err != nil {
+		return false
+	}
+	return res
 }
