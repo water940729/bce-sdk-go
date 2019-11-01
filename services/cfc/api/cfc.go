@@ -40,6 +40,7 @@ func ListFunctions(cli bce.Client, args *ListFunctionsArgs) (*ListFunctionsResul
 	result := &cfcResult{
 		Result: &ListFunctionsResult{},
 	}
+
 	err := caller(cli, op, request, result)
 	if err != nil {
 		return nil, err

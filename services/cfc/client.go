@@ -20,6 +20,7 @@ package cfc
 
 import (
 	"errors"
+
 	"github.com/baidubce/bce-sdk-go/auth"
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/cfc/api"
