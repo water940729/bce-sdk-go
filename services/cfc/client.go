@@ -177,3 +177,13 @@ func (c *Client) UpdateTrigger(args *api.UpdateTriggerArgs) (*api.UpdateTriggerR
 func (c *Client) DeleteTrigger(args *api.DeleteTriggerArgs) error {
 	return api.DeleteTrigger(c, args)
 }
+
+// 为函数添加预留并发度 PUT /v1/functions/{FunctionName}/concurrency
+func (c *Client) SetReservedConcurrent(args *api.ReservedConcurrentArgs) error {
+	return api.SetReservedConcurrent(c, args)
+}
+
+// 删除函数的预留并发度 DELETE /v1/functions/{FunctionName}/concurrency
+func (c *Client) DeleteReservedConcurrent(functionName string) error {
+	return api.DeleteReservedConcurrent(c, functionName)
+}

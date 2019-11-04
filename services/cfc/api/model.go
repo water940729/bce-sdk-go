@@ -60,6 +60,7 @@ type Function struct {
 	Environment  *Environment `json:"Environment"`
 	CommitID     string       `json:"CommitID"`
 	Role         string       `json:"Role"`
+	VpcConfig    *VpcConfig   `json:"VpcConfig"`
 	LogType      string       `json:"LogType"`
 	LogBosDir    string       `json:"LogBosDir"`
 }
@@ -105,6 +106,11 @@ type CodeFile struct {
 	DryRun  bool
 }
 
+type VpcConfig struct {
+	SubnetIds        []string
+	SecurityGroupIds []string
+}
+
 type InvocationsArgs struct {
 	FunctionName   string
 	InvocationType InvocationType
@@ -141,7 +147,6 @@ type ListFunctionsResult struct {
 
 type CreateFunctionArgs struct {
 	Code         *CodeFile
-	Publish      bool
 	FunctionName string
 	Handler      string
 	Runtime      string
@@ -149,6 +154,7 @@ type CreateFunctionArgs struct {
 	Timeout      int
 	Description  string
 	Environment  *Environment
+	VpcConfig    *VpcConfig
 }
 
 type CreateFunctionResult Function
@@ -172,6 +178,7 @@ type UpdateFunctionConfigurationArgs struct {
 	Handler      string
 	Runtime      string
 	Environment  *Environment
+	VpcConfig    *VpcConfig
 }
 
 type UpdateFunctionConfigurationResult Function
@@ -184,6 +191,11 @@ type UpdateFunctionCodeArgs struct {
 }
 
 type UpdateFunctionCodeResult Function
+
+type ReservedConcurrentArgs struct {
+	FunctionName                 string
+	ReservedConcurrentExecutions int
+}
 
 type ListVersionsByFunctionArgs struct {
 	FunctionName string

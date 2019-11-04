@@ -50,6 +50,10 @@ func getFunctionConfigurationUri(functionName string) string {
 	return fmt.Sprintf("/v1/functions/%s/configuration", functionName)
 }
 
+func getFunctionConCurrentUri(functionName string) string {
+	return fmt.Sprintf("/v1/functions/%s/concurrency", functionName)
+}
+
 func getFunctionVersionsUri(functionName string) string {
 	return fmt.Sprintf("/v1/functions/%s/versions", functionName)
 }

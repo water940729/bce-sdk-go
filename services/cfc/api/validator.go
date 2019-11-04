@@ -293,3 +293,15 @@ func (args DeleteTriggerArgs) Validate() error {
 	}
 	return nil
 }
+
+func (args ReservedConcurrentArgs) Validate() error {
+	if args.FunctionName == "" {
+		return fmt.Errorf(requiredIllegal, "FunctionName")
+	}
+
+	if args.ReservedConcurrentExecutions < 0 || args.ReservedConcurrentExecutions > 90 {
+		return fmt.Errorf(requiredIllegal, "ReservedConcurrentExecutions")
+	}
+
+	return nil
+}

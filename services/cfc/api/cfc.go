@@ -186,6 +186,42 @@ func UpdateFunctionConfiguration(cli bce.Client, args *UpdateFunctionConfigurati
 	return nil, nil
 }
 
+func SetReservedConcurrent(cli bce.Client, args *ReservedConcurrentArgs) error {
+	if err := args.Validate(); err != nil {
+		return err
+	}
+
+	op := &Operation{
+		HTTPUri:    getFunctionConCurrentUri(args.FunctionName),
+		HTTPMethod: PUT,
+	}
+	request := &cfcRequest{
+		Args: args,
+	}
+	result := &cfcResult{
+		Result: nil,
+	}
+	err := caller(cli, op, request, result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteReservedConcurrent(cli bce.Client, functionName string) error {
+	op := &Operation{
+		HTTPUri:    getFunctionConCurrentUri(functionName),
+		HTTPMethod: DELETE,
+	}
+	request := &cfcRequest{}
+	result := &cfcResult{}
+	err := caller(cli, op, request, result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func Invocations(cli bce.Client, args *InvocationsArgs) (*InvocationsResult, error) {
 	if err := args.Validate(); err != nil {
 		return nil, err
