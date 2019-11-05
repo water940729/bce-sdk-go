@@ -175,8 +175,8 @@ type GetFunctionConfigurationResult Function
 
 type UpdateFunctionConfigurationArgs struct {
 	FunctionName string
-	Timeout      int
-	MemorySize   int
+	Timeout      int `json:"Timeout,omitempty"`
+	MemorySize   int `json:"MemorySize,omitempty"`
 	Description  string
 	Handler      string
 	Runtime      string

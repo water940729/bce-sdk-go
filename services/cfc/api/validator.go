@@ -112,12 +112,6 @@ func (args UpdateFunctionConfigurationArgs) Validate() error {
 	if !validateFunctionName(args.FunctionName) {
 		return fmt.Errorf(functionNameInvalid, args.FunctionName)
 	}
-	if args.Handler == "" {
-		return fmt.Errorf(requiredIllegal, "Handler")
-	}
-	if args.Runtime == "" {
-		return fmt.Errorf(requiredIllegal, "Runtime")
-	}
 	return nil
 }
 
