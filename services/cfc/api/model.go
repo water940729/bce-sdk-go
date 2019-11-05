@@ -155,6 +155,8 @@ type CreateFunctionArgs struct {
 	Description  string
 	Environment  *Environment
 	VpcConfig    *VpcConfig
+	LogType      string
+	LogBosDir    string
 }
 
 type CreateFunctionResult Function
@@ -180,6 +182,8 @@ type UpdateFunctionConfigurationArgs struct {
 	Runtime      string
 	Environment  *Environment
 	VpcConfig    *VpcConfig
+	LogType      string
+	LogBosDir    string
 }
 
 type UpdateFunctionConfigurationResult Function
