@@ -144,7 +144,8 @@ type ListFunctionsArgs struct {
 }
 
 type ListFunctionsResult struct {
-	Functions []*Function
+	Functions  []*Function
+	NextMarker string
 }
 
 type CreateFunctionArgs struct {
@@ -214,7 +215,8 @@ type ListVersionsByFunctionArgs struct {
 	MaxItems     int
 }
 type ListVersionsByFunctionResult struct {
-	Versions []*Function
+	Versions   []*Function
+	NextMarker string
 }
 
 type PublishVersionArgs struct {
@@ -233,7 +235,8 @@ type ListAliasesArgs struct {
 }
 
 type ListAliasesResult struct {
-	Aliases []*Alias
+	Aliases    []*Alias
+	NextMarker string
 }
 
 type GetAliasArgs struct {

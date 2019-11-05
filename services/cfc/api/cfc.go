@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"reflect"
+	"strconv"
 
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
@@ -579,6 +580,8 @@ func caller(cli bce.Client, op *Operation, request *cfcRequest, response *cfcRes
 			switch rv.Kind() {
 			case reflect.String:
 				req.SetParam(key, value.(string))
+			case reflect.Int:
+				req.SetParam(key, strconv.Itoa(value.(int)))
 			case reflect.Struct:
 				if valueBytes, err := json.Marshal(value); err != nil {
 					req.SetParam(key, string(valueBytes))
