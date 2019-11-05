@@ -216,11 +216,13 @@ type ListVersionsByFunctionArgs struct {
 type ListVersionsByFunctionResult struct {
 	Versions []*Function
 }
+
 type PublishVersionArgs struct {
 	FunctionName string
 	Description  string
 	CodeSha256   string
 }
+
 type PublishVersionResult Function
 
 type ListAliasesArgs struct {
