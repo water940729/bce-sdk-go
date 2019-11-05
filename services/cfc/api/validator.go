@@ -250,6 +250,23 @@ func (args CreateTriggerArgs) Validate() error {
 	if !validateFunctionBRN(args.Target) {
 		return fmt.Errorf(functionBRNInvalid, args.Target)
 	}
+
+	switch args.Source {
+	case SourceTypeBOS:
+		if _, ok := args.Data.(*BosTriggerData); !ok {
+			return fmt.Errorf(requiredIllegal, "BosTriggerData pointer")
+		}
+	case SourceTypeHTTP:
+		if _, ok := args.Data.(*HttpTriggerData); !ok {
+			return fmt.Errorf(requiredIllegal, "HttpTriggerData pointer")
+		}
+	case SourceTypeDuEdge, SourceTypeDuerOS:
+		return nil
+	case SourceTypeCDN:
+		if _, ok := args.Data.(*CDNTriggerData); !ok {
+			return fmt.Errorf(requiredIllegal, "CDNTriggerData pointer")
+		}
+	}
 	return nil
 }
 
@@ -266,6 +283,24 @@ func (args UpdateTriggerArgs) Validate() error {
 	if !validateFunctionBRN(args.Target) {
 		return fmt.Errorf(functionBRNInvalid, args.Target)
 	}
+
+	switch args.Source {
+	case SourceTypeBOS:
+		if _, ok := args.Data.(*BosTriggerData); !ok {
+			return fmt.Errorf(requiredIllegal, "BosTriggerData pointer")
+		}
+	case SourceTypeHTTP:
+		if _, ok := args.Data.(*HttpTriggerData); !ok {
+			return fmt.Errorf(requiredIllegal, "HttpTriggerData pointer")
+		}
+	case SourceTypeDuEdge, SourceTypeDuerOS:
+		return nil
+	case SourceTypeCDN:
+		if _, ok := args.Data.(*CDNTriggerData); !ok {
+			return fmt.Errorf(requiredIllegal, "CDNTriggerData pointer")
+		}
+	}
+
 	return nil
 }
 

@@ -35,6 +35,7 @@ const (
 	SourceTypeBOS    SourceType = "bos/your-bucket-name"
 	SourceTypeDuEdge SourceType = "duedge"
 	SourceTypeHTTP   SourceType = "cfc-http-trigger/v1/CFCAPI"
+	SourceTypeCDN    SourceType = "cdn"
 
 	TriggerTypeHTTP    TriggerType = "cfc-http-trigger"
 	TriggerTypeGeneric TriggerType = "generic"
@@ -273,6 +274,49 @@ type ListTriggersArgs struct {
 }
 type ListTriggersResult struct {
 	Relation []*RelationInfo
+}
+
+type BosEventType string
+
+const (
+	BosEventTypePutObject               BosEventType = "PutObject"
+	BosEventTypePostObject              BosEventType = "PostObject"
+	BosEventTypeAppendObject            BosEventType = "AppendObject"
+	BosEventTypeCopyObject              BosEventType = "CopyObject"
+	BosEventTypeCompleteMultipartObject BosEventType = "CompleteMultipartObject"
+)
+
+type BosTriggerData struct {
+	Resource  string
+	Status    string
+	EventType []BosEventType
+	Name      string
+}
+
+type HttpTriggerData struct {
+	ResourcePath string
+	Method       string
+	AuthType     string
+}
+
+type CDNEventType string
+
+const (
+	CDNEventTypeCachedObjectsBlocked   CDNEventType = "CachedObjectsBlocked"
+	CDNEventTypeCachedObjectsPushed    CDNEventType = "CachedObjectsPushed"
+	CDNEventTypeCachedObjectsRefreshed CDNEventType = "CachedObjectsRefreshed"
+	CDNEventTypeCdnDomainCreated       CDNEventType = "CdnDomainCreated"
+	CDNEventTypeCdnDomainDeleted       CDNEventType = "CdnDomainDeleted"
+	CDNEventTypeLogFileCreated         CDNEventType = "LogFileCreated"
+	CDNEventTypeCdnDomainStarted       CDNEventType = "CdnDomainStarted"
+	CDNEventTypeCdnDomainStopped       CDNEventType = "CdnDomainStopped"
+)
+
+type CDNTriggerData struct {
+	EventType CDNEventType
+	Domains   []string
+	Remark    string
+	Status    string
 }
 
 type CreateTriggerArgs struct {
