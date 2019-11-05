@@ -326,7 +326,7 @@ func ListVersionsByFunction(cli bce.Client, args *ListVersionsByFunctionArgs) (*
 	return nil, nil
 }
 
-func PublishVersion(cli bce.Client, args *PublishVersionArgs) error {
+func PublishVersion(cli bce.Client, args *PublishVersionArgs) (*PublishVersionResult, error) {
 	op := &Operation{
 		HTTPUri:    getFunctionVersionsUri(args.FunctionName),
 		HTTPMethod: POST,
@@ -338,12 +338,17 @@ func PublishVersion(cli bce.Client, args *PublishVersionArgs) error {
 			"CodeSha256":  args.CodeSha256,
 		},
 	}
-	result := &cfcResult{}
+	result := &cfcResult{
+		Result: &PublishVersionResult{},
+	}
 	err := caller(cli, op, request, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	if value, ok := result.Result.(*PublishVersionResult); ok {
+		return value, nil
+	}
+	return nil, nil
 }
 
 func ListAliases(cli bce.Client, args *ListAliasesArgs) (*ListAliasesResult, error) {

@@ -59,10 +59,12 @@ type Function struct {
 	MemorySize   int          `json:"MemorySize"`
 	Environment  *Environment `json:"Environment"`
 	CommitID     string       `json:"CommitID"`
+	CodeID       string       `json:"CodeID"`
 	Role         string       `json:"Role"`
 	VpcConfig    *VpcConfig   `json:"VpcConfig"`
 	LogType      string       `json:"LogType"`
 	LogBosDir    string       `json:"LogBosDir"`
+	SourceTag    string       `json:"SourceTag"`
 }
 
 //functionInfo

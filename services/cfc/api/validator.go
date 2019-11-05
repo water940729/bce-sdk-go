@@ -135,9 +135,6 @@ func (args PublishVersionArgs) Validate() error {
 	if !validateFunctionName(args.FunctionName) {
 		return fmt.Errorf(functionNameInvalid, args.FunctionName)
 	}
-	if args.CodeSha256 == "" {
-		return fmt.Errorf(requiredIllegal, "CodeSha256")
-	}
 	return nil
 }
 

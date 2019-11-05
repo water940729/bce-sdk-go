@@ -129,7 +129,7 @@ func (c *Client) ListVersionsByFunction(args *api.ListVersionsByFunctionArgs) (*
 }
 
 // 发布函数版本 PublishVersion POST /v1/functions/{FunctionName}/versions
-func (c *Client) PublishVersion(args *api.PublishVersionArgs) error {
+func (c *Client) PublishVersion(args *api.PublishVersionArgs) (*api.PublishVersionResult, error) {
 	return api.PublishVersion(c, args)
 }
 
