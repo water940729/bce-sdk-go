@@ -197,6 +197,7 @@ func SetReservedConcurrent(cli bce.Client, args *ReservedConcurrentArgs) error {
 	}
 	request := &cfcRequest{
 		Args: args,
+		Body: args,
 	}
 	result := &cfcResult{
 		Result: nil,
@@ -208,12 +209,14 @@ func SetReservedConcurrent(cli bce.Client, args *ReservedConcurrentArgs) error {
 	return nil
 }
 
-func DeleteReservedConcurrent(cli bce.Client, functionName string) error {
+func DeleteReservedConcurrent(cli bce.Client, args *DeleteReservedConcurrentArgs) error {
 	op := &Operation{
-		HTTPUri:    getFunctionConCurrentUri(functionName),
+		HTTPUri:    getFunctionConCurrentUri(args.FunctionName),
 		HTTPMethod: DELETE,
 	}
-	request := &cfcRequest{}
+	request := &cfcRequest{
+		Args: args,
+	}
 	result := &cfcResult{}
 	err := caller(cli, op, request, result)
 	if err != nil {

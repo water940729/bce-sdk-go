@@ -174,6 +174,7 @@ type GetFunctionConfigurationResult Function
 type UpdateFunctionConfigurationArgs struct {
 	FunctionName string
 	Timeout      int
+	MemorySize   int
 	Description  string
 	Handler      string
 	Runtime      string
@@ -195,6 +196,10 @@ type UpdateFunctionCodeResult Function
 type ReservedConcurrentArgs struct {
 	FunctionName                 string
 	ReservedConcurrentExecutions int
+}
+
+type DeleteReservedConcurrentArgs struct {
+	FunctionName string
 }
 
 type ListVersionsByFunctionArgs struct {

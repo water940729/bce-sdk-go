@@ -184,6 +184,6 @@ func (c *Client) SetReservedConcurrent(args *api.ReservedConcurrentArgs) error {
 }
 
 // 删除函数的预留并发度 DELETE /v1/functions/{FunctionName}/concurrency
-func (c *Client) DeleteReservedConcurrent(functionName string) error {
-	return api.DeleteReservedConcurrent(c, functionName)
+func (c *Client) DeleteReservedConcurrent(args *api.DeleteReservedConcurrentArgs) error {
+	return api.DeleteReservedConcurrent(c, args)
 }

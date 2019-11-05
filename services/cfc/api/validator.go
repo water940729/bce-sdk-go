@@ -305,3 +305,11 @@ func (args ReservedConcurrentArgs) Validate() error {
 
 	return nil
 }
+
+func (args DeleteReservedConcurrentArgs) Validate() error {
+	if args.FunctionName == "" {
+		return fmt.Errorf(requiredIllegal, "FunctionName")
+	}
+
+	return nil
+}
