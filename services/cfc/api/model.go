@@ -32,7 +32,6 @@ const (
 	LogTypeNone LogType = "None"
 
 	SourceTypeDuerOS SourceType = "dueros"
-	SourceTypeBOS    SourceType = "bos/your-bucket-name"
 	SourceTypeDuEdge SourceType = "duedge"
 	SourceTypeHTTP   SourceType = "cfc-http-trigger/v1/CFCAPI"
 	SourceTypeCDN    SourceType = "cdn"
