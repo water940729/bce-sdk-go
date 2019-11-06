@@ -30,6 +30,10 @@ func ListFunctions(cli bce.Client, args *ListFunctionsArgs) (*ListFunctionsResul
 		HTTPUri:    getFunctionsUri(),
 		HTTPMethod: GET,
 	}
+
+	if args.MaxItems <= 0 {
+		args.MaxItems = 10000
+	}
 	request := &cfcRequest{
 		Args: args,
 		Params: map[string]interface{}{
@@ -307,6 +311,9 @@ func ListVersionsByFunction(cli bce.Client, args *ListVersionsByFunctionArgs) (*
 		HTTPUri:    getFunctionVersionsUri(args.FunctionName),
 		HTTPMethod: GET,
 	}
+	if args.MaxItems <= 0 {
+		args.MaxItems = 10000
+	}
 	request := &cfcRequest{
 		Args: args,
 		Params: map[string]interface{}{
@@ -356,6 +363,9 @@ func ListAliases(cli bce.Client, args *ListAliasesArgs) (*ListAliasesResult, err
 	op := &Operation{
 		HTTPUri:    getFunctionAliasesUri(args.FunctionName),
 		HTTPMethod: GET,
+	}
+	if args.MaxItems <= 0 {
+		args.MaxItems = 10000
 	}
 	request := &cfcRequest{
 		Args: args,

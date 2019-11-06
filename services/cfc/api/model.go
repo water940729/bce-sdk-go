@@ -89,7 +89,7 @@ type Alias struct {
 type RelationInfo struct {
 	RelationId string      `json:"RelationId"`
 	Sid        string      `json:"Sid"`
-	Source     string      `json:"Source"`
+	Source     SourceType  `json:"Source"`
 	Target     string      `json:"Target"`
 	Data       interface{} `json:"Data"`
 }
