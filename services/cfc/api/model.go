@@ -197,9 +197,11 @@ type UpdateFunctionConfigurationResult Function
 
 type UpdateFunctionCodeArgs struct {
 	FunctionName string
-	ZipFile      string
+	ZipFile      []byte
 	Publish      bool
 	DryRun       bool
+	BosBucket    string
+	BosObject    string
 }
 
 type UpdateFunctionCodeResult Function
