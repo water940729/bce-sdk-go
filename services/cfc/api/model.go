@@ -109,6 +109,7 @@ type CodeFile struct {
 }
 
 type VpcConfig struct {
+	VpcId            string
 	SubnetIds        []string
 	SecurityGroupIds []string
 }
@@ -316,6 +317,14 @@ type CDNTriggerData struct {
 	Domains   []string
 	Remark    string
 	Status    string
+}
+
+type CrontabTriggerData struct {
+	Brn                string
+	Enabled            string
+	Input              string
+	Name               string
+	ScheduleExpression string
 }
 
 type CreateTriggerArgs struct {
