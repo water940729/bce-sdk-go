@@ -31,10 +31,11 @@ const (
 	LogTypeTail LogType = "Tail"
 	LogTypeNone LogType = "None"
 
-	SourceTypeDuerOS SourceType = "dueros"
-	SourceTypeDuEdge SourceType = "duedge"
-	SourceTypeHTTP   SourceType = "cfc-http-trigger/v1/CFCAPI"
-	SourceTypeCDN    SourceType = "cdn"
+	SourceTypeDuerOS  SourceType = "dueros"
+	SourceTypeDuEdge  SourceType = "duedge"
+	SourceTypeHTTP    SourceType = "cfc-http-trigger/v1/CFCAPI"
+	SourceTypeCrontab SourceType = "cfc-crontab-trigger/v1/"
+	SourceTypeCDN     SourceType = "cdn"
 
 	TriggerTypeHTTP    TriggerType = "cfc-http-trigger"
 	TriggerTypeGeneric TriggerType = "generic"
