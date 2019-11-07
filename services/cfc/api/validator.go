@@ -63,7 +63,7 @@ func (args CreateFunctionArgs) Validate() error {
 	if err := validateMemorySize(args.MemorySize); err != nil {
 		return err
 	}
-	if args.Code.ZipFile == "" {
+	if len(args.Code.ZipFile) == 0 {
 		return fmt.Errorf(FunctionCodeInvalid)
 	}
 	return nil

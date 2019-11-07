@@ -104,9 +104,11 @@ type Environment struct {
 }
 
 type CodeFile struct {
-	ZipFile string
-	Publish bool
-	DryRun  bool
+	Publish   bool
+	DryRun    bool
+	ZipFile   []byte
+	BosBucket string
+	BosObject string
 }
 
 type VpcConfig struct {
