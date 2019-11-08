@@ -191,11 +191,7 @@ func UpdateFunctionConfiguration(cli bce.Client, args *UpdateFunctionConfigurati
 	return nil, nil
 }
 
-func SetReservedConcurrent(cli bce.Client, args *ReservedConcurrentArgs) error {
-	if err := args.Validate(); err != nil {
-		return err
-	}
-
+func SetReservedConcurrentExecutions(cli bce.Client, args *ReservedConcurrentExecutionsArgs) error {
 	op := &Operation{
 		HTTPUri:    getFunctionConCurrentUri(args.FunctionName),
 		HTTPMethod: PUT,
@@ -214,7 +210,7 @@ func SetReservedConcurrent(cli bce.Client, args *ReservedConcurrentArgs) error {
 	return nil
 }
 
-func DeleteReservedConcurrent(cli bce.Client, args *DeleteReservedConcurrentArgs) error {
+func DeleteReservedConcurrentExecutions(cli bce.Client, args *DeleteReservedConcurrentExecutionsArgs) error {
 	op := &Operation{
 		HTTPUri:    getFunctionConCurrentUri(args.FunctionName),
 		HTTPMethod: DELETE,

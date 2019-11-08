@@ -74,116 +74,239 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 	return newClient(ak, sk, "", endpoint)
 }
 
-func NewStsClient(ak, sk, token, endpoint string) (*Client, error) {
-	return newClient(ak, sk, token, endpoint)
-}
-
-// 调用函数 invocations POST /v1/functions/{FunctionName}/invocations
+// Invocations - invocation a cfc function with specific parameters
+//
+// PARAMS:
+//     - args: the arguments to invocation cfc function
+// RETURNS:
+//     - *api.InvocationsResult: the result of invocation cfc function
+//     - error: nil if success otherwise the specific error
 func (c *Client) Invocations(args *api.InvocationsArgs) (*api.InvocationsResult, error) {
 	return api.Invocations(c, args)
 }
 
-// 调用函数 Invoke POST /v1/functions/{FunctionName}/invocations
+// Invoke - invoke a cfc function, the same as Invocations
+//
+// PARAMS:
+//     - args: the arguments to invocation cfc function
+// RETURNS:
+//     - *api.InvocationsResult: the result of invocation cfc function
+//     - error: nil if success otherwise the specific error
 func (c *Client) Invoke(args *api.InvocationsArgs) (*api.InvocationsResult, error) {
 	return api.Invocations(c, args)
 }
 
-// 查询用户函数 ListFunctions GET /v1/functions
+// ListFunctions - list all functions with the specific parameters
+//
+// PARAMS:
+//     - args: the arguments to list all functions
+// RETURNS:
+//     - *api.ListFunctionsResult: the result of list all functions
+//     - error: nil if success otherwise the specific error
 func (c *Client) ListFunctions(args *api.ListFunctionsArgs) (*api.ListFunctionsResult, error) {
 	return api.ListFunctions(c, args)
 }
 
-// 查询单个用户函数 GetFunction GET /v1/functions/{FunctionName}
+// GetFunction - get a specific cfc function
+//
+// PARAMS:
+//     - args: the arguments to get a specific cfc function
+// RETURNS:
+//     - *api.GetFunctionResult: the result of get function
+//     - error: nil if success otherwise the specific error
 func (c *Client) GetFunction(args *api.GetFunctionArgs) (*api.GetFunctionResult, error) {
 	return api.GetFunction(c, args)
 }
 
-// 创建函数 CreateFunction POST /v1/functions
+// CreateFunction - create a cfc function with specific parameters
+//
+// PARAMS:
+//     - args: the arguments to create a cfc function
+// RETURNS:
+//     - *api.CreateFunctionResult: the result of create a cfc function, it contains function information
+//     - error: nil if success otherwise the specific error
 func (c *Client) CreateFunction(args *api.CreateFunctionArgs) (*api.CreateFunctionResult, error) {
 	return api.CreateFunction(c, args)
 }
 
-// 删除函数 DeleteFunction DELETE /v1/functions/{FunctionName}
+// DeleteFunction - delete a specific cfc function
+//
+// PARAMS:
+//     - args: the arguments to delete cfc function
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func (c *Client) DeleteFunction(args *api.DeleteFunctionArgs) error {
 	return api.DeleteFunction(c, args)
 }
 
-// 更新指定函数的代码 UpdateFunctionCode PUT /v1/functions/{FunctionName}/code
+// UpdateFunctionCode - update a cfc function code
+//
+// PARAMS:
+//     - args: the arguments to update function code
+// RETURNS:
+//     - *api.UpdateFunctionCodeResult: the result of update function code
+//     - error: nil if success otherwise the specific error
 func (c *Client) UpdateFunctionCode(args *api.UpdateFunctionCodeArgs) (*api.UpdateFunctionCodeResult, error) {
 	return api.UpdateFunctionCode(c, args)
 }
 
-// 获取指定函数配置 GetFunctionConfiguration GET /v1/functions/{FunctionName}/configuration
+// GetFunctionConfiguration - get a specific cfc function configuration
+//
+// PARAMS:
+//     - args: the arguments to get function configuration
+// RETURNS:
+//     - *api.GetFunctionConfigurationResult: the result of function configuration
+//     - error: nil if success otherwise the specific error
 func (c *Client) GetFunctionConfiguration(args *api.GetFunctionConfigurationArgs) (*api.GetFunctionConfigurationResult, error) {
 	return api.GetFunctionConfiguration(c, args)
 }
 
-// 修改函数配置 UpdateFunctionConfiguration PUT /v1/functions/{FunctionName}/configuration
+// UpdateFunctionConfiguration - update a specific cfc function configuration
+//
+// PARAMS:
+//     - args: the arguments to update cfc function
+// RETURNS:
+//     - *api.UpdateFunctionConfigurationResult: the result of update function configuration
+//     - error: nil if success otherwise the specific error
 func (c *Client) UpdateFunctionConfiguration(args *api.UpdateFunctionConfigurationArgs) (*api.UpdateFunctionConfigurationResult, error) {
 	return api.UpdateFunctionConfiguration(c, args)
 }
 
-// 查询函数所有版本 ListVersionsByFunction GET /v1/functions/{FunctionName}/versions
+// ListVersionsByFunction - list all versions about a specific cfc function
+//
+// PARAMS:
+//     - args: the arguments to list all versions
+// RETURNS:
+//     - *api.ListVersionsByFunctionResult: the result of all versions information
+//     - error: nil if success otherwise the specific error
 func (c *Client) ListVersionsByFunction(args *api.ListVersionsByFunctionArgs) (*api.ListVersionsByFunctionResult, error) {
 	return api.ListVersionsByFunction(c, args)
 }
 
-// 发布函数版本 PublishVersion POST /v1/functions/{FunctionName}/versions
+// PublishVersion - publish a cfc function as a new version
+//
+// PARAMS:
+//     - args: the arguments to publish a version
+// RETURNS:
+//     - *api.PublishVersionResult: the result of publish a function version
+//     - error: nil if success otherwise the specific error
 func (c *Client) PublishVersion(args *api.PublishVersionArgs) (*api.PublishVersionResult, error) {
 	return api.PublishVersion(c, args)
 }
 
-// 查询函数所有别名 ListAliases GET /v1/functions/{FunctionName}/aliases
+// ListAliases - list all alias about a specific cfc function with specific parameters
+//
+// PARAMS:
+//     - args: the arguments to list all alias
+// RETURNS:
+//     - *api.ListAliasesResult: the result of list all alias
+//     - error: nil if success otherwise the specific error
 func (c *Client) ListAliases(args *api.ListAliasesArgs) (*api.ListAliasesResult, error) {
 	return api.ListAliases(c, args)
 }
 
-// 创建别名 CreateAlias POST /v1/functions/{FunctionName}/aliases
+// CreateAlias - create an alias which bind one specific cfc function version
+//
+// PARAMS:
+//     - args: the arguments to create an alias
+// RETURNS:
+//     - *api.CreateAliasResult: the result of create alias
+//     - error: nil if success otherwise the specific error
 func (c *Client) CreateAlias(args *api.CreateAliasArgs) (*api.CreateAliasResult, error) {
 	return api.CreateAlias(c, args)
 }
 
-// 查询别名详情 GetAlias GET /v1/functions/{FunctionName}/aliases/{aliasName}/
+// GetAlias - get alias information which bind one cfc function
+//
+// PARAMS:
+//     - args: the arguments to get an alias
+// RETURNS:
+//     - *api.GetAliasResult: the result of get alias
+//     - error: nil if success otherwise the specific error
 func (c *Client) GetAlias(args *api.GetAliasArgs) (*api.GetAliasResult, error) {
 	return api.GetAlias(c, args)
 }
 
-// 修改别名 UpdateAlias PUT /v1/functions/{FunctionName}/aliases/{aliaName}/
+// UpdateAlias - update an alias configuration
+//
+// PARAMS:
+//     - args: the arguments to update an alias
+// RETURNS:
+//     - *api.UpdateAliasResult: the result of update an alias
+//     - error: nil if success otherwise the specific error
 func (c *Client) UpdateAlias(args *api.UpdateAliasArgs) (*api.UpdateAliasResult, error) {
 	return api.UpdateAlias(c, args)
 }
 
-// 删除别名 DeleteAlias DELETE /v1/functions/{FunctionName}/aliases/{aliaName}
+// DeleteAlias - delete an alias
+//
+// PARAMS:
+//     - args: the arguments to delete an alias
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func (c *Client) DeleteAlias(args *api.DeleteAliasArgs) error {
 	return api.DeleteAlias(c, args)
 }
 
-// 获取触发器列表 ListTriggers GET /v1/console/relation
+// ListTriggers - list all triggers in one cfc function version
+//
+// PARAMS:
+//     - args: the arguments to list all triggers
+// RETURNS:
+//     - *api.ListTriggersResult: the result of list all triggers
+//     - error: nil if success otherwise the specific error
 func (c *Client) ListTriggers(args *api.ListTriggersArgs) (*api.ListTriggersResult, error) {
 	return api.ListTriggers(c, args)
 }
 
-// 创建触发器 CreateTrigger POST /v1/console/relation
+// CreateTrigger - create a specific trigger
+//
+// PARAMS:
+//     - args: the arguments to create a trigger
+// RETURNS:
+//     - *api.CreateTriggerResult: the result of create a trigger
+//     - error: nil if success otherwise the specific error
 func (c *Client) CreateTrigger(args *api.CreateTriggerArgs) (*api.CreateTriggerResult, error) {
 	return api.CreateTrigger(c, args)
 }
 
-// 更新触发器 UpdateTrigger PUT /v1/console/relation
+// UpdateTrigger - update a trigger
+//
+// PARAMS:
+//     - args: the arguments to update a trigger
+// RETURNS:
+//     - *api.UpdateTriggerResult: the result of update a trigger
+//     - error: nil if success otherwise the specific error
 func (c *Client) UpdateTrigger(args *api.UpdateTriggerArgs) (*api.UpdateTriggerResult, error) {
 	return api.UpdateTrigger(c, args)
 }
 
-// 删除触发器 DeleteTrigger DELETE /v1/console/relation
+// DeleteTrigger - delete a trigger
+//
+// PARAMS:
+//     - args: the arguments to delete a trigger
+// RETURNS:
+//     - error: nil if success otherwise the specific error
 func (c *Client) DeleteTrigger(args *api.DeleteTriggerArgs) error {
 	return api.DeleteTrigger(c, args)
 }
 
-// 为函数添加预留并发度 PUT /v1/functions/{FunctionName}/concurrency
-func (c *Client) SetReservedConcurrent(args *api.ReservedConcurrentArgs) error {
-	return api.SetReservedConcurrent(c, args)
+// SetReservedConcurrentExecutions - set a cfc function reserved concurrent executions
+//
+// PARAMS:
+//     - args: the arguments to set reserved concurrent executions
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) SetReservedConcurrentExecutions(args *api.ReservedConcurrentExecutionsArgs) error {
+	return api.SetReservedConcurrentExecutions(c, args)
 }
 
-// 删除函数的预留并发度 DELETE /v1/functions/{FunctionName}/concurrency
-func (c *Client) DeleteReservedConcurrent(args *api.DeleteReservedConcurrentArgs) error {
-	return api.DeleteReservedConcurrent(c, args)
+// DeleteReservedConcurrentExecutions - delete one cfc function reserved concurrent executions setting
+//
+// PARAMS:
+//     - args: the arguments to delete reserved concurrent executions setting
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) DeleteReservedConcurrentExecutions(args *api.DeleteReservedConcurrentExecutionsArgs) error {
+	return api.DeleteReservedConcurrentExecutions(c, args)
 }

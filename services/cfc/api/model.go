@@ -206,12 +206,12 @@ type UpdateFunctionCodeArgs struct {
 
 type UpdateFunctionCodeResult Function
 
-type ReservedConcurrentArgs struct {
+type ReservedConcurrentExecutionsArgs struct {
 	FunctionName                 string
 	ReservedConcurrentExecutions int
 }
 
-type DeleteReservedConcurrentArgs struct {
+type DeleteReservedConcurrentExecutionsArgs struct {
 	FunctionName string
 }
 
