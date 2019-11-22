@@ -3,6 +3,7 @@ package cfc
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -60,35 +61,9 @@ func init() {
 	decoder.Decode(confObj)
 	FunctionName01 = fmt.Sprintf("sdktest-function01-%s", time.Now().Format("2006-01-02T150405"))
 	FunctionName02 = fmt.Sprintf("sdktest-function02-%s", time.Now().Format("2006-01-02T150405"))
-	zipFilePython = `UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAaW5kZXgucHlKSU1TyEjMS8lJLdJILUvNK9FRSM
-7PK0mtKNG0UuBSUFBQKCjKzCuByGmCBYpSS0qL8hSUPFJzcvIVwvOLclKUuAABAAD//1BLBwhwCJ
-1tRwAAAEgAAABQSwECFAAUAAgACAAAAAAAcAidbUcAAABIAAAACAAAAAAAAAAAAAAAAAAAAAAAaW
-5kZXgucHlQSwUGAAAAAAEAAQA2AAAAfQAAAAAA`
-
-	zipFileNodejs01 = `UEsDBBQACAAIAAyjX00AAAAAAAAAAAAAAAAIABAAaW5kZXguanNVWAwAsJ/ZW/ie2Vv6Z7qeS60o
-yC8qKdbLSMxLyUktUrBV0EgtS80r0VFIzs8rSa0AMRJzcpISk7M1FWztFKq5FIAAJqSRV5qTo6Og
-5JGak5OvUJ5flJOiqKRpzVVrDQBQSwcILzRMjVAAAABYAAAAUEsDBAoAAAAAAHCjX00AAAAAAAAA
-AAAAAAAJABAAX19NQUNPU1gvVVgMALSf2Vu0n9lb+me6nlBLAwQUAAgACAAMo19NAAAAAAAAAAAA
-AAAAEwAQAF9fTUFDT1NYLy5faW5kZXguanNVWAwAsJ/ZW/ie2Vv6Z7qeY2AVY2dgYmDwTUxW8A9W
-iFCAApAYAycQGwFxHRCD+BsYiAKOISFBUCZIxwIgFkBTwogQl0rOz9VLLCjISdXLSSwuKS1OTUlJ
-LElVDggGKXw772Y0iO5J8tAH0QBQSwcIDgnJLFwAAACwAAAAUEsBAhUDFAAIAAgADKNfTS80TI1Q
-AAAAWAAAAAgADAAAAAAAAAAAQKSBAAAAAGluZGV4LmpzVVgIALCf2Vv4ntlbUEsBAhUDCgAAAAAA
-cKNfTQAAAAAAAAAAAAAAAAkADAAAAAAAAAAAQP1BlgAAAF9fTUFDT1NYL1VYCAC0n9lbtJ/ZW1BL
-AQIVAxQACAAIAAyjX00OCcksXAAAALAAAAATAAwAAAAAAAAAAECkgc0AAABfX01BQ09TWC8uX2lu
-ZGV4LmpzVVgIALCf2Vv4ntlbUEsFBgAAAAADAAMA0gAAAHoBAAAAAA==`
-
-	zipFileNodejs02 = `UEsDBBQACAAAAHCjX00AAAAAAAAAAAAAAAAJABUAX19NQUNPU1gvVVgIALSf2Vu0n9lbVVQFAAG0
-n9lbUEsHCAAAAAAAAAAAAAAAAFBLAwQUAAgACAAMo19NAAAAAAAAAAAAAAAAEwAVAF9fTUFDT1NY
-Ly5faW5kZXguanNVWAgAsJ/ZW/ie2VtVVAUAAfie2VtiYBVjZ2BiYPBNTFbwD1aIUIACkBgDJwMD
-gxEDA0MdAwOYv4GBKOAYEhIEZYJ0LGBgYBBAU8KIEJdKzs/VSywoyEnVy0ksLiktTk1JSSxJVQ4I
-Bil8O+9mNIjuSfLQB9GAAAAA//9QSwcIDgnJLGYAAACwAAAAUEsDBBQACAAIAAAAAAAAAAAAAAAA
-AAAAAAAIAAAAaW5kZXguanNKrSjILyop1stIzEvJSS1SsFXQSC1LzSvRUUjOzytJrQAxEnNykhKT
-szUVbO0UqrkUFBTgQhp5pTk5OgpKHqk5OfkKzm7Oikqa1ly11oAAAAD//1BLBwg7znNyUwAAAFYA
-AABQSwECFAMUAAgAAABwo19NAAAAAAAAAAAAAAAACQAVAAAAAAAAAABA/UEAAAAAX19NQUNPU1gv
-VVgIALSf2Vu0n9lbVVQFAAG0n9lbUEsBAhQDFAAIAAgADKNfTQ4JySxmAAAAsAAAABMAFQAAAAAA
-AAAAQKSBTAAAAF9fTUFDT1NYLy5faW5kZXguanNVWAgAsJ/ZW/ie2VtVVAUAAfie2VtQSwECFAAU
-AAgACAAAAAAAO85zclMAAABWAAAACAAAAAAAAAAAAAAAAAAIAQAAaW5kZXguanNQSwUGAAAAAAMA
-AwDYAAAAkQEAAAAA`
+	zipFilePython = filepath.Join(filepath.Dir(f), "./python.zip")
+	zipFileNodejs01 = filepath.Join(filepath.Dir(f), "./nodejs.zip")
+	zipFileNodejs02 = filepath.Join(filepath.Dir(f), "./nodejs2.zip")
 
 	AliasName01 = fmt.Sprintf("sdktest-alias01-%s", time.Now().Format("2006-01-02T150405"))
 	AliasName02 = fmt.Sprintf("sdktest-alias02-%s", time.Now().Format("2006-01-02T150405"))
@@ -104,11 +79,19 @@ AwDYAAAAkQEAAAAA`
 }
 
 func TestCreateFunction(t *testing.T) {
+	codeFile, err := ioutil.ReadFile(zipFilePython)
+	if err != nil {
+		t.Fatalf("err (%v)", err)
+	}
+
+	codeFile2, err := ioutil.ReadFile(zipFilePython)
+	if err != nil {
+		t.Fatalf("err (%v)", err)
+	}
 	// This function return Hello World
 	cases := []api.CreateFunctionArgs{
 		{
-			Code:         &api.CodeFile{ZipFile: zipFilePython},
-			Publish:      true,
+			Code:         &api.CodeFile{ZipFile: codeFile},
 			FunctionName: FunctionName01,
 			Handler:      "index.handler",
 			Runtime:      "python2",
@@ -117,8 +100,7 @@ func TestCreateFunction(t *testing.T) {
 			Description:  "Description",
 		},
 		{
-			Code:         &api.CodeFile{ZipFile: zipFileNodejs01},
-			Publish:      false,
+			Code:         &api.CodeFile{ZipFile: codeFile2},
 			FunctionName: FunctionName02,
 			Handler:      "index.handler",
 			Runtime:      "nodejs8.5",
@@ -239,9 +221,13 @@ func TestInvocations(t *testing.T) {
 }
 
 func TestUpdateFunctionCode(t *testing.T) {
+	codeFile, err :=  ioutil.ReadFile(zipFileNodejs02)
+	if err != nil {
+		t.Fatalf("err (%v)", err)
+	}
 	res, err := CfcClient.UpdateFunctionCode(&api.UpdateFunctionCodeArgs{
 		FunctionName: FunctionName02,
-		ZipFile:      zipFileNodejs02,
+		ZipFile:      codeFile,
 		Publish:      false,
 		DryRun:       false,
 	})
@@ -298,13 +284,13 @@ func TestPublishVersion(t *testing.T) {
 	}
 	CodeSha256 = res.Configuration.CodeSha256
 	fmt.Printf(FunctionBRN)
-	err = CfcClient.PublishVersion(&api.PublishVersionArgs{
+	result, err := CfcClient.PublishVersion(&api.PublishVersionArgs{
 		FunctionName: FunctionName02,
 		Description:  "test",
 		CodeSha256:   CodeSha256,
 	})
-	if err != nil {
-		t.Fatalf("err (%v)", err)
+	if logSuccess && err == nil {
+		t.Logf("res %v ", result)
 	}
 }
 
