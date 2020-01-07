@@ -221,7 +221,7 @@ func TestInvocations(t *testing.T) {
 }
 
 func TestUpdateFunctionCode(t *testing.T) {
-	codeFile, err :=  ioutil.ReadFile(zipFileNodejs02)
+	codeFile, err := ioutil.ReadFile(zipFileNodejs02)
 	if err != nil {
 		t.Fatalf("err (%v)", err)
 	}
