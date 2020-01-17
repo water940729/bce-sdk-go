@@ -2018,7 +2018,7 @@ func (c *Client) parallelPartCopy(srcMeta api.GetObjectMetaResult, source string
 		}
 
 		partCopyArgs := api.UploadPartCopyArgs{
-			SourceRange: fmt.Sprintf("bytes=%d-%d", (i-1)*partSize, (i-1)*partSize+uploadSize),
+			SourceRange: fmt.Sprintf("bytes=%d-%d", (i-1)*partSize, (i-1)*partSize+uploadSize-1),
 			IfMatch:     srcMeta.ETag,
 		}
 
