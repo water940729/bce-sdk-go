@@ -29,6 +29,7 @@ bce-sdk-go
 |--http                   //BCE的http通信模块
 |--services               //BCE相关服务目录
 |  |--appblb              //应用型负载均衡服务目录
+|  |--bbc                 //物理服务器
 |  |--bcc                 //云服务器
 |  |--bie                 //百度边缘计算
 |  |--bos                 //BOS服务目录
