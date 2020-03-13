@@ -14,17 +14,18 @@ import (
 )
 
 var (
-	BBC_CLIENT          *Client
-	BBC_TestBbcId       string
-	BBC_TestImageId     string
-	BBC_TestFlavorId    string
-	BBC_TestRaidId      string
-	BBC_TestZoneName    string
-	BBC_TestSubnetId    string
-	BBC_TestName        string
-	BBC_TestAdminPass   string
-	BBC_TestDeploySetId string
-	BBC_TestClientToken string
+	BBC_CLIENT              *Client
+	BBC_TestBbcId           string
+	BBC_TestImageId         string
+	BBC_TestFlavorId        string
+	BBC_TestRaidId          string
+	BBC_TestZoneName        string
+	BBC_TestSubnetId        string
+	BBC_TestName            string
+	BBC_TestAdminPass       string
+	BBC_TestDeploySetId     string
+	BBC_TestClientToken     string
+	BBC_TestSecurityGroupId string
 )
 
 // For security reason, ak/sk should not hard write here.
@@ -58,6 +59,7 @@ func init() {
 	BBC_TestAdminPass = "123@adminPass"
 	BBC_TestDeploySetId = "deployset-id"
 	BBC_TestBbcId = "bbc-id"
+	BBC_TestSecurityGroupId = "bbc-security-group-id"
 	BBC_CLIENT, _ = NewClient(confObj.AK, confObj.SK, confObj.Endpoint)
 	log.SetLogLevel(log.WARN)
 	//log.SetLogLevel(log.DEBUG)
@@ -107,9 +109,10 @@ func TestCreateInstance(t *testing.T) {
 				ReservationTimeUnit: "Month",
 			},
 		},
-		DeploySetId: BBC_TestDeploySetId,
-		AdminPass:   BBC_TestAdminPass,
-		Name:        BBC_TestName,
+		SecurityGroupId: BBC_TestSecurityGroupId,
+		DeploySetId:     BBC_TestDeploySetId,
+		AdminPass:       BBC_TestAdminPass,
+		Name:            BBC_TestName,
 	}
 	res, err := BBC_CLIENT.CreateInstance(createInstanceArgs)
 	fmt.Println(res)

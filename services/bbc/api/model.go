@@ -69,6 +69,7 @@ type CreateInstanceArgs struct {
 	AdminPass        string  `json:"adminPass,omitempty"`
 	DeploySetId      string  `json:"deploySetId,omitempty"`
 	ClientToken      string  `json:"-"`
+	SecurityGroupId  string  `json:"securityGroupId,omitempty"`
 }
 
 type Billing struct {
@@ -92,17 +93,17 @@ type ListInstanceArgs struct {
 }
 
 type ListInstanceResult struct {
-	Marker      		string          		`json:"marker"`
-	IsTruncated 		bool            		`json:"isTruncated"`
-	NextMarker  		string          		`json:"nextMarker"`
-	MaxKeys     		int             		`json:"maxKeys"`
-	Instances   		[]InstanceModel 		`json:"instances"`
+	Marker      string          `json:"marker"`
+	IsTruncated bool            `json:"isTruncated"`
+	NextMarker  string          `json:"nextMarker"`
+	MaxKeys     int             `json:"maxKeys"`
+	Instances   []InstanceModel `json:"instances"`
 }
 
 type InstanceModel struct {
-	Id            		  string           `json:"id"`
-	Name          	      string           `json:"name"`
-	Desc           		  string           `json:"desc"`
+	Id                    string           `json:"id"`
+	Name                  string           `json:"name"`
+	Desc                  string           `json:"desc"`
 	Status                InstanceStatus   `json:"status"`
 	PaymentTiming         string           `json:"paymentTiming"`
 	CreateTime            string           `json:"createTime"`
@@ -130,11 +131,11 @@ type ModifyInstanceDescArgs struct {
 }
 
 type RebuildInstanceArgs struct {
-	ImageId        		string 		`json:"imageId"`
-	AdminPass      		string 		`json:"adminPass"`
-	IsPreserveData 		bool   		`json:"isPreserveData,omitempty"`
-	RaidId         		string 		`json:"raidId,omitempty"`
-	SysRootSize    		int    		`json:"sysRootSize,omitempty"`
+	ImageId        string `json:"imageId"`
+	AdminPass      string `json:"adminPass"`
+	IsPreserveData bool   `json:"isPreserveData,omitempty"`
+	RaidId         string `json:"raidId,omitempty"`
+	SysRootSize    int    `json:"sysRootSize,omitempty"`
 }
 
 type GetVpcSubnetArgs struct {
@@ -146,26 +147,26 @@ type GetVpcSubnetResult struct {
 }
 
 type BbcNetworkModel struct {
-	BbcId  			string      		`json:"bbcId"`
-	Vpc    			VpcModel    		`json:"vpc"`
-	Subnet 			SubnetModel 		`json:"subnet"`
+	BbcId  string      `json:"bbcId"`
+	Vpc    VpcModel    `json:"vpc"`
+	Subnet SubnetModel `json:"subnet"`
 }
 
 type VpcModel struct {
-	VpcId       	string 				`json:"vpcId"`
-	Cidr        	string 				`json:"cidr"`
-	Name        	string 				`json:"name"`
-	IsDefault   	bool   				`json:"isDefault"`
-	Description 	string 				`json:"description"`
+	VpcId       string `json:"vpcId"`
+	Cidr        string `json:"cidr"`
+	Name        string `json:"name"`
+	IsDefault   bool   `json:"isDefault"`
+	Description string `json:"description"`
 }
 
 type SubnetModel struct {
-	VpcId      		string 				`json:"vpcId"`
-	Name       		string 				`json:"name"`
-	SubnetType 		string 				`json:"subnetType"`
-	SubnetId   		string 				`json:"subnetId"`
-	Cidr       		string 				`json:"cidr"`
-	ZoneName   		string 				`json:"zoneName"`
+	VpcId      string `json:"vpcId"`
+	Name       string `json:"name"`
+	SubnetType string `json:"subnetType"`
+	SubnetId   string `json:"subnetId"`
+	Cidr       string `json:"cidr"`
+	ZoneName   string `json:"zoneName"`
 }
 
 type ModifyInstancePasswordArgs struct {
