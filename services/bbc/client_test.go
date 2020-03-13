@@ -25,7 +25,7 @@ var (
 	BBC_TestName        string
 	BBC_TestAdminPass   string
 	BBC_TestDeploySetId string
-	BBC_TestClientToken	string
+	BBC_TestClientToken string
 )
 
 // For security reason, ak/sk should not hard write here.
@@ -50,16 +50,16 @@ func init() {
 	confObj := &Conf{}
 	decoder.Decode(confObj)
 
-	BBC_TestFlavorId = "BBC-I2-01"
-	BBC_TestImageId = "m-BPwwiJYh"
-	BBC_TestRaidId = "raid-malo48xg"
-	BBC_TestZoneName = "cn-bj-a"
-	BBC_TestSubnetId = "25590fe3-a54e-434e-93b3-761d01eb32bb"
+	BBC_TestFlavorId = "flavor-id"
+	BBC_TestImageId = "image-id"
+	BBC_TestRaidId = "raid-id"
+	BBC_TestZoneName = "zone-name"
+	BBC_TestSubnetId = "subnet-id"
 	BBC_TestName = "sdkTest"
-	BBC_TestAdminPass = "testbbc123@baidu"
-	BBC_TestDeploySetId = "dset-w3O9lX0n"
+	BBC_TestAdminPass = "123@adminPass"
+	BBC_TestDeploySetId = "deployset-id"
 	BBC_TestClientToken = getClientToken()
-	BBC_TestBbcId = "i-YiYvvB0v"
+	BBC_TestBbcId = "bbc-id"
 	BBC_CLIENT, _ = NewClient(confObj.AK, confObj.SK, confObj.Endpoint)
 	log.SetLogLevel(log.WARN)
 	//log.SetLogLevel(log.DEBUG)
@@ -106,11 +106,11 @@ func TestCreateInstance(t *testing.T) {
 		PurchaseCount:    1,
 		ZoneName:         BBC_TestZoneName,
 		SubnetId:         BBC_TestSubnetId,
-		ClientToken: 	  BBC_TestClientToken,
+		ClientToken:      BBC_TestClientToken,
 		Billing: api.Billing{
 			PaymentTiming: api.PaymentTimingPostPaid,
 			Reservation: &api.Reservation{
-				ReservationLength: 1,
+				ReservationLength:   1,
 				ReservationTimeUnit: "Month",
 			},
 		},
@@ -149,7 +149,7 @@ func TestStartInstance(t *testing.T) {
 }
 
 func TestRebootInstance(t *testing.T) {
-	err := BBC_CLIENT.RebootInstance(BBC_TestBbcId, false)
+	err := BBC_CLIENT.RebootInstance(BBC_TestBbcId, true)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
@@ -171,11 +171,11 @@ func TestModifyInstanceDesc(t *testing.T) {
 
 func TestRebuildInstance(t *testing.T) {
 	rebuildArgs := &api.RebuildInstanceArgs{
-		ImageId:        "m-BPwwiJYh",
-		AdminPass:      "123qaz!@#",
+		ImageId:        BBC_TestImageId,
+		AdminPass:      BBC_TestAdminPass,
 		IsPreserveData: true,
 		RaidId:         BBC_TestRaidId,
-		SysRootSize: 20,
+		SysRootSize:    20,
 	}
 	err := BBC_CLIENT.RebuildInstance(BBC_TestBbcId, true, rebuildArgs)
 	ExpectEqual(t.Errorf, err, nil)
@@ -188,7 +188,7 @@ func TestReleaseInstance(t *testing.T) {
 
 func TestModifyInstancePassword(t *testing.T) {
 	modifyInstancePasswordArgs := &api.ModifyInstancePasswordArgs{
-		AdminPass: "123qaz!@#",
+		AdminPass: BBC_TestAdminPass,
 	}
 	err := BBC_CLIENT.ModifyInstancePassword(BBC_TestBbcId, modifyInstancePasswordArgs)
 	ExpectEqual(t.Errorf, err, nil)
@@ -199,7 +199,7 @@ func TestGetVpcSubnet(t *testing.T) {
 		BbcIds: []string{BBC_TestBbcId},
 	}
 	result, err := BBC_CLIENT.GetVpcSubnet(getVpcSubnetArgs)
-	t.Log(result)
+	fmt.Println(result)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
@@ -223,21 +223,21 @@ func TestListFlavors(t *testing.T) {
 }
 
 func TestGetFlavorDetail(t *testing.T) {
-	testFlavorId := "BBC-I1-01"
+	testFlavorId := BBC_TestFlavorId
 	rep, err := BBC_CLIENT.GetFlavorDetail(testFlavorId)
 	fmt.Println(rep)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
 func TestGetFlavorRaid(t *testing.T) {
-	testFlavorId := "BBC-I1-01"
+	testFlavorId := BBC_TestFlavorId
 	rep, err := BBC_CLIENT.GetFlavorRaid(testFlavorId)
 	fmt.Println(rep)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
 func TestCreateImageFromInstanceId(t *testing.T) {
-	testInstanceId := "i-YiYvvB0v"
+	testInstanceId := BBC_TestBbcId
 	testImageName := "testCreateImage"
 	queryArgs := &api.CreateImageArgs{
 		ImageName:  testImageName,
@@ -256,14 +256,14 @@ func TestListImage(t *testing.T) {
 }
 
 func TestGetImageDetail(t *testing.T) {
-	testImageId := "m-BPwwiJYh"
+	testImageId := BBC_TestImageId
 	rep, err := BBC_CLIENT.GetImageDetail(testImageId)
 	fmt.Println(rep.Image)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
 func TestDeleteImage(t *testing.T) {
-	testImageId := "m-3yB3s46S"
+	testImageId := BBC_TestImageId
 	err := BBC_CLIENT.DeleteImage(testImageId)
 	ExpectEqual(t.Errorf, err, nil)
 }
@@ -298,14 +298,14 @@ func TestListDeploySets(t *testing.T) {
 }
 
 func TestGetDeploySet(t *testing.T) {
-	testDeploySetID := "dset-IkJtoqjR"
+	testDeploySetID := BBC_TestDeploySetId
 	rep, err := BBC_CLIENT.GetDeploySet(testDeploySetID)
 	fmt.Println(rep)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-func TestDeleteDeploySet(t *testing.T)  {
-	testDeleteDeploySetId := "dset-IkJtoqjR"
+func TestDeleteDeploySet(t *testing.T) {
+	testDeleteDeploySetId := BBC_TestDeploySetId
 	err := BBC_CLIENT.DeleteDeploySet(testDeleteDeploySetId)
 	fmt.Println(err)
 	ExpectEqual(t.Errorf, err, nil)
