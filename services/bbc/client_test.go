@@ -6,7 +6,6 @@ import (
 	"github.com/baidubce/bce-sdk-go/model"
 	"github.com/baidubce/bce-sdk-go/services/bbc/api"
 	"github.com/baidubce/bce-sdk-go/util/log"
-	"github.com/satori/go.uuid"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -58,16 +57,10 @@ func init() {
 	BBC_TestName = "sdkTest"
 	BBC_TestAdminPass = "123@adminPass"
 	BBC_TestDeploySetId = "deployset-id"
-	BBC_TestClientToken = getClientToken()
 	BBC_TestBbcId = "bbc-id"
 	BBC_CLIENT, _ = NewClient(confObj.AK, confObj.SK, confObj.Endpoint)
 	log.SetLogLevel(log.WARN)
 	//log.SetLogLevel(log.DEBUG)
-}
-
-func getClientToken() string {
-	uuid, _ := uuid.NewV4()
-	return uuid.String()
 }
 
 // ExpectEqual is the helper function for test each case
