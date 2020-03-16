@@ -3,14 +3,15 @@ package bbc
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/baidubce/bce-sdk-go/model"
-	"github.com/baidubce/bce-sdk-go/services/bbc/api"
-	"github.com/baidubce/bce-sdk-go/util/log"
 	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/baidubce/bce-sdk-go/model"
+	"github.com/baidubce/bce-sdk-go/services/bbc/api"
+	"github.com/baidubce/bce-sdk-go/util/log"
 )
 
 var (

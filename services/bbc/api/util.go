@@ -18,6 +18,7 @@ package api
 import (
 	"encoding/hex"
 	"fmt"
+
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/util/crypto"
 )

@@ -18,9 +18,10 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
-	"strconv"
 )
 
 // CreateInstance - create a bbc instance

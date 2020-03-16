@@ -18,9 +18,10 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
-	"strconv"
 )
 
 // CreateImageFromInstanceId - create image from specified instance
@@ -169,4 +170,3 @@ func getImageUri() string {
 func getImageUriWithId(id string) string {
 	return URI_PREFIX_V1 + REQUEST_IMAGE_URI + "/" + id
 }
-

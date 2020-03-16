@@ -19,6 +19,7 @@ package bbc
 
 import (
 	"encoding/json"
+
 	"github.com/baidubce/bce-sdk-go/auth"
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/bbc/api"
