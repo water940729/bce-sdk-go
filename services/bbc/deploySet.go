@@ -12,31 +12,29 @@
  * and limitations under the License.
  */
 
-// image.go - the image APIs definition supported by the BBC service
+// deploySet.go - the deploy set  definition supported by the BBC service
 
-// Package api defines all APIs supported by the BBC service of BCE.
-package api
+// Package defines all  supported by the BBC service of BCE.
+package bbc
 
 import (
-	"strconv"
-
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/http"
 )
 
-// CreateImageFromInstanceId - create image from specified instance
+// CreateDeploySet - create a deploy set
 //
 // PARAMS:
 //     - cli: the client agent which can perform sending request
 //     - clientToken: idempotent token,  an ASCII string no longer than 64 bits
 //     - reqBody: http request body
 // RETURNS:
-//     - *api.CreateImageResult: the result of create Image
+//     - *CreateDeploySetResult: results of creating a deploy set
 //     - error: nil if success otherwise the specific error
-func CreateImageFromInstanceId(cli bce.Client, clientToken string, reqBody *bce.Body) (*CreateImageResult, error) {
+func CreateDeploySet(cli bce.Client, clientToken string, reqBody *bce.Body) (*CreateDeploySetResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
-	req.SetUri(getImageUri())
+	req.SetUri(getDeploySetUri())
 	req.SetMethod(http.POST)
 	req.SetBody(reqBody)
 
@@ -53,7 +51,7 @@ func CreateImageFromInstanceId(cli bce.Client, clientToken string, reqBody *bce.
 		return nil, resp.ServiceError()
 	}
 
-	jsonBody := &CreateImageResult{}
+	jsonBody := &CreateDeploySetResult{}
 	if err := resp.ParseJsonBody(jsonBody); err != nil {
 		return nil, err
 	}
@@ -61,64 +59,16 @@ func CreateImageFromInstanceId(cli bce.Client, clientToken string, reqBody *bce.
 	return jsonBody, nil
 }
 
-//ListImage - list all images
-//
+// ListDeploySets - list all deploy sets
 // PARAMS:
 //     - cli: the client agent which can perform sending request
-//     - args: the arguments to list all images
 // RETURNS:
-//     - *api.ListImageResult: the result of list all images
+//     - *ListDeploySetsResult: the result of list all deploy sets
 //     - error: nil if success otherwise the specific error
-func ListImage(cli bce.Client, queryArgs *ListImageArgs) (*ListImageResult, error) {
+func ListDeploySets(cli bce.Client) (*ListDeploySetsResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
-	req.SetUri(getImageUri())
-	req.SetMethod(http.GET)
-
-	if queryArgs != nil {
-		if len(queryArgs.Marker) != 0 {
-			req.SetParam("marker", queryArgs.Marker)
-		}
-		if queryArgs.MaxKeys != 0 {
-			req.SetParam("maxKeys", strconv.Itoa(queryArgs.MaxKeys))
-		}
-		if len(queryArgs.ImageType) != 0 {
-			req.SetParam("imageType", queryArgs.ImageType)
-		}
-	}
-
-	if queryArgs == nil || queryArgs.MaxKeys == 0 {
-		req.SetParam("maxKeys", "1000")
-	}
-
-	// Send request and get response
-	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
-		return nil, err
-	}
-	if resp.IsFail() {
-		return nil, resp.ServiceError()
-	}
-
-	jsonBody := &ListImageResult{}
-	if err := resp.ParseJsonBody(jsonBody); err != nil {
-		return nil, err
-	}
-	return jsonBody, nil
-}
-
-// GetImageDetail - get an image's detail info
-//
-// PARAMS:
-//     - cli: the client agent which can perform sending request
-//     - imageId: the specific image ID
-// RETURNS:
-//     - *api.GetImageDetailResult: the result of get image's detail
-//     - error: nil if success otherwise the specific error
-func GetImageDetail(cli bce.Client, imageId string) (*GetImageDetailResult, error) {
-	// Build the request
-	req := &bce.BceRequest{}
-	req.SetUri(getImageUriWithId(imageId))
+	req.SetUri(getDeploySetUri())
 	req.SetMethod(http.GET)
 
 	// Send request and get response
@@ -130,24 +80,56 @@ func GetImageDetail(cli bce.Client, imageId string) (*GetImageDetailResult, erro
 		return nil, resp.ServiceError()
 	}
 
-	jsonBody := &GetImageDetailResult{}
+	jsonBody := &ListDeploySetsResult{}
 	if err := resp.ParseJsonBody(jsonBody); err != nil {
 		return nil, err
 	}
+
 	return jsonBody, nil
 }
 
-// DeleteImage - delete an image
+// GetDeploySet - get details of the deploy set
 //
 // PARAMS:
 //     - cli: the client agent which can perform sending request
-//     - imageId: the specific image ID
+//     - deploySetId: the id of the deploy set
 // RETURNS:
+//     - *GetDeploySetResult: the detail of the deploy set
 //     - error: nil if success otherwise the specific error
-func DeleteImage(cli bce.Client, imageId string) error {
+func GetDeploySet(cli bce.Client, deploySetId string) (*GetDeploySetResult, error) {
 	// Build the request
 	req := &bce.BceRequest{}
-	req.SetUri(getImageUriWithId(imageId))
+	req.SetUri(getDeploySetUriWithId(deploySetId))
+	req.SetMethod(http.GET)
+
+	// Send request and get response
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+
+	jsonBody := &GetDeploySetResult{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+
+	return jsonBody, nil
+}
+
+// DeleteDeploySet - delete a deploy set
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//     - deploySetId: the id of the deploy set
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func DeleteDeploySet(cli bce.Client, deploySetId string) error {
+	// Build the request
+	req := &bce.BceRequest{}
+	req.SetUri(getDeploySetUriWithId(deploySetId))
 	req.SetMethod(http.DELETE)
 
 	// Send request and get response
@@ -160,13 +142,14 @@ func DeleteImage(cli bce.Client, imageId string) error {
 	}
 
 	defer func() { resp.Body().Close() }()
+
 	return nil
 }
 
-func getImageUri() string {
-	return URI_PREFIX_V1 + REQUEST_IMAGE_URI
+func getDeploySetUri() string {
+	return URI_PREFIX_V1 + REQUEST_DEPLOY_SET_URI
 }
 
-func getImageUriWithId(id string) string {
-	return URI_PREFIX_V1 + REQUEST_IMAGE_URI + "/" + id
+func getDeploySetUriWithId(id string) string {
+	return URI_PREFIX_V1 + REQUEST_DEPLOY_SET_URI + "/" + id
 }

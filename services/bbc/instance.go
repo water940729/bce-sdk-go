@@ -12,10 +12,10 @@
  * and limitations under the License.
  */
 
-// instance.go - the instance APIs definition supported by the BBC service
+// instance.go - the instance  definition supported by the BBC service
 
-// Package api defines all APIs supported by the BBC service of BCE.
-package api
+// Package defines all  supported by the BBC service of BCE.
+package bbc
 
 import (
 	"strconv"

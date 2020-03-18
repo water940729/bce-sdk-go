@@ -12,8 +12,8 @@
  * and limitations under the License.
  */
 
-// util.go - define the utilities for api package of BBC service
-package api
+// util.go - define the utilities for package of BBC service
+package bbc
 
 import (
 	"encoding/hex"

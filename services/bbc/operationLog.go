@@ -12,10 +12,10 @@
  * and limitations under the License.
  */
 
-// operationLog.go - the operationLog APIs definition supported by the BBC service
+// operationLog.go - the operationLog  definition supported by the BBC service
 
-// Package api defines all APIs supported by the BBC service of BCE.
-package api
+// Package defines all  supported by the BBC service of BCE.
+package bbc
 
 import (
 	"github.com/baidubce/bce-sdk-go/bce"
@@ -28,7 +28,7 @@ import (
 //     - cli: the client agent which can perform sending request
 //     - args: the arguments to get operation log
 // RETURNS:
-//     - *api.GetOperationLogResult: results of getting operation log
+//     - *GetOperationLogResult: results of getting operation log
 //     - error: nil if success otherwise the specific error
 func GetOperationLog(cli bce.Client, args *GetOperationLogArgs) (*GetOperationLogResult, error) {
 	// Build the request
