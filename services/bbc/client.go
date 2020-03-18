@@ -14,7 +14,7 @@
 
 // client.go - define the client for BBC service
 
-// Package bbc defines the BBC services of BCE. The supported  are all defined in sub-package
+// Package bbc defines the BBC services of BCE. The supported APIs are all defined in sub-package
 package bbc
 
 import (

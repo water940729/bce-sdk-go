@@ -12,9 +12,9 @@
  * and limitations under the License.
  */
 
-// tag.go - the tag  definition supported by the BBC service
+// tag.go - the tag APIs definition supported by the BBC service
 
-// Package defines all  supported by the BBC service of BCE.
+// Package bbc defines all APIs supported by the BBC service of BCE.
 package bbc
 
 import (

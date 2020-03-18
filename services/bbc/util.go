@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 
-// util.go - define the utilities for package of BBC service
+// util.go - define the utilities for api package of BBC service
 package bbc
 
 import (

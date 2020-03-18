@@ -12,9 +12,9 @@
  * and limitations under the License.
  */
 
-// image.go - the image  definition supported by the BBC service
+// image.go - the image APIs definition supported by the BBC service
 
-// Package defines all  supported by the BBC service of BCE.
+// Package bbc defines all APIs supported by the BBC service of BCE.
 package bbc
 
 import (

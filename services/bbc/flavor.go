@@ -12,9 +12,9 @@
  * and limitations under the License.
  */
 
-// flavor.go - the flavor  definition supported by the BBC service
+// flavor.go - the flavor APIs definition supported by the BBC service
 
-// Package defines all  supported by the BBC service of BCE.
+// Package defines all APIs supported by the BBC service of BCE.
 package bbc
 
 import (

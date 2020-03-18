@@ -12,9 +12,9 @@
  * and limitations under the License.
  */
 
-// operationLog.go - the operationLog  definition supported by the BBC service
+// operationLog.go - the operationLog APIs definition supported by the BBC service
 
-// Package defines all  supported by the BBC service of BCE.
+// Package bbc defines all APIs supported by the BBC service of BCE.
 package bbc
 
 import (
