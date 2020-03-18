@@ -160,9 +160,9 @@ createInstanceArgs := &api.CreateInstanceArgs{
     // 选择付费方式
     Billing: api.Billing{
         PaymentTiming: api.PaymentTimingPostPaid,
-        Reservation: &api.Reservation{
-            ReservationLength: 1,
-            ReservationTimeUnit: "Month",
+        Reservation: api.Reservation{
+            Length: 1,
+            TimeUnit: "Month",
         },
     },
     // 指定使用的部署集id，可选参数，通过SDK获取可用部署集id的方法详见部署集章节
@@ -187,7 +187,7 @@ if res, err := bbcClient.CreateInstance(createInstanceArgs); err != nil {
 ### 查询实例列表
 使用以下代码查询所有BBC实例的列表及详情信息：
 ```go
-listArgs := &api.ListInstanceArgs{
+listArgs := &api.ListInstancesArgs{
     // 批量获取列表的查询起始位置，是一个由系统产生的字符串
     Marker: "your-marker",
     // 设置返回数据大小，缺省为1000
@@ -318,7 +318,7 @@ if err := bbcClient.RebuildInstance(instanceId, isPreserveData, rebuildArgs); er
 ```go
 // 设置你要操作的instanceId
 instanceId := "your-choose-instance-id"
-if err := bbcClient.ReleaseInstance(instanceId); err != nil {
+if err := bbcClient.DeleteInstance(instanceId); err != nil {
     fmt.Println("release instance failed: ", err)
 } else {
     fmt.Println("release instance success.")
