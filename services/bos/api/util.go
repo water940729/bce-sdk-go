@@ -75,11 +75,17 @@ var (
 	}
 )
 
-func getBucketUri(bucketName string) string {
+func getBucketUri(bucketName string, cnameEnabled bool) string {
+	if cnameEnabled {
+		return bce.URI_PREFIX
+	}
 	return bce.URI_PREFIX + bucketName
 }
 
-func getObjectUri(bucketName, objectName string) string {
+func getObjectUri(bucketName, objectName string, cnameEnabled bool) string {
+	if cnameEnabled {
+		return bce.URI_PREFIX + objectName
+	}
 	return bce.URI_PREFIX + bucketName + "/" + objectName
 }
 

@@ -58,6 +58,8 @@ type BceClientConfiguration struct {
 	SignOption                *auth.SignOptions
 	Retry                     RetryPolicy
 	ConnectionTimeoutInMillis int
+	// CnameEnabled should be true when use custom domain as endpoint to visit bos resource
+	CnameEnabled bool
 }
 
 func (c *BceClientConfiguration) String() string {

@@ -61,7 +61,7 @@ func ListBuckets(cli bce.Client) (*ListBucketsResult, error) {
 func ListObjects(cli bce.Client, bucket string,
 	args *ListObjectsArgs) (*ListObjectsResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 
 	// Optional arguments settings
@@ -107,7 +107,7 @@ func ListObjects(cli bce.Client, bucket string,
 //     - error: nil if exists and have authority otherwise the specific error
 func HeadBucket(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.HEAD)
 	resp := &bce.BceResponse{}
 	if err := cli.SendRequest(req, resp); err != nil {
@@ -130,7 +130,7 @@ func HeadBucket(cli bce.Client, bucket string) error {
 //     - error: nil if create success otherwise the specific error
 func PutBucket(cli bce.Client, bucket string) (string, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	resp := &bce.BceResponse{}
 	if err := cli.SendRequest(req, resp); err != nil {
@@ -152,7 +152,7 @@ func PutBucket(cli bce.Client, bucket string) (string, error) {
 //     - error: nil if delete success otherwise the specific error
 func DeleteBucket(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	resp := &bce.BceResponse{}
 	if err := cli.SendRequest(req, resp); err != nil {
@@ -175,7 +175,7 @@ func DeleteBucket(cli bce.Client, bucket string) error {
 //     - error: nil if delete success otherwise the specific error
 func GetBucketLocation(cli bce.Client, bucket string) (string, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("location", "")
 	resp := &bce.BceResponse{}
@@ -203,7 +203,7 @@ func GetBucketLocation(cli bce.Client, bucket string) (string, error) {
 //     - error: nil if delete success otherwise the specific error
 func PutBucketAcl(cli bce.Client, bucket, cannedAcl string, aclBody *bce.Body) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("acl", "")
 
@@ -240,7 +240,7 @@ func PutBucketAcl(cli bce.Client, bucket, cannedAcl string, aclBody *bce.Body) e
 //     - error: nil if success otherwise the specific error
 func GetBucketAcl(cli bce.Client, bucket string) (*GetBucketAclResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("acl", "")
 
@@ -268,7 +268,7 @@ func GetBucketAcl(cli bce.Client, bucket string) (*GetBucketAclResult, error) {
 //     - error: nil if success otherwise the specific error
 func PutBucketLogging(cli bce.Client, bucket string, logging *bce.Body) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("logging", "")
 	req.SetBody(logging)
@@ -293,7 +293,7 @@ func PutBucketLogging(cli bce.Client, bucket string, logging *bce.Body) error {
 //     - error: nil if success otherwise the specific error
 func GetBucketLogging(cli bce.Client, bucket string) (*GetBucketLoggingResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("logging", "")
 
@@ -320,7 +320,7 @@ func GetBucketLogging(cli bce.Client, bucket string) (*GetBucketLoggingResult, e
 //     - error: nil if success otherwise the specific error
 func DeleteBucketLogging(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("logging", "")
 	resp := &bce.BceResponse{}
@@ -344,7 +344,7 @@ func DeleteBucketLogging(cli bce.Client, bucket string) error {
 //     - error: nil if success otherwise the specific error
 func PutBucketLifecycle(cli bce.Client, bucket string, lifecycle *bce.Body) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("lifecycle", "")
 	req.SetBody(lifecycle)
@@ -369,7 +369,7 @@ func PutBucketLifecycle(cli bce.Client, bucket string, lifecycle *bce.Body) erro
 //     - error: nil if success otherwise the specific error
 func GetBucketLifecycle(cli bce.Client, bucket string) (*GetBucketLifecycleResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("lifecycle", "")
 
@@ -396,7 +396,7 @@ func GetBucketLifecycle(cli bce.Client, bucket string) (*GetBucketLifecycleResul
 //     - error: nil if success otherwise the specific error
 func DeleteBucketLifecycle(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("lifecycle", "")
 	resp := &bce.BceResponse{}
@@ -420,7 +420,7 @@ func DeleteBucketLifecycle(cli bce.Client, bucket string) error {
 //     - error: nil if success otherwise the specific error
 func PutBucketStorageclass(cli bce.Client, bucket, storageClass string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("storageClass", "")
 
@@ -456,7 +456,7 @@ func PutBucketStorageclass(cli bce.Client, bucket, storageClass string) error {
 //     - error: nil if success otherwise the specific error
 func GetBucketStorageclass(cli bce.Client, bucket string) (string, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("storageClass", "")
 
@@ -484,7 +484,7 @@ func GetBucketStorageclass(cli bce.Client, bucket string) (string, error) {
 //     - error: nil if success otherwise the specific error
 func PutBucketReplication(cli bce.Client, bucket string, replicationConf *bce.Body) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("replication", "")
 	if replicationConf != nil {
@@ -513,7 +513,7 @@ func PutBucketReplication(cli bce.Client, bucket string, replicationConf *bce.Bo
 //     - error: nil if success otherwise the specific error
 func GetBucketReplication(cli bce.Client, bucket string) (*GetBucketReplicationResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("replication", "")
 
@@ -540,7 +540,7 @@ func GetBucketReplication(cli bce.Client, bucket string) (*GetBucketReplicationR
 //     - error: nil if success otherwise the specific error
 func DeleteBucketReplication(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("replication", "")
 	resp := &bce.BceResponse{}
@@ -565,7 +565,7 @@ func DeleteBucketReplication(cli bce.Client, bucket string) error {
 func GetBucketReplicationProgress(cli bce.Client, bucket string) (
 	*GetBucketReplicationProgressResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("replicationProgress", "")
 
@@ -593,7 +593,7 @@ func GetBucketReplicationProgress(cli bce.Client, bucket string) (
 //     - error: nil if success otherwise the specific error
 func PutBucketEncryption(cli bce.Client, bucket, algorithm string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("encryption", "")
 
@@ -630,7 +630,7 @@ func PutBucketEncryption(cli bce.Client, bucket, algorithm string) error {
 //     - error: nil if success otherwise the specific error
 func GetBucketEncryption(cli bce.Client, bucket string) (string, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("encryption", "")
 
@@ -657,7 +657,7 @@ func GetBucketEncryption(cli bce.Client, bucket string) (string, error) {
 //     - error: nil if success otherwise the specific error
 func DeleteBucketEncryption(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("encryption", "")
 	resp := &bce.BceResponse{}
@@ -681,7 +681,7 @@ func DeleteBucketEncryption(cli bce.Client, bucket string) error {
 //     - error: nil if success otherwise the specific error
 func PutBucketStaticWebsite(cli bce.Client, bucket string, confBody *bce.Body) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("website", "")
 	if confBody != nil {
@@ -711,7 +711,7 @@ func PutBucketStaticWebsite(cli bce.Client, bucket string, confBody *bce.Body) e
 func GetBucketStaticWebsite(cli bce.Client, bucket string) (
 	*GetBucketStaticWebsiteResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("website", "")
 
@@ -738,7 +738,7 @@ func GetBucketStaticWebsite(cli bce.Client, bucket string) (
 //     - error: nil if success otherwise the specific error
 func DeleteBucketStaticWebsite(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("website", "")
 	resp := &bce.BceResponse{}
@@ -762,7 +762,7 @@ func DeleteBucketStaticWebsite(cli bce.Client, bucket string) error {
 //     - error: nil if success otherwise the specific error
 func PutBucketCors(cli bce.Client, bucket string, confBody *bce.Body) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("cors", "")
 	if confBody != nil {
@@ -792,7 +792,7 @@ func PutBucketCors(cli bce.Client, bucket string, confBody *bce.Body) error {
 func GetBucketCors(cli bce.Client, bucket string) (
 	*GetBucketCorsResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("cors", "")
 
@@ -819,7 +819,7 @@ func GetBucketCors(cli bce.Client, bucket string) (
 //     - error: nil if success otherwise the specific error
 func DeleteBucketCors(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("cors", "")
 	resp := &bce.BceResponse{}
@@ -843,7 +843,7 @@ func DeleteBucketCors(cli bce.Client, bucket string) error {
 //     - error: nil if success otherwise the specific error
 func PutBucketCopyrightProtection(cli bce.Client, bucket string, resources ...string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("copyrightProtection", "")
 	if len(resources) == 0 {
@@ -882,7 +882,7 @@ func PutBucketCopyrightProtection(cli bce.Client, bucket string, resources ...st
 //     - error: nil if success otherwise the specific error
 func GetBucketCopyrightProtection(cli bce.Client, bucket string) ([]string, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("copyrightProtection", "")
 
@@ -909,7 +909,7 @@ func GetBucketCopyrightProtection(cli bce.Client, bucket string) ([]string, erro
 //     - error: nil if success otherwise the specific error
 func DeleteBucketCopyrightProtection(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("copyrightProtection", "")
 	resp := &bce.BceResponse{}
@@ -933,7 +933,7 @@ func DeleteBucketCopyrightProtection(cli bce.Client, bucket string) error {
 //     - error: nil if success otherwise the specific error
 func PutBucketTrash(cli bce.Client, bucket string, trashReq PutBucketTrashReq) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("trash", "")
 	reqByte, _ := json.Marshal(trashReq)
@@ -955,7 +955,7 @@ func PutBucketTrash(cli bce.Client, bucket string, trashReq PutBucketTrashReq) e
 
 func GetBucketTrash(cli bce.Client, bucket string) (*GetBucketTrashResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("trash", "")
 	resp := &bce.BceResponse{}
@@ -974,7 +974,7 @@ func GetBucketTrash(cli bce.Client, bucket string) (*GetBucketTrashResult, error
 
 func DeleteBucketTrash(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("trash", "")
 	resp := &bce.BceResponse{}
@@ -990,7 +990,7 @@ func DeleteBucketTrash(cli bce.Client, bucket string) error {
 
 func PutBucketNotification(cli bce.Client, bucket string, putBucketNotificationReq PutBucketNotificationReq) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.PUT)
 	req.SetParam("notification", "")
 	reqByte, _ := json.Marshal(putBucketNotificationReq)
@@ -1012,7 +1012,7 @@ func PutBucketNotification(cli bce.Client, bucket string, putBucketNotificationR
 
 func GetBucketNotification(cli bce.Client, bucket string) (*PutBucketNotificationReq, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.GET)
 	req.SetParam("notification", "")
 	resp := &bce.BceResponse{}
@@ -1031,7 +1031,7 @@ func GetBucketNotification(cli bce.Client, bucket string) (*PutBucketNotificatio
 
 func DeleteBucketNotification(cli bce.Client, bucket string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket))
+	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
 	req.SetMethod(http.DELETE)
 	req.SetParam("notification", "")
 	resp := &bce.BceResponse{}
