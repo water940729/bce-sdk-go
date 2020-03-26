@@ -40,7 +40,7 @@ import (
 func InitiateMultipartUpload(cli bce.Client, bucket, object, contentType string,
 	args *InitiateMultipartUploadArgs) (*InitiateMultipartUploadResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getObjectUri(bucket, object))
 	req.SetMethod(http.POST)
 	req.SetParam("uploads", "")
 	if len(contentType) == 0 {
@@ -68,7 +68,7 @@ func InitiateMultipartUpload(cli bce.Client, bucket, object, contentType string,
 
 	// Send request and get the result
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return nil, err
 	}
 	if resp.IsFail() {
@@ -97,7 +97,7 @@ func InitiateMultipartUpload(cli bce.Client, bucket, object, contentType string,
 func UploadPart(cli bce.Client, bucket, object, uploadId string, partNumber int,
 	content *bce.Body, args *UploadPartArgs) (string, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getObjectUri(bucket, object))
 	req.SetMethod(http.PUT)
 	req.SetParam("uploadId", uploadId)
 	req.SetParam("partNumber", fmt.Sprintf("%d", partNumber))
@@ -120,7 +120,7 @@ func UploadPart(cli bce.Client, bucket, object, uploadId string, partNumber int,
 
 	// Send request and get the result
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return "", err
 	}
 	if resp.IsFail() {
@@ -146,7 +146,7 @@ func UploadPart(cli bce.Client, bucket, object, uploadId string, partNumber int,
 func UploadPartCopy(cli bce.Client, bucket, object, source, uploadId string, partNumber int,
 	args *UploadPartCopyArgs) (*CopyObjectResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getObjectUri(bucket, object))
 	req.SetMethod(http.PUT)
 	req.SetParam("uploadId", uploadId)
 	req.SetParam("partNumber", fmt.Sprintf("%d", partNumber))
@@ -168,7 +168,7 @@ func UploadPartCopy(cli bce.Client, bucket, object, source, uploadId string, par
 
 	// Send request and get the result
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return nil, err
 	}
 	if resp.IsFail() {
@@ -196,7 +196,7 @@ func UploadPartCopy(cli bce.Client, bucket, object, source, uploadId string, par
 func CompleteMultipartUpload(cli bce.Client, bucket, object, uploadId string,
 	body *bce.Body, args *CompleteMultipartUploadArgs) (*CompleteMultipartUploadResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getObjectUri(bucket, object))
 	req.SetMethod(http.POST)
 	req.SetParam("uploadId", uploadId)
 	if body == nil {
@@ -222,7 +222,7 @@ func CompleteMultipartUpload(cli bce.Client, bucket, object, uploadId string,
 
 	// Send request and get the result
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return nil, err
 	}
 	if resp.IsFail() {
@@ -250,12 +250,12 @@ func CompleteMultipartUpload(cli bce.Client, bucket, object, uploadId string,
 //     - error: nil if ok otherwise the specific error
 func AbortMultipartUpload(cli bce.Client, bucket, object, uploadId string) error {
 	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getObjectUri(bucket, object))
 	req.SetMethod(http.DELETE)
 	req.SetParam("uploadId", uploadId)
 
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return err
 	}
 	if resp.IsFail() {
@@ -281,7 +281,7 @@ func AbortMultipartUpload(cli bce.Client, bucket, object, uploadId string) error
 func ListParts(cli bce.Client, bucket, object, uploadId string,
 	args *ListPartsArgs) (*ListPartsResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getObjectUri(bucket, object, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getObjectUri(bucket, object))
 	req.SetMethod(http.GET)
 	req.SetParam("uploadId", uploadId)
 
@@ -297,7 +297,7 @@ func ListParts(cli bce.Client, bucket, object, uploadId string,
 
 	// Send request and get the result
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return nil, err
 	}
 	if resp.IsFail() {
@@ -322,7 +322,7 @@ func ListParts(cli bce.Client, bucket, object, uploadId string,
 func ListMultipartUploads(cli bce.Client, bucket string,
 	args *ListMultipartUploadsArgs) (*ListMultipartUploadsResult, error) {
 	req := &bce.BceRequest{}
-	req.SetUri(getBucketUri(bucket, cli.GetBceClientConfig().CnameEnabled))
+	req.SetUri(getBucketUri(bucket))
 	req.SetMethod(http.GET)
 	req.SetParam("uploads", "")
 
@@ -344,7 +344,7 @@ func ListMultipartUploads(cli bce.Client, bucket string,
 
 	// Send request and get the result
 	resp := &bce.BceResponse{}
-	if err := cli.SendRequest(req, resp); err != nil {
+	if err := SendRequest(cli, req, resp); err != nil {
 		return nil, err
 	}
 	if resp.IsFail() {

@@ -2,6 +2,7 @@ package bos
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/bos/api"
 	"github.com/baidubce/bce-sdk-go/util/log"
@@ -32,7 +33,7 @@ func init() {
 	conf := filepath.Join(f, "config.json")
 	fp, err := os.Open(conf)
 	if err != nil {
-		log.Fatal("config json file of ak/sk not given:", conf)
+		fmt.Printf("config json file of ak/sk not given: %+v\n", conf)
 		os.Exit(1)
 	}
 	decoder := json.NewDecoder(fp)
@@ -1084,7 +1085,7 @@ func TestParallelCopy(t *testing.T) {
 	args := api.MultiCopyObjectArgs{
 		StorageClass: api.STORAGE_CLASS_COLD,
 	}
-	res, err := BOS_CLIENT.ParallelCopy(EXISTS_BUCKET, "test_multiupload", EXISTS_BUCKET, "test_multiupload_copy", &args)
+	res, err := BOS_CLIENT.ParallelCopy(EXISTS_BUCKET, "test_multiupload", EXISTS_BUCKET, "test_multiupload_copy", &args, nil)
 	ExpectEqual(t.Errorf, err, nil)
 	t.Logf("%v,%v", res, err)
 }

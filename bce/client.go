@@ -72,7 +72,9 @@ func (c *BceClient) buildHttpRequest(request *BceRequest) {
 	request.BuildHttpRequest()
 
 	// Set the client specific configurations
-	request.SetEndpoint(c.Config.Endpoint)
+	if request.Endpoint() == "" {
+		request.SetEndpoint(c.Config.Endpoint)
+	}
 	if request.Protocol() == "" {
 		request.SetProtocol(DEFAULT_PROTOCOL)
 	}
