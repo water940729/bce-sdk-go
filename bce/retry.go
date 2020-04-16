@@ -26,6 +26,7 @@ import (
 
 // RetryPolicy defines the two methods to retry for sending request.
 type RetryPolicy interface {
+	HasRetryConf() bool
 	ShouldRetry(BceError, int) bool
 	GetDelayBeforeNextRetryInMillis(BceError, int) time.Duration
 }
@@ -42,6 +43,10 @@ func (_ *NoRetryPolicy) GetDelayBeforeNextRetryInMillis(
 	return 0 * time.Millisecond
 }
 
+func (_ *NoRetryPolicy) HasRetryConf() bool {
+	return false
+}
+
 func NewNoRetryPolicy() *NoRetryPolicy {
 	return &NoRetryPolicy{}
 }
@@ -56,6 +61,10 @@ type BackOffRetryPolicy struct {
 	maxErrorRetry        int
 	maxDelayInMillis     int64
 	baseIntervalInMillis int64
+}
+
+func (b *BackOffRetryPolicy) HasRetryConf() bool {
+	return true
 }
 
 func (b *BackOffRetryPolicy) ShouldRetry(err BceError, attempts int) bool {

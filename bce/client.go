@@ -121,7 +121,7 @@ func (c *BceClient) SendRequest(req *BceRequest, resp *BceResponse) error {
 		// The request body should be temporarily saved if retry to send the http request
 		var retryBuf bytes.Buffer
 		var teeReader io.Reader
-		if req.Body() != nil {
+		if c.Config.Retry.HasRetryConf() && req.Body() != nil {
 			teeReader = io.TeeReader(req.Body(), &retryBuf)
 			req.Request.SetBody(ioutil.NopCloser(teeReader))
 		}
