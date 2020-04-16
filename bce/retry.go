@@ -65,7 +65,7 @@ func (b *BackOffRetryPolicy) ShouldRetry(err BceError, attempts int) bool {
 	}
 
 	if err == nil {
-		return false
+		return true
 	}
 
 	// Always retry on IO error
