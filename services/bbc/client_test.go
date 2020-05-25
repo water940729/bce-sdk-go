@@ -50,14 +50,14 @@ func init() {
 	confObj := &Conf{}
 	decoder.Decode(confObj)
 
-	BBC_TestFlavorId = "flavor-id"
-	BBC_TestImageId = "image-id"
-	BBC_TestRaidId = "raid-id"
-	BBC_TestZoneName = "zone-name"
-	BBC_TestSubnetId = "subnet-id"
+	BBC_TestFlavorId = "BBC-G4-01"
+	BBC_TestImageId = "m-41tRA3yT"
+	BBC_TestRaidId = "raid-rhBOlUZ3"
+	BBC_TestZoneName = "cn-su-a"
+	BBC_TestSubnetId = "sbn-jpxq57pc9rw0"
 	BBC_TestName = "sdkTest"
 	BBC_TestAdminPass = "123@adminPass"
-	BBC_TestDeploySetId = "deployset-id"
+	BBC_TestDeploySetId = "dset-DS9RpMEu"
 	BBC_TestBbcId = "bbc_id"
 	BBC_TestSecurityGroupId = "bbc-security-group-id"
 	BBC_CLIENT, _ = NewClient(confObj.AK, confObj.SK, confObj.Endpoint)
@@ -97,21 +97,15 @@ func TestCreateInstance(t *testing.T) {
 		FlavorId:         BBC_TestFlavorId,
 		ImageId:          BBC_TestImageId,
 		RaidId:           BBC_TestRaidId,
-		RootDiskSizeInGb: 20,
+		RootDiskSizeInGb: 40,
 		PurchaseCount:    1,
 		ZoneName:         BBC_TestZoneName,
 		SubnetId:         BBC_TestSubnetId,
 		ClientToken:      BBC_TestClientToken,
 		Billing: Billing{
 			PaymentTiming: PaymentTimingPostPaid,
-			Reservation: Reservation{
-				Length:   1,
-				TimeUnit: "Month",
-			},
 		},
-		SecurityGroupId: BBC_TestSecurityGroupId,
 		DeploySetId:     BBC_TestDeploySetId,
-		AdminPass:       BBC_TestAdminPass,
 		Name:            BBC_TestName,
 	}
 	res, err := BBC_CLIENT.CreateInstance(createInstanceArgs)

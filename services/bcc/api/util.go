@@ -43,6 +43,9 @@ const (
 	REQUEST_ZONE_URI     = "/zone"
 
 	REQUEST_SUBNET_URI = "/subnet"
+	REQUEST_DEPLOYSET_URI	= "/deployset"
+	REQUEST_CREATE_URI		= "/create"
+	REQUEST_LIST_URI		= "/list"
 )
 
 func getInstanceUri() string {
