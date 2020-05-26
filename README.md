@@ -233,3 +233,4 @@ SSL证书服务 | CERT | github.com/baidubce/bce-sdk-go/services/cert | [CERT.md
 视频内容分析 |  VCA   | github.com/baidubce/bce-sdk-go/services/vca |
 视频内容审核 |  VCR   | github.com/baidubce/bce-sdk-go/services/vcr |
 私有网络 | VPC | github.com/baidubce/bce-sdk-go/services/vpc | [VPC.md](./doc/VPC.md)
+VPN网关 | VPN | github.com/baidubce/bce-sdk-go/services/vpn | [VPN.md](./doc/VPN.md)
