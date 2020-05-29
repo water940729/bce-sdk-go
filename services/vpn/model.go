@@ -164,7 +164,7 @@ type CreateVpnConnArgs struct {
 	LocalSubnets      []string           `json:"localSubnets"`
 	RemoteIp          string             `json:"remoteIp"`
 	RemoteSubnets     []string           `json:"remoteSubnets"`
-	Description       string             `json:"description"`
+	Description       string             `json:"description,omitempty"`
 	CreateIkeConfig   *CreateIkeConfig   `json:"ikeConfig"`
 	CreateIpsecConfig *CreateIpsecConfig `json:"ipsecConfig"`
 }
