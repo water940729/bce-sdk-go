@@ -21,7 +21,7 @@ var (
 	BCC_TestImageId         string
 	BCC_TestSnapshotId      string
 	BCC_TestAspId           string
-	BCC_TestDeploySetId 	string
+	BCC_TestDeploySetId     string
 )
 
 // For security reason, ak/sk should not hard write here.
@@ -81,8 +81,8 @@ func ExpectEqual(alert func(format string, args ...interface{}),
 
 func TestCreateInstance(t *testing.T) {
 	createInstanceArgs := &api.CreateInstanceArgs{
-		DeployId: "dset-SBrGedFE",
-		ImageId: "m-6lR4V130",
+		DeployId: "DeployId",
+		ImageId:  "ImageId",
 		Billing: api.Billing{
 			PaymentTiming: api.PaymentTimingPostPaid,
 		},
@@ -91,12 +91,12 @@ func TestCreateInstance(t *testing.T) {
 		MemoryCapacityInGB:  4,
 		RootDiskSizeInGb:    40,
 		RootDiskStorageType: api.StorageTypeHP1,
-		ZoneName:			 "cn-hkg-a",
-		SubnetId:			 "sbn-1mpjhyj2undg",
+		ZoneName:            "cn-hkg-a",
+		SubnetId:            "sbn-1mpjhyj2undg",
 		SecurityGroupId:     "g-s6dz0hymg8vz",
 		RelationTag:         true,
 		PurchaseCount:       1,
-		Name:      "sdkTest",
+		Name:                "sdkTest",
 	}
 	createResult, err := BCC_CLIENT.CreateInstance(createInstanceArgs)
 	ExpectEqual(t.Errorf, err, nil)
@@ -105,12 +105,12 @@ func TestCreateInstance(t *testing.T) {
 
 func TestCreateInstanceBySpec(t *testing.T) {
 	createInstanceBySpecArgs := &api.CreateInstanceBySpecArgs{
-		ImageId:               "m-1PyVLtic",
-		Spec:                  "bcc.g2.c2m8",
-		Name:                  "sdkTest2",
-		AdminPass:             "123qaz!@#",
-		ZoneName:              "cn-bj-a",
-		Billing:               api.Billing{
+		ImageId:   "m-1PyVLtic",
+		Spec:      "bcc.g2.c2m8",
+		Name:      "sdkTest2",
+		AdminPass: "123qaz!@#",
+		ZoneName:  "cn-bj-a",
+		Billing: api.Billing{
 			PaymentTiming: api.PaymentTimingPostPaid,
 		},
 	}
@@ -220,7 +220,7 @@ func TestGetInstanceVNC(t *testing.T) {
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-func TestBatchAddIp(t *testing.T)  {
+func TestBatchAddIp(t *testing.T) {
 	privateIps := []string{"192.168.16.17"}
 	batchAddIpArgs := &api.BatchAddIpArgs{
 		InstanceId: BCC_TestBccId,
@@ -230,7 +230,7 @@ func TestBatchAddIp(t *testing.T)  {
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-func TestBatchDelIp(t *testing.T)  {
+func TestBatchDelIp(t *testing.T) {
 	privateIps := []string{"192.168.16.17"}
 	batchDelIpArgs := &api.BatchDelIpArgs{
 		InstanceId: BCC_TestBccId,
@@ -552,9 +552,9 @@ func TestCreateDeploySet(t *testing.T) {
 	testDeployDesc := "testDesc"
 	testStrategy := "HOST_HA"
 	queryArgs := &api.CreateDeploySetArgs{
-		Strategy:    testStrategy,
-		Name:        testDeploySetName,
-		Desc:        testDeployDesc,
+		Strategy: testStrategy,
+		Name:     testDeploySetName,
+		Desc:     testDeployDesc,
 	}
 	rep, err := BCC_CLIENT.CreateDeploySet(queryArgs)
 	fmt.Println(rep)
@@ -572,17 +572,17 @@ func TestModifyDeploySet(t *testing.T) {
 	testDeploySetName := "testName"
 	testDeployDesc := "goDesc"
 	queryArgs := &api.ModifyDeploySetArgs{
-		Name:        testDeploySetName,
-		Desc:        testDeployDesc,
+		Name: testDeploySetName,
+		Desc: testDeployDesc,
 	}
-	BCC_TestDeploySetId = "dset-llbSXjpa"
+	BCC_TestDeploySetId = "DeploySetId"
 	rep, err := BCC_CLIENT.ModifyDeploySet(BCC_TestDeploySetId, queryArgs)
 	fmt.Println(rep)
 	ExpectEqual(t.Errorf, err, nil)
 }
 
 func TestDeleteDeploySet(t *testing.T) {
-	testDeleteDeploySetId := "dset-llbSXjpa"
+	testDeleteDeploySetId := "DeploySetId"
 	err := BCC_CLIENT.DeleteDeploySet(testDeleteDeploySetId)
 	fmt.Println(err)
 	ExpectEqual(t.Errorf, err, nil)

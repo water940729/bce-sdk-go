@@ -50,14 +50,14 @@ func init() {
 	confObj := &Conf{}
 	decoder.Decode(confObj)
 
-	BBC_TestFlavorId = "BBC-G4-01"
-	BBC_TestImageId = "m-41tRA3yT"
-	BBC_TestRaidId = "raid-rhBOlUZ3"
-	BBC_TestZoneName = "cn-su-a"
-	BBC_TestSubnetId = "sbn-jpxq57pc9rw0"
+	BBC_TestFlavorId = "flavor-id"
+	BBC_TestImageId = "image-id"
+	BBC_TestRaidId = "raid-id"
+	BBC_TestZoneName = "zone-name"
+	BBC_TestSubnetId = "subnet-id"
 	BBC_TestName = "sdkTest"
 	BBC_TestAdminPass = "123@adminPass"
-	BBC_TestDeploySetId = "dset-DS9RpMEu"
+	BBC_TestDeploySetId = "deployset-id"
 	BBC_TestBbcId = "bbc_id"
 	BBC_TestSecurityGroupId = "bbc-security-group-id"
 	BBC_CLIENT, _ = NewClient(confObj.AK, confObj.SK, confObj.Endpoint)
@@ -105,8 +105,8 @@ func TestCreateInstance(t *testing.T) {
 		Billing: Billing{
 			PaymentTiming: PaymentTimingPostPaid,
 		},
-		DeploySetId:     BBC_TestDeploySetId,
-		Name:            BBC_TestName,
+		DeploySetId: BBC_TestDeploySetId,
+		Name:        BBC_TestName,
 	}
 	res, err := BBC_CLIENT.CreateInstance(createInstanceArgs)
 	fmt.Println(res)
@@ -193,7 +193,7 @@ func TestGetVpcSubnet(t *testing.T) {
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-func TestBatchAddIp(t *testing.T)  {
+func TestBatchAddIp(t *testing.T) {
 	privateIps := []string{"192.168.1.25"}
 	batchAddIpArgs := &BatchAddIpArgs{
 		InstanceId: BBC_TestBbcId,
@@ -203,7 +203,7 @@ func TestBatchAddIp(t *testing.T)  {
 	ExpectEqual(t.Errorf, err, nil)
 }
 
-func TestBatchDelIp(t *testing.T)  {
+func TestBatchDelIp(t *testing.T) {
 	privateIps := []string{"192.168.1.25"}
 	batchDelIpArgs := &BatchDelIpArgs{
 		InstanceId: BBC_TestBbcId,
