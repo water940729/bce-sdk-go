@@ -3,3 +3,4 @@ logs
 output
 example
 .DS_Store
+go.iml
