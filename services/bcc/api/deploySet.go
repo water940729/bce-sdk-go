@@ -12,9 +12,9 @@
  * and limitations under the License.
  */
 
-// deploySet.go - the deploy set APIs definition supported by the BBC service
+// deploySet.go - the deploy set APIs definition supported by the BCC service
 
-// Package bbc defines all APIs supported by the BBC service of BCE.
+// Package api defines all APIs supported by the BCC service of BCE.
 package api
 
 import (

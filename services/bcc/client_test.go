@@ -91,9 +91,9 @@ func TestCreateInstance(t *testing.T) {
 		MemoryCapacityInGB:  4,
 		RootDiskSizeInGb:    40,
 		RootDiskStorageType: api.StorageTypeHP1,
-		ZoneName:            "cn-hkg-a",
-		SubnetId:            "sbn-1mpjhyj2undg",
-		SecurityGroupId:     "g-s6dz0hymg8vz",
+		ZoneName:            "ZoneName",
+		SubnetId:            "SubnetId",
+		SecurityGroupId:     "SecurityGroupId",
 		RelationTag:         true,
 		PurchaseCount:       1,
 		Name:                "sdkTest",
@@ -559,7 +559,7 @@ func TestCreateDeploySet(t *testing.T) {
 	rep, err := BCC_CLIENT.CreateDeploySet(queryArgs)
 	fmt.Println(rep)
 	ExpectEqual(t.Errorf, err, nil)
-	BCC_TestDeploySetId = rep.DeploySetId[0]
+	BCC_TestDeploySetId = rep.DeploySetIds[0]
 }
 
 func TestListDeploySets(t *testing.T) {
