@@ -29,6 +29,7 @@ bce-sdk-go
 |--http                   //BCE的http通信模块
 |--services               //BCE相关服务目录
 |  |--appblb              //应用型负载均衡服务目录
+|  |--bbc                 //物理服务器
 |  |--bcc                 //云服务器
 |  |--bie                 //百度边缘计算
 |  |--bos                 //BOS服务目录
@@ -43,10 +44,12 @@ bce-sdk-go
 |  |--cert                //SSL证书服务
 |  |--cfc                 //函数计算
 |  |--eip                 //弹性公网IP
+|  |--etGateway           //专线网关
 |  |--sts                 //STS服务目录
 |  |--vca                 //VCA服务目录
 |  |--vcr                 //VCR服务目录
 |  |--vpc                 //私有网络
+|  |--vpn                 //VPN网关
 |--util                   //BCE公用的工具实现
 ```
 
@@ -219,14 +222,18 @@ myLogger.Info("this is my own logger from the sdk")
 产品名称   | 产品缩写 | 导入路径 | 说明文档
 -----------|----------|----------|----------
 应用型负载均衡 | APPBLB | github.com/baidubce/bce-sdk-go/services/appblb | [APPBLB.md](./doc/APPBLB.md)
+物理服务器 | BBC | github.com/baidubce/bce-sdk-go/services/bbc | [BBC.md](./doc/BBC.md)
 云服务器 | BCC | github.com/baidubce/bce-sdk-go/services/bcc | [BCC.md](./doc/BCC.md)
 百度边缘计算 |  BIE   | github.com/baidubce/bce-sdk-go/services/bie |
+负载均衡 | BLB | github.com/baidubce/bce-sdk-go/services/blb | [BLB.md](./doc/BLB.md)
 百度对象存储 |  BOS   | github.com/baidubce/bce-sdk-go/services/bos | [BOS.md](./doc/BOS.md)
 内容分布网络 |  CDN   | github.com/baidubce/bce-sdk-go/services/cdn | [CDN.md](./doc/CDN.md)
 SSL证书服务 | CERT | github.com/baidubce/bce-sdk-go/services/cert | [CERT.md](./doc/CERT.md)
 函数计算 | CFC | github.com/baidubce/bce-sdk-go/services/cfc | [CFC.md](./doc/CFC.md)
 弹性公网IP | EIP | github.com/baidubce/bce-sdk-go/services/eip | [EIP.md](./doc/EIP.md)
+专线网关 | EtGateway | github.com/baidubce/bce-sdk-go/services/etGateway | [ETGateway.md](./doc/ETGateway.md)
 安全Token服务|  STS   | github.com/baidubce/bce-sdk-go/services/sts | [STS.md](./doc/STS.md)
 视频内容分析 |  VCA   | github.com/baidubce/bce-sdk-go/services/vca |
 视频内容审核 |  VCR   | github.com/baidubce/bce-sdk-go/services/vcr |
 私有网络 | VPC | github.com/baidubce/bce-sdk-go/services/vpc | [VPC.md](./doc/VPC.md)
+VPN网关 | VPN | github.com/baidubce/bce-sdk-go/services/vpn | [VPN.md](./doc/VPN.md)
