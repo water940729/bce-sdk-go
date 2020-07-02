@@ -107,14 +107,14 @@ type BccConfig struct {
 	LogicalZone       string       `json:"logicalZone,omitempty"`
 	InstanceType      InstanceType `json:"instanceType"`
 	GpuCard           string       `json:"gpuCard,omitempty"`
-	GpuCount          string       `json:"gpuCount"`
+	GpuCount          int          `json:"gpuCount"`
 	Cpu               int          `json:"cpu"`
 	Memory            int          `json:"memory"`
 	ImageType         ImageType    `json:"imageType"`
 	SubnetUuid        string       `json:"subnetUuid"`
 	SecurityGroupId   string       `json:"securityGroupId"`
 	AdminPass         string       `json:"adminPass,omitempty"`
-	PurchaseLength    string       `json:"purchaseLength,omitempty"`
+	PurchaseLength    int          `json:"purchaseLength,omitempty"`
 	PurchaseNum       int          `json:"purchaseNum"`
 	AutoRenewTimeUnit string       `json:"autoRenewTimeUnit,omitempty"`
 	AutoRenewTime     int          `json:"autoRenewTime,omitempty"`
@@ -176,8 +176,8 @@ type BaseCreateOrderRequestVo struct {
 }
 
 type CdsPreMountInfo struct {
-	MountPath string      `json:"mountPath"`
-	CdsConfig []CdsConfig `json:"cdsConfig"`
+	MountPath string           `json:"mountPath"`
+	CdsConfig []DiskSizeConfig `json:"cdsConfig"`
 }
 
 type CniMode string
@@ -218,6 +218,7 @@ type AdvancedOptions struct {
 	SecureContainerEnable bool          `json:"secureContainerEnable,omitempty"`
 	SetOSSecurity         bool          `json:"setOSSecurity,omitempty"`
 	CniMode               CniMode       `json:"cniMode,omitempty"`
+	CniType               CniType       `json:"cniType,omitempty"`
 	DnsMode               DNSMode       `json:"dnsMode,omitempty"`
 	MaxPodNum             int           `json:"maxPodNum,omitempty"`
 }
@@ -408,17 +409,17 @@ const (
 )
 
 type ListExistedNodeArgs struct {
-	ClusterUuid  string       `json:"clusterUuid"`
-	VpcId        string       `json:"vpcId,omitempty"`
-	VpcCidr      string       `json:"vpcCidr,omitempty"`
-	InstanceType InstanceType `json:"instanceType,omitempty"`
-	BBCFlavorId  string       `json:"bbcFlavorId,omitempty"`
-	KeywordType  KeywordType  `json:"keywordType,omitempty"`
-	Keyword      string       `json:"keyword,omitempty"`
-	OrderBy      string       `json:"orderBy,omitempty"`
-	Order        Order        `json:"order,omitempty"`
-	PageNo       int          `json:"pageNo,omitempty"`
-	PageSize     int          `json:"pageSize,omitempty"`
+	ClusterUuid  string            `json:"clusterUuid"`
+	VpcId        string            `json:"vpcId,omitempty"`
+	VpcCidr      string            `json:"vpcCidr,omitempty"`
+	InstanceType ShiftInstanceType `json:"instanceType,omitempty"`
+	BBCFlavorId  string            `json:"bbcFlavorId,omitempty"`
+	KeywordType  KeywordType       `json:"keywordType,omitempty"`
+	Keyword      string            `json:"keyword,omitempty"`
+	OrderBy      string            `json:"orderBy,omitempty"`
+	Order        Order             `json:"order,omitempty"`
+	PageNo       int               `json:"pageNo,omitempty"`
+	PageSize     int               `json:"pageSize,omitempty"`
 }
 
 type ListExistedNodeResult struct {
