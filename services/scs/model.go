@@ -17,8 +17,6 @@
 package scs
 
 import (
-	"time"
-
 	"github.com/baidubce/bce-sdk-go/model"
 )
 
@@ -68,8 +66,8 @@ type InstanceModel struct {
 	EngineVersion      string           `json:"engineVersion"`
 	VnetIP             string           `json:"vnetIp"`
 	Domain             string           `json:"domain"`
-	Port               string           `json:"port"`
-	InstanceCreateTime time.Time        `json:"instanceCreateTime"`
+	Port               int              `json:"port"`
+	InstanceCreateTime string           `json:"instanceCreateTime"`
 	Capacity           int              `json:"capacity"`
 	UsedCapacity       float64          `json:"usedCapacity"`
 	PaymentTiming      string           `json:"paymentTiming"`
@@ -106,8 +104,8 @@ type GetInstanceDetailResult struct {
 	VnetIP             string           `json:"vnetIp"`
 	Domain             string           `json:"domain"`
 	Port               int              `json:"port"`
-	InstanceCreateTime time.Time        `json:"instanceCreateTime"`
-	InstanceExpireTime time.Time        `json:"instanceExpireTime"`
+	InstanceCreateTime string           `json:"instanceCreateTime"`
+	InstanceExpireTime string           `json:"instanceExpireTime"`
 	Capacity           int              `json:"capacity"`
 	UsedCapacity       float64          `json:"usedCapacity"`
 	PaymentTiming      string           `json:"paymentTiming"`
