@@ -68,7 +68,7 @@ func (c *Client) ListClusters(args *ListClusterArgs) (*ListClusterResult, error)
 		WithURL(getClusterUri()).
 		WithQueryParamFilter("maker", args.Marker).
 		WithQueryParamFilter("maxKeys", maxKeysStr).
-		WithQueryParamFilter("status", args.Status).
+		WithQueryParamFilter("status", string(args.Status)).
 		WithResult(result).
 		Do()
 

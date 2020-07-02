@@ -41,10 +41,10 @@ const (
 )
 
 type SimpleNode struct {
-	InstanceShortId string `json:"instanceShortId"`
-	InstanceUuid    string `json:"instanceUuid"`
-	InstanceName    string `json:"instanceName"`
-	ClusterUuid     string `json:"clusterUuid"`
+	InstanceShortId string        `json:"instanceShortId"`
+	InstanceUuid    string        `json:"instanceUuid"`
+	InstanceName    string        `json:"instanceName"`
+	ClusterUuid     string        `json:"clusterUuid"`
 	Status          ClusterStatus `json:"status"`
 }
 
@@ -320,7 +320,7 @@ type GetClusterResult struct {
 	VpcCidr               string            `json:"vpcCidr"`
 	ZoneSubnetMap         map[string]string `json:"zoneSubnetMap"`
 	ContainerNet          string            `json:"containerNet"`
-	AdvancedOptions       *AdvancedOptions   `json:"advancedOptions"`
+	AdvancedOptions       *AdvancedOptions  `json:"advancedOptions"`
 	Status                ClusterStatus     `json:"status"`
 	CreateStartTime       time.Time         `json:"createStartTime"`
 	DeleteTime            time.Time         `json:"deleteTime"`
@@ -380,12 +380,12 @@ const (
 )
 
 type ShiftInNodeArgs struct {
-	ClusterUuid     string            `json:"clusterUuid"`
-	NeedRebuild     bool              `json:"needRebuild"`
-	ImageId         string            `json:"imageId,omitempty"`
-	AdminPass       string            `json:"adminPass"`
-	InstanceType    ShiftInstanceType `json:"instanceType"`
-	NodeInfoList    []CceNodeInfo     `json:"nodeInfoList"`
+	ClusterUuid  string            `json:"clusterUuid"`
+	NeedRebuild  bool              `json:"needRebuild"`
+	ImageId      string            `json:"imageId,omitempty"`
+	AdminPass    string            `json:"adminPass"`
+	InstanceType ShiftInstanceType `json:"instanceType"`
+	NodeInfoList []CceNodeInfo     `json:"nodeInfoList"`
 }
 
 type ShiftOutNodeArgs struct {
@@ -445,7 +445,7 @@ type GetContainerNetResult struct {
 type KubeConfigType string
 
 const (
-	KubeConfigTypeDefault KubeConfigType = "default"
+	KubeConfigTypeDefault  KubeConfigType = "default"
 	KubeConfigTypeInternal KubeConfigType = "internal"
 	KubeConfigTypeIntraVpc KubeConfigType = "intraVpc"
 )
