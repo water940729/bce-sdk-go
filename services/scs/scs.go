@@ -41,9 +41,6 @@ func (c *Client) CreateInstance(args *CreateInstanceArgs) (*CreateInstanceResult
 		return nil, fmt.Errorf("please set create scs argments")
 	}
 
-	//if (args.ClusterType != "cluster" && args.ClusterType != "master_slave") {
-	//	return nil, fmt.Errorf("please set scs argment ClusterType")
-	//}
 	result := &CreateInstanceResult{}
 	err := bce.NewRequestBuilder(c).
 		WithMethod(http.POST).
