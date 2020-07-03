@@ -102,25 +102,27 @@ const (
 )
 
 type BccConfig struct {
-	Name              string       `json:"name,omitempty"`
-	ProductType       ProductType  `json:"productType"`
-	LogicalZone       string       `json:"logicalZone,omitempty"`
-	InstanceType      InstanceType `json:"instanceType"`
-	GpuCard           string       `json:"gpuCard,omitempty"`
-	GpuCount          int          `json:"gpuCount"`
-	Cpu               int          `json:"cpu"`
-	Memory            int          `json:"memory"`
-	ImageType         ImageType    `json:"imageType"`
-	SubnetUuid        string       `json:"subnetUuid"`
-	SecurityGroupId   string       `json:"securityGroupId"`
-	AdminPass         string       `json:"adminPass,omitempty"`
-	PurchaseLength    int          `json:"purchaseLength,omitempty"`
-	PurchaseNum       int          `json:"purchaseNum"`
-	AutoRenewTimeUnit string       `json:"autoRenewTimeUnit,omitempty"`
-	AutoRenewTime     int          `json:"autoRenewTime,omitempty"`
-	AutoRenew         bool         `json:"autoRenew,omitempty"`
-	ImageId           string       `json:"imageId"`
-	ServiceType       ServiceType  `json:"serviceType"`
+	Name                string       `json:"name,omitempty"`
+	ProductType         ProductType  `json:"productType"`
+	LogicalZone         string       `json:"logicalZone,omitempty"`
+	InstanceType        InstanceType `json:"instanceType"`
+	GpuCard             string       `json:"gpuCard,omitempty"`
+	GpuCount            int          `json:"gpuCount"`
+	Cpu                 int          `json:"cpu"`
+	Memory              int          `json:"memory"`
+	ImageType           ImageType    `json:"imageType"`
+	SubnetUuid          string       `json:"subnetUuid"`
+	SecurityGroupId     string       `json:"securityGroupId"`
+	AdminPass           string       `json:"adminPass,omitempty"`
+	PurchaseLength      int          `json:"purchaseLength,omitempty"`
+	PurchaseNum         int          `json:"purchaseNum"`
+	RootDiskSizeInGb    int          `json:"rootDiskSizeInGb,omitempty"`
+	RootDiskStorageType VolumeType   `json:"rootDiskStorageType,omitempty"`
+	AutoRenewTimeUnit   string       `json:"autoRenewTimeUnit,omitempty"`
+	AutoRenewTime       int          `json:"autoRenewTime,omitempty"`
+	AutoRenew           bool         `json:"autoRenew,omitempty"`
+	ImageId             string       `json:"imageId"`
+	ServiceType         ServiceType  `json:"serviceType"`
 }
 
 type VolumeType string
