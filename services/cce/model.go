@@ -38,6 +38,7 @@ const (
 	ClusterStatusMasterUpgrading     ClusterStatus = "MASTER_UPGRADING"
 	ClusterStatusMasterUpgradeFailed ClusterStatus = "MASTER_UPGRADE_FAILED"
 	ClusterStatusError               ClusterStatus = "ERROR"
+	ClusterStatusDeleted             ClusterStatus = "DELETED"
 )
 
 type SimpleNode struct {
@@ -159,7 +160,7 @@ const (
 
 type EipConfig struct {
 	ProductType       ProductType `json:"productType"`
-	BandWidthInMbps   int         `json:"bandWidthInMbps"`
+	BandwidthInMbps   int         `json:"bandwidthInMbps"`
 	SubProductType    EipType     `json:"subProductType"`
 	PurchaseNum       int         `json:"purchaseNum"`
 	PurchaseLength    int         `json:"purchaseLength,omitempty"`
@@ -240,7 +241,7 @@ type Node struct {
 	SubnetId        string    `json:"subnetId"`
 	SubnetType      string    `json:"subnetType"`
 	Eip             string    `json:"eip"`
-	EipBandWidth    int       `json:"eipBandWidth"`
+	EipBandwidth    int       `json:"eipBandwidth"`
 	Cpu             int       `json:"cpu"`
 	Memory          int       `json:"memory"`
 	DiskSize        int       `json:"diskSize"`
