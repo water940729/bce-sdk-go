@@ -81,3 +81,73 @@ func ListZone(cli bce.Client) (*ListZoneResult, error) {
 
 	return jsonBody, nil
 }
+
+// ListFlavorSpec - get flavor specification list information of the instance
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//	   - args: the arguments to list flavor spec
+// RETURNS:
+//     - *ListBccFlavorSpecResult: result of the flavor specification
+//     - error: nil if success otherwise the flavor specific error
+func ListFlavorSpec(cli bce.Client, args *ListFlavorSpecRequest) (*ListBccFlavorSpecResponse, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getFlavorSpecUri())
+	req.SetMethod(http.GET)
+
+	if args != nil {
+		if len(args.ZoneName) != 0 {
+			req.SetParam("zoneName", args.ZoneName)
+		}
+	}
+
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+
+	jsonBody := &ListBccFlavorSpecResponse{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+
+	return jsonBody, nil
+}
+
+// GetPriceBySpec - get price by spec
+//
+// PARAMS:
+//     - cli: the client agent which can perform sending request
+//	   - reqBody: the request body to get price by spec
+// RETURNS:
+//     - *BccPriceResponse: result of the BccPriceResponse
+//     - error: nil if success otherwise the get price by spec error
+func GetPriceBySpec(cli bce.Client, clientToken string, reqBody *bce.Body) (*BccPriceResponse, error) {
+	req := &bce.BceRequest{}
+	req.SetUri(getPriceBySpecUri())
+	req.SetMethod(http.POST)
+	req.SetBody(reqBody)
+
+	if clientToken != "" {
+		req.SetParam("clientToken", clientToken)
+	}
+
+	// Send request and get response
+	resp := &bce.BceResponse{}
+	if err := cli.SendRequest(req, resp); err != nil {
+		return nil, err
+	}
+	if resp.IsFail() {
+		return nil, resp.ServiceError()
+	}
+
+	jsonBody := &BccPriceResponse{}
+	if err := resp.ParseJsonBody(jsonBody); err != nil {
+		return nil, err
+	}
+
+	return jsonBody, nil
+}
