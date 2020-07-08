@@ -980,35 +980,6 @@ func (c *Client) DeleteDeploySet(deploySetId string) error {
 	return api.DeleteDeploySet(c, deploySetId)
 }
 
-// ListFlavorSpec - list all flavor spec
-//
-// RETURNS:
-//     - *api.ListBccFlavorSpecResult: the result of all flavor spec
-//     - error: nil if success otherwise the specific error
-func (c *Client) ListFlavorSpec(args *api.ListFlavorSpecRequest) (*api.ListBccFlavorSpecResponse, error) {
-	return api.ListFlavorSpec(c, args)
-}
-
-// GetPriceBySpec - get price by spec
-//
-// PARAMS:
-//	   - args: the arguments to get price by spec
-// RETURNS:
-//     - *api.BccPriceResponse: result of the BccPriceResponse
-//     - error: nil if success otherwise the get price by spec error
-func (c *Client) GetPriceBySpec(args *api.BccPriceRequest) (*api.BccPriceResponse, error) {
-	jsonBytes, jsonErr := json.Marshal(args)
-	if jsonErr != nil {
-		return nil, jsonErr
-	}
-	body, err := bce.NewBodyFromBytes(jsonBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	return api.GetPriceBySpec(c, args.ClientToken, body)
-}
-
 // ResizeInstanceBySpec - resize a specific instance
 //
 // PARAMS:
