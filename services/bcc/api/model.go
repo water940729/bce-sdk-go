@@ -51,12 +51,14 @@ const (
 type StorageType string
 
 const (
-	StorageTypeStd1     StorageType = "std1"
-	StorageTypeHP1      StorageType = "hp1"
-	StorageTypeCloudHP1 StorageType = "cloud_hp1"
-	StorageTypeLocal    StorageType = "local"
-	StorageTypeSATA     StorageType = "sata"
-	StorageTypeSSD      StorageType = "ssd"
+	StorageTypeStd1          StorageType = "std1"
+	StorageTypeHP1           StorageType = "hp1"
+	StorageTypeCloudHP1      StorageType = "cloud_hp1"
+	StorageTypeLocal         StorageType = "local"
+	StorageTypeSATA          StorageType = "sata"
+	StorageTypeSSD           StorageType = "ssd"
+	StorageTypeHDDThroughput StorageType = "HDD_Throughput"
+	StorageTypeHdd           StorageType = "hdd"
 )
 
 type PaymentTimingType string
@@ -64,6 +66,7 @@ type PaymentTimingType string
 const (
 	PaymentTimingPrePaid  PaymentTimingType = "Prepaid"
 	PaymentTimingPostPaid PaymentTimingType = "Postpaid"
+	PaymentTimingBidding  PaymentTimingType = "bidding"
 )
 
 // Instance define instance model
@@ -95,6 +98,7 @@ type InstanceModel struct {
 	KeypairName           string           `json:"keypairName"`
 	DedicatedHostId       string           `json:"dedicatedHostId"`
 	Tags                  []model.TagModel `json:"tags"`
+	Ipv6                  string           `json:"ipv6"`
 }
 
 type Reservation struct {
@@ -147,6 +151,12 @@ type CreateInstanceArgs struct {
 	RelationTag           bool             `json:"relationTag,omitempty"`
 	Tags                  []model.TagModel `json:"tags,omitempty"`
 	DeployId              string           `json:"deployId,omitempty"`
+	BidModel              string           `json:"bidModel,omitempty"`
+	BidPrice              string           `json:"bidPrice,omitempty"`
+	KeypairId             string           `json:"keypairId,omitempty"`
+	AspId                 string           `json:"aspId,omitempty"`
+	InternetChargeType    string           `json:"internetChargeType,omitempty"`
+	InternalIps           []string         `json:"internalIps,omitempty"`
 	ClientToken           string           `json:"-"`
 }
 
@@ -176,6 +186,8 @@ type CreateInstanceBySpecArgs struct {
 	AutoRenewTimeUnit     string           `json:"autoRenewTimeUnit"`
 	AutoRenewTime         int              `json:"autoRenewTime"`
 	CdsAutoRenew          bool             `json:"cdsAutoRenew"`
+	AspId                 string           `json:"aspId"`
+	InternalIps           []string         `json:"internalIps,omitempty"`
 	ClientToken           string           `json:"-"`
 }
 
@@ -189,6 +201,7 @@ type ListInstanceArgs struct {
 	InternalIp      string
 	DedicatedHostId string
 	ZoneName        string
+	KeypairId       string
 }
 
 type ListInstanceResult struct {
@@ -207,16 +220,19 @@ type ResizeInstanceArgs struct {
 	CpuCount           int             `json:"cpuCount"`
 	MemoryCapacityInGB int             `json:"memoryCapacityInGB"`
 	EphemeralDisks     []EphemeralDisk `json:"ephemeralDisks,omitempty"`
+	Spec               string          `json:"spec"`
 	ClientToken        string          `json:"-"`
 }
 
 type RebuildInstanceArgs struct {
 	ImageId   string `json:"imageId"`
 	AdminPass string `json:"adminPass"`
+	KeypairId string `json:"keypairId"`
 }
 
 type StopInstanceArgs struct {
-	ForceStop bool `json:"forceStop"`
+	ForceStop        bool `json:"forceStop"`
+	StopWithNoCharge bool `json:"stopWithNoCharge"`
 }
 
 type ChangeInstancePassArgs struct {
@@ -243,6 +259,16 @@ type PurchaseReservedArgs struct {
 	Billing     Billing `json:"billing"`
 	ClientToken string  `json:"-"`
 }
+
+const (
+	RelatedRenewFlagCDS       string = "CDS"
+	RelatedRenewFlagEIP       string = "EIP"
+	RelatedRenewFlagMKT       string = "MKT"
+	RelatedRenewFlagCDSEIP    string = "CDS_EIP"
+	RelatedRenewFlagCDSMKT    string = "CDS_MKT"
+	RelatedRenewFlagEIPMKT    string = "EIP_MKT"
+	RelatedRenewFlagCDSEIPMKT string = "CDS_EIP_MKT"
+)
 
 type DeleteInstanceWithRelateResourceArgs struct {
 	RelatedReleaseFlag    bool `json:"relatedReleaseFlag"`
@@ -346,6 +372,7 @@ type VolumeModel struct {
 	SourceSnapshotId   string                   `json:"sourceSnapshotId"`
 	SnapshotNum        string                   `json:"snapshotNum"`
 	Tags               []model.TagModel         `json:"tags"`
+	Encrypted          string                   `json:"encrypted"`
 }
 
 type VolumeAttachmentModel struct {
@@ -368,6 +395,7 @@ type CreateCDSVolumeArgs struct {
 	CdsSizeInGB   int         `json:"cdsSizeInGB,omitempty"`
 	StorageType   StorageType `json:"storageType,omitempty"`
 	Billing       *Billing    `json:"billing"`
+	EncryptKey    string      `json:"encryptKey"`
 	ClientToken   string      `json:"-"`
 }
 
@@ -384,8 +412,9 @@ type AttachVolumeArgs struct {
 }
 
 type ResizeCSDVolumeArgs struct {
-	NewCdsSizeInGB int    `json:"newCdsSizeInGB"`
-	ClientToken    string `json:"-"`
+	NewCdsSizeInGB int         `json:"newCdsSizeInGB"`
+	NewVolumeType  StorageType `json:"newVolumeType"`
+	ClientToken    string      `json:"-"`
 }
 
 type RollbackCSDVolumeArgs struct {
@@ -717,4 +746,37 @@ type AzIntstanceStatis struct {
 
 type GetDeploySetResult struct {
 	DeploySetModel
+}
+
+type RebuildBatchInstanceArgs struct {
+	ImageId     string   `json:"imageId"`
+	AdminPass   string   `json:"adminPass"`
+	KeypairId   string   `json:"keypairId"`
+	InstanceIds []string `json:"instanceIds"`
+}
+
+type ChangeToPrepaidRequest struct {
+	Duration    int  `json:"duration"`
+	RelationCds bool `json:"relationCds"`
+}
+
+type ChangeToPrepaidResponse struct {
+	OrderId string `json:"orderId"`
+}
+
+type BindTagsRequest struct {
+	ChangeTags []model.TagModel `json:"changeTags"`
+}
+
+type UnBindTagsRequest struct {
+	ChangeTags []model.TagModel `json:"changeTags"`
+}
+
+type CancelBidOrderRequest struct {
+	OrderId     string `json:"orderId"`
+	ClientToken string `json:"-"`
+}
+
+type CreateBidInstanceResult struct {
+	OrderId string `json:"orderId"`
 }

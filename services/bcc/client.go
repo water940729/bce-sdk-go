@@ -213,9 +213,10 @@ func (c *Client) StartInstance(instanceId string) error {
 //     - forceStop: choose to force stop an instance or not
 // RETURNS:
 //     - error: nil if success otherwise the specific error
-func (c *Client) StopInstance(instanceId string, forceStop bool) error {
+func (c *Client) StopInstance(instanceId string, forceStop bool, stopWithNoCharge bool) error {
 	args := &api.StopInstanceArgs{
 		ForceStop: forceStop,
+		StopWithNoCharge: stopWithNoCharge,
 	}
 
 	jsonBytes, jsonErr := json.Marshal(args)
@@ -386,7 +387,8 @@ func (c *Client) GetInstanceVNC(instanceId string) (*api.GetInstanceVNCResult, e
 //     - args: the arguments to purchase reserved an instance
 // RETURNS:
 //     - error: nil if success otherwise the specific error
-func (c *Client) InstancePurchaseReserved(instanceId string, args *api.PurchaseReservedArgs) error {
+func (c *Client) InstancePurchaseReserved(instanceId string, relatedRenewFlag string,
+	args *api.PurchaseReservedArgs) error {
 	// this api only support Prepaid instance
 	args.Billing.PaymentTiming = api.PaymentTimingPrePaid
 
@@ -399,7 +401,7 @@ func (c *Client) InstancePurchaseReserved(instanceId string, args *api.PurchaseR
 		return err
 	}
 
-	return api.InstancePurchaseReserved(c, instanceId, args.ClientToken, body)
+	return api.InstancePurchaseReserved(c, instanceId, relatedRenewFlag, args.ClientToken, body)
 }
 
 // DeleteInstanceWithRelateResource - delete an instance and all eip/cds relate it
@@ -976,4 +978,169 @@ func (c *Client) ModifyDeploySet(deploySetId string, args *api.ModifyDeploySetAr
 //     - error: nil if success otherwise the specific error
 func (c *Client) DeleteDeploySet(deploySetId string) error {
 	return api.DeleteDeploySet(c, deploySetId)
+}
+
+// ResizeInstanceBySpec - resize a specific instance
+//
+// PARAMS:
+//     - instanceId: the specific instance ID
+//     - args: the arguments to resize a specific instance
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) ResizeInstanceBySpec(instanceId string, args *api.ResizeInstanceArgs) error {
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+
+	return api.ResizeInstanceBySpec(c, instanceId, args.ClientToken, body)
+}
+
+// RebuildBatchInstance - batch rebuild instances
+//
+// PARAMS:
+//     - args: the arguments to batch rebuild instances
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) BatchRebuildInstances(args *api.RebuildBatchInstanceArgs) error {
+	cryptedPass, err := api.Aes128EncryptUseSecreteKey(c.Config.Credentials.SecretAccessKey, args.AdminPass)
+	if err != nil {
+		return err
+	}
+	args.AdminPass = cryptedPass
+
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+
+	return api.BatchRebuildInstances(c, body)
+}
+
+// ChangeToPrepaid - to prepaid
+//
+// PARAMS:
+//     - instanceId: instanceId
+//     - args: the arguments to ChangeToPrepaid
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) ChangeToPrepaid(instanceId string, args *api.ChangeToPrepaidRequest) (*api.ChangeToPrepaidResponse,
+	error) {
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.ChangeToPrepaid(c, instanceId, body)
+}
+
+// BindInstanceToTags - bind instance to tags
+//
+// PARAMS:
+//     - instanceId: instanceId
+//     - args: the arguments to BindInstanceToTags
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) BindInstanceToTags(instanceId string, args *api.BindTagsRequest) error {
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+
+	return api.BindInstanceToTags(c, instanceId, body)
+}
+
+// UnBindInstanceToTags - unbind instance to tags
+//
+// PARAMS:
+//     - instanceId: instanceId
+//     - args: the arguments to unBindInstanceToTags
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) UnBindInstanceToTags(instanceId string, args *api.UnBindTagsRequest) error {
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return err
+	}
+
+	return api.UnBindInstanceToTags(c, instanceId, body)
+}
+
+// GetInstanceNoChargeList - get instance with nocharge list
+//
+// PARAMS:
+//     - args: the arguments to list all nocharge instance
+// RETURNS:
+//     - *api.ListInstanceResult: the result of list Instance
+//     - error: nil if success otherwise the specific error
+func (c *Client) GetInstanceNoChargeList(args *api.ListInstanceArgs) (*api.ListInstanceResult, error) {
+	return api.GetInstanceNoChargeList(c, args)
+}
+
+// CreateBidInstance - create an instance with the specific parameters
+//
+// PARAMS:
+//     - args: the arguments to create instance
+// RETURNS:
+//     - *api.CreateInstanceResult: the result of create Instance, contains new Instance ID
+//     - error: nil if success otherwise the specific error
+func (c *Client) CreateBidInstance(args *api.CreateInstanceArgs) (*api.CreateInstanceResult, error) {
+	if len(args.AdminPass) > 0 {
+		cryptedPass, err := api.Aes128EncryptUseSecreteKey(c.Config.Credentials.SecretAccessKey, args.AdminPass)
+		if err != nil {
+			return nil, err
+		}
+
+		args.AdminPass = cryptedPass
+	}
+
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.CreateBidInstance(c, args.ClientToken, body)
+}
+
+// CancelBidOrder - Cancel the bidding instance order.
+//
+// PARAMS:
+//     - args: the arguments to cancel bid order
+// RETURNS:
+//     - error: nil if success otherwise the specific error
+func (c *Client) CancelBidOrder(args *api.CancelBidOrderRequest) (*api.CreateBidInstanceResult, error) {
+	jsonBytes, jsonErr := json.Marshal(args)
+	if jsonErr != nil {
+		return nil, jsonErr
+	}
+	body, err := bce.NewBodyFromBytes(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return api.CancelBidOrder(c, args.ClientToken, body)
 }
