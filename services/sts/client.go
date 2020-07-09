@@ -46,15 +46,15 @@ func NewClient(ak, sk, endpoint string) (*Client, error) {
 		return nil, err
 	}
 	if len(endpoint) == 0 {
-		endpoint = bce.DEFAULT_REGION
+		endpoint = DEFAULT_SERVICE_DOMAIN
 	}
 	defaultSignOptions := &auth.SignOptions{
 		auth.DEFAULT_HEADERS_TO_SIGN,
 		util.NowUTCSeconds(),
 		auth.DEFAULT_EXPIRE_SECONDS}
 	defaultConf := &bce.BceClientConfiguration{
-		Endpoint:    DEFAULT_SERVICE_DOMAIN,
-		Region:      endpoint,
+		Endpoint:    endpoint,
+		Region:      bce.DEFAULT_REGION,
 		UserAgent:   bce.DEFAULT_USER_AGENT,
 		Credentials: credentials,
 		SignOption:  defaultSignOptions,
