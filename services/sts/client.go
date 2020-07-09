@@ -41,6 +41,10 @@ func (c *Client) GetSessionToken(duration int, acl string) (*api.GetSessionToken
 // NewClient make the STS service client with default configuration.
 // Use `cli.Config.xxx` to access the config or change it to non-default value.
 func NewClient(ak, sk, endpoint string) (*Client, error) {
+	return NewStsClient(ak, sk, DEFAULT_SERVICE_DOMAIN)
+}
+
+func NewStsClient(ak, sk, endpoint string) (*Client, error) {
 	credentials, err := auth.NewBceCredentials(ak, sk)
 	if err != nil {
 		return nil, err
